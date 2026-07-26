@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { ServiceOrder, ODSStatus } from '../../types';
-import { ClipboardList, Search, Plus, Filter, ArrowUpRight, Eye } from 'lucide-react';
+import { ClipboardList, Search, Plus, Filter, ArrowUpRight, Eye, Trash2 } from 'lucide-react';
 
 interface ODSListViewProps {
   orders: ServiceOrder[];
   onSelectOrder: (order: ServiceOrder) => void;
   onNewODS: () => void;
+  onDeleteODS?: (orderId: string) => void;
 }
 
-export const ODSListView: React.FC<ODSListViewProps> = ({ orders, onSelectOrder, onNewODS }) => {
+export const ODSListView: React.FC<ODSListViewProps> = ({ orders, onSelectOrder, onNewODS, onDeleteODS }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
@@ -130,13 +131,25 @@ export const ODSListView: React.FC<ODSListViewProps> = ({ orders, onSelectOrder,
                   </td>
                   <td className="p-3 text-right font-mono font-bold text-white">${order.totalAmount}</td>
                   <td className="p-3 text-right font-mono font-bold text-emerald-400">${order.paidAmount}</td>
-                  <td className="p-3 text-center">
-                    <button
-                      onClick={() => onSelectOrder(order)}
-                      className="px-3 py-1.5 rounded-full bg-[#00E5FF]/10 text-[#00E5FF] hover:bg-[#00E5FF] hover:text-black font-display text-xs transition-all flex items-center gap-1 mx-auto"
-                    >
-                      <Eye className="w-3.5 h-3.5" /> VER FICHA
-                    </button>
+                  <td className="p-3">
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => onSelectOrder(order)}
+                        className="px-3 py-1.5 rounded-full bg-[#00E5FF]/10 text-[#00E5FF] hover:bg-[#00E5FF] hover:text-black font-display text-xs transition-all flex items-center gap-1"
+                      >
+                        <Eye className="w-3.5 h-3.5" /> VER
+                      </button>
+                      
+                      {onDeleteODS && (
+                        <button
+                          onClick={() => onDeleteODS(order.id)}
+                          className="p-1.5 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-full transition-colors border border-red-500/30"
+                          title="Eliminar ODS"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               );

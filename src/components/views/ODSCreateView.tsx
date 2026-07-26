@@ -669,7 +669,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
               <ArrowLeft className="w-4 h-4" /> Anterior
             </button>
             <button onClick={handleCompleteODS} className="btn-nike-primary text-base py-3 px-8 shadow-2xl">
-              <Sparkles className="w-5 h-5" /> GENERAR ORDEN DE SERVICIO OFICIAL
+              <CheckCircle2 className="w-5 h-5" /> GENERAR ORDEN DE SERVICIO OFICIAL
             </button>
           </div>
         </div>

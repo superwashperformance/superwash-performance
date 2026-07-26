@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { InventoryItem, InventoryCategory } from '../../types';
-import { Package, AlertTriangle, Plus, ArrowUpRight, ArrowDownRight, RefreshCw, Sparkles, Droplet, Palette } from 'lucide-react';
+import { Package, AlertTriangle, Plus, ArrowUpRight, ArrowDownRight, RefreshCw, Sparkles, Droplet, Palette, Trash2 } from 'lucide-react';
+import { CurrencyDisplay } from '../common/CurrencyDisplay';
 
 interface InventoryViewProps {
   inventory: InventoryItem[];
   onUpdateStock: (itemId: string, newStock: number) => void;
+  onDeleteProduct?: (itemId: string) => void;
 }
 
-export const InventoryView: React.FC<InventoryViewProps> = ({ inventory, onUpdateStock }) => {
+export const InventoryView: React.FC<InventoryViewProps> = ({ inventory, onUpdateStock, onDeleteProduct }) => {
   const [activeTab, setActiveTab] = useState<InventoryCategory>('detailing');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -90,6 +92,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({ inventory, onUpdat
               <th className="p-3 text-right">COSTO UNITARIO</th>
               <th className="p-3">RESPONSABLE</th>
               <th className="p-3 text-center">AJUSTE DE STOCK</th>
+              <th className="p-3 text-center">ACCIONES</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/5 font-sans">
@@ -113,7 +116,9 @@ export const InventoryView: React.FC<InventoryViewProps> = ({ inventory, onUpdat
                   <td className="p-3 font-mono text-slate-400">
                     {item.minStock} {item.unitOfMeasure}
                   </td>
-                  <td className="p-3 text-right font-mono font-bold text-white">${item.unitCost}</td>
+                  <td className="p-3 text-right text-white">
+                    <CurrencyDisplay amount={item.unitCost} size="sm" />
+                  </td>
                   <td className="p-3 text-slate-300">{item.responsiblePerson}</td>
                   <td className="p-3 text-center">
                     <div className="flex items-center justify-center gap-2">
@@ -132,6 +137,17 @@ export const InventoryView: React.FC<InventoryViewProps> = ({ inventory, onUpdat
                         +
                       </button>
                     </div>
+                  </td>
+                  <td className="p-3 text-center">
+                    {onDeleteProduct && (
+                      <button
+                        onClick={() => onDeleteProduct(item.id)}
+                        className="p-1.5 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition-colors border border-red-500/30"
+                        title="Eliminar producto"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               );

@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import { UserRole, ServiceOrder, InventoryItem, CashTransaction, ODSStatus } from './types';
 import {
-  mockServiceOrders,
   mockInventory,
   mockTransactions,
   mockCustomers,
   mockVehicles,
 } from './data/mockData';
+import { odsService } from './services/odsService';
+import { inventoryService } from './services/inventoryService';
+import { supabase } from './lib/supabase';
 import { Header } from './components/layout/Header';
 import { Sidebar, NavTab } from './components/layout/Sidebar';
 import { SplashScreen } from './components/views/SplashScreen';
+import { ClientTrackingPortal } from './components/views/ClientTrackingPortal';
 import { DashboardView } from './components/views/DashboardView';
 import { ODSListView } from './components/views/ODSListView';
 import { ODSCreateView } from './components/views/ODSCreateView';
@@ -20,20 +23,65 @@ import { CustomersView } from './components/views/CustomersView';
 import { VehiclesView } from './components/views/VehiclesView';
 import { SettingsView } from './components/views/SettingsView';
 import { ODSDetailModal } from './components/views/ODSDetailModal';
+import { TurboWidget } from './components/common/TurboWidget';
 import { Search, X } from 'lucide-react';
 
 export function App() {
-  const [showSplash, setShowSplash] = useState(true);
+  const [appMode, setAppMode] = useState<'splash' | 'admin' | 'tracking'>('splash');
+  const [trackingPlate, setTrackingPlate] = useState('');
   const [activeTab, setActiveTab] = useState<NavTab>('dashboard');
   const [currentRole, setCurrentRole] = useState<UserRole>('admin');
 
   // Application State
-  const [orders, setOrders] = useState<ServiceOrder[]>(mockServiceOrders);
-  const [inventory, setInventory] = useState<InventoryItem[]>(mockInventory);
+  const [orders, setOrders] = useState<ServiceOrder[]>([]);
+  const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const [isLoadingOrders, setIsLoadingOrders] = useState(true);
   const [transactions, setTransactions] = useState<CashTransaction[]>(mockTransactions);
 
   // Selected Order for Detail Modal
   const [selectedOrder, setSelectedOrder] = useState<ServiceOrder | null>(null);
+
+  // Fetch initial data from Supabase
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoadingOrders(true);
+        // 1. Fetch ODS
+        const odsData = await odsService.getActiveODS();
+        setOrders(odsData);
+
+        // 2. Fetch & Seed Inventory
+        await inventoryService.seedMockDataIfNeeded(mockInventory);
+        const invData = await inventoryService.getInventory();
+        setInventory(invData);
+      } catch (error) {
+        console.error('Failed to fetch data from Supabase', error);
+      } finally {
+        setIsLoadingOrders(false);
+      }
+    };
+    fetchData();
+
+    // 3. Supabase Realtime Subscription for ODS
+    const channel = supabase
+      .channel('ods_realtime_changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'service_orders' },
+        (payload) => {
+          console.log('Realtime ODS change received!', payload);
+          // Simple approach: re-fetch all active ODS to ensure relationships (customers, vehicles) are included.
+          odsService.getActiveODS().then((newData) => {
+            setOrders(newData);
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   // Search Command Palette Modal State
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -51,36 +99,85 @@ export function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const handleCreateODS = (newODS: ServiceOrder) => {
-    setOrders([newODS, ...orders]);
-    setActiveTab('ods');
+  const handleCreateODS = async (newODS: ServiceOrder) => {
+    try {
+      // Optimistic update for better UX (optional) or wait for server
+      const createdODS = await odsService.createODS(newODS);
+      setOrders([createdODS, ...orders]);
+      setActiveTab('ods');
+    } catch (error) {
+      console.error('Error al guardar la ODS:', error);
+      alert('Hubo un error al guardar la ODS en la nube. Revisa la consola.');
+    }
   };
 
-  const handleUpdateStatus = (orderId: string, newStatus: ODSStatus) => {
-    setOrders(
-      orders.map((o) =>
-        o.id === orderId
-          ? {
-              ...o,
-              status: newStatus,
-              statusHistory: [
-                ...o.statusHistory,
-                {
-                  status: newStatus,
-                  changedAt: new Date().toLocaleString('es-ES'),
-                  changedBy: currentRole,
-                },
-              ],
-            }
-          : o
-      )
-    );
+  const handleUpdateStatus = async (orderId: string, newStatus: ODSStatus) => {
+    try {
+      // 1. Update in DB
+      await odsService.updateODSStatus(orderId, newStatus);
+      
+      // 2. Update local state
+      setOrders(
+        orders.map((o) =>
+          o.id === orderId
+            ? {
+                ...o,
+                status: newStatus,
+                statusHistory: [
+                  ...o.statusHistory,
+                  {
+                    status: newStatus,
+                    changedAt: new Date().toLocaleString('es-ES'),
+                    changedBy: currentRole,
+                  },
+                ],
+              }
+            : o
+        )
+      );
+    } catch (error) {
+      console.error('Error al actualizar estado:', error);
+      alert('Error al actualizar el estado en la base de datos.');
+    }
   };
 
-  const handleUpdateStock = (itemId: string, newStock: number) => {
-    setInventory(
-      inventory.map((item) => (item.id === itemId ? { ...item, stock: newStock } : item))
-    );
+  const handleDeleteODS = async (orderId: string) => {
+    if (!window.confirm('¿Estás seguro de que deseas eliminar esta Orden de Servicio de forma permanente?')) return;
+    try {
+      await odsService.deleteODS(orderId);
+      setOrders(orders.filter((o) => o.id !== orderId));
+      if (selectedOrder?.id === orderId) setSelectedOrder(null);
+    } catch (error) {
+      console.error('Error al eliminar ODS:', error);
+      alert('Error al eliminar la ODS en la base de datos.');
+    }
+  };
+
+  const handleUpdateStock = async (itemId: string, newStock: number) => {
+    try {
+      await inventoryService.updateStock(itemId, newStock);
+      setInventory(
+        inventory.map((item) =>
+          item.id === itemId
+            ? { ...item, stock: newStock, lastUpdated: new Date().toLocaleString('es-ES') }
+            : item
+        )
+      );
+    } catch (error) {
+      console.error('Error updating stock', error);
+      alert('Hubo un error al actualizar el stock en la base de datos.');
+    }
+  };
+
+  const handleDeleteProduct = async (itemId: string) => {
+    if (!window.confirm('¿Estás seguro de que deseas eliminar este insumo del inventario?')) return;
+    try {
+      await inventoryService.deleteItem(itemId);
+      setInventory(inventory.filter((item) => item.id !== itemId));
+    } catch (error) {
+      console.error('Error al eliminar producto:', error);
+      alert('Hubo un error al eliminar el insumo.');
+    }
   };
 
   const handleAddPayment = (
@@ -115,8 +212,18 @@ export function App() {
     setTransactions([newTx, ...transactions]);
   };
 
-  if (showSplash) {
-    return <SplashScreen onEnter={() => setShowSplash(false)} />;
+  if (appMode === 'splash') {
+    return <SplashScreen 
+      onEnter={() => setAppMode('admin')} 
+      onTrack={(plate) => { setTrackingPlate(plate); setAppMode('tracking'); }} 
+    />;
+  }
+  
+  if (appMode === 'tracking') {
+    return <ClientTrackingPortal 
+      initialPlate={trackingPlate} 
+      onExit={() => setAppMode('splash')} 
+    />;
   }
 
   // Filtered search items
@@ -160,6 +267,7 @@ export function App() {
               orders={orders}
               onSelectOrder={setSelectedOrder}
               onNewODS={() => setActiveTab('ods_new' as any)}
+              onDeleteODS={handleDeleteODS}
             />
           )}
 
@@ -180,7 +288,11 @@ export function App() {
           )}
 
           {activeTab === 'inventory' && (
-            <InventoryView inventory={inventory} onUpdateStock={handleUpdateStock} />
+            <InventoryView 
+              inventory={inventory} 
+              onUpdateStock={handleUpdateStock} 
+              onDeleteProduct={handleDeleteProduct} 
+            />
           )}
 
           {activeTab === 'cashier' && (
@@ -255,6 +367,16 @@ export function App() {
           </div>
         </div>
       )}
+
+      {/* Turbo Assistant Widget */}
+      <TurboWidget 
+        role={currentRole} 
+        orders={orders} 
+        onViewOrder={(orderId) => {
+          const found = orders.find(o => o.id === orderId);
+          if (found) setSelectedOrder(found);
+        }} 
+      />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CurrencyDisplay } from '../common/CurrencyDisplay';
 import { ServiceOrder } from '../../types';
 import { FaviconLogo } from '../common/FaviconLogo';
 import { VehicleDiagram360 } from '../common/VehicleDiagram360';
@@ -52,7 +53,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 print:hidden">
             {/* WhatsApp Share Button */}
             <a
               href={generateWhatsAppLink()}
@@ -78,9 +79,9 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
         </div>
 
         {/* Modal Navigation Tabs */}
-        <div className="flex items-center gap-2 px-6 py-3 bg-slate-950 border-b border-white/10 overflow-x-auto">
+        <div className="flex items-center gap-2 px-6 py-3 bg-slate-950 border-b border-white/10 overflow-x-auto print:hidden">
           {[
-            { id: 'quote', label: 'PRESUPUESTO & FACTURA', icon: FileText },
+            { id: 'quote', label: 'PRESUPUESTO & NOTA DE ENTREGA', icon: FileText },
             { id: 'photos', label: `FOTOGRAFÍAS (${order.photos.length})`, icon: Camera },
             { id: 'checklist', label: 'CHECKLIST 20 PUNTOS', icon: CheckCircle },
             { id: 'damages', label: `MAPA DAÑOS (${order.damageMarkers.length})`, icon: ShieldAlert },
@@ -106,10 +107,9 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
 
         {/* Modal Tab Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          {/* TAB 1: PRESUPUESTO & FACTURA PRINTABLE VIEW */}
-          {activeTab === 'quote' && (
-            <div id="printable-quote" className="flex flex-col gap-6 bg-slate-950 p-6 rounded-2xl border border-white/10">
-              {/* Header Invoice Brand */}
+          {/* TAB 1: PRESUPUESTO & NOTA DE ENTREGA PRINTABLE VIEW */}
+          <div id="printable-quote" className={`flex flex-col gap-6 bg-slate-950 p-6 rounded-2xl border border-white/10 ${activeTab === 'quote' ? 'flex' : 'hidden print:flex'}`}>
+            {/* Header Invoice Brand */}
               <div className="flex items-start justify-between border-b border-white/10 pb-4">
                 <div>
                   <h1 className="font-display text-3xl text-white">SUPER WASH PERFORMANCE</h1>
@@ -154,8 +154,12 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
                       <tr key={i}>
                         <td className="p-2.5 font-bold text-white">{s.serviceName}</td>
                         <td className="p-2.5 text-center font-mono">{s.quantity}</td>
-                        <td className="p-2.5 text-right font-mono">${s.unitPrice}</td>
-                        <td className="p-2.5 text-right font-mono font-bold text-white">${s.totalPrice}</td>
+                        <td className="p-2.5 text-right">
+                          <CurrencyDisplay amount={s.unitPrice} size="sm" />
+                        </td>
+                        <td className="p-2.5 text-right text-white font-bold">
+                          <CurrencyDisplay amount={s.totalPrice} size="sm" />
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -164,32 +168,65 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
 
               {/* Financial Totals */}
               <div className="flex flex-col items-end border-t border-white/10 pt-4 text-xs font-mono space-y-1">
-                <div className="flex justify-between w-64">
-                  <span className="text-slate-400">SUBTOTAL:</span>
-                  <span className="text-white font-bold">${order.subtotalAmount}</span>
+                <div className="flex justify-between p-2">
+                  <span className="text-slate-400">Subtotal:</span>
+                  <span className="text-white font-bold">
+                    <CurrencyDisplay amount={order.subtotalAmount} size="sm" />
+                  </span>
                 </div>
-                <div className="flex justify-between w-64 text-emerald-400">
-                  <span>MONTO ABONADO:</span>
-                  <span className="font-bold">${order.paidAmount}</span>
+                <div className="flex justify-between p-2">
+                  <span className="text-slate-400">Abonado:</span>
+                  <span className="font-bold">
+                    <CurrencyDisplay amount={order.paidAmount} size="sm" />
+                  </span>
                 </div>
-                <div className="flex justify-between w-64 text-amber-400 border-t border-white/10 pt-1 font-display text-lg">
-                  <span>TOTAL PENDIENTE:</span>
-                  <span className="font-bold">${order.totalAmount - order.paidAmount}</span>
+                <div className="flex justify-between p-2 border-t border-white/20 mt-2">
+                  <span className="text-slate-400">Pendiente:</span>
+                  <span className="font-bold text-red-400">
+                    <CurrencyDisplay amount={order.totalAmount - order.paidAmount} size="sm" />
+                  </span>
                 </div>
               </div>
 
-              {/* Observations */}
-              {order.observations && (
-                <div className="p-3 rounded-xl bg-black/40 border border-white/5 text-xs">
-                  <span className="font-bold text-slate-400 block mb-1">OBSERVACIONES:</span>
+              {/* Observations & Print Textual Details */}
+              <div className="p-3 rounded-xl bg-black/40 border border-white/5 text-xs">
+                <span className="font-bold text-slate-400 block mb-1">OBSERVACIONES:</span>
+                {order.observations ? (
                   <p className="text-slate-300 italic">{order.observations}</p>
+                ) : (
+                  <p className="text-slate-500 italic">Sin observaciones iniciales.</p>
+                )}
+
+                {/* Print only: Detailed damages and checklist */}
+                <div className="hidden print:block mt-4 pt-4 border-t border-white/10 space-y-3">
+                  {order.checklist && order.checklist.filter(i => i.condition !== 'ok').length > 0 && (
+                    <div>
+                      <span className="font-bold text-slate-400 mb-1 block">PUNTOS DE INSPECCIÓN CON NOVEDAD:</span>
+                      <ul className="list-disc ml-5 text-slate-300">
+                        {order.checklist.filter(i => i.condition !== 'ok').map(i => (
+                          <li key={i.id}>{i.label}: <span className="font-bold uppercase text-amber-400">{i.condition}</span></li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {order.damageMarkers && order.damageMarkers.length > 0 && (
+                    <div>
+                      <span className="font-bold text-slate-400 mb-1 block">DAÑOS REGISTRADOS EN CARROCERÍA:</span>
+                      <ul className="list-disc ml-5 text-slate-300">
+                        {order.damageMarkers.map(m => (
+                          <li key={m.id}>
+                            <span className="font-bold text-amber-400 uppercase">{m.type}</span> en {m.view} (Severidad: {m.severity}) - {m.description}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
-          )}
 
           {/* TAB 2: PHOTOGRAPHS */}
-          {activeTab === 'photos' && (
+          <div className={activeTab === 'photos' ? 'block print:hidden' : 'hidden'}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {order.photos.map((p) => (
                 <div key={p.id} className="relative rounded-xl overflow-hidden border border-white/10 aspect-video group">
@@ -202,10 +239,10 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
                 </div>
               ))}
             </div>
-          )}
+          </div>
 
           {/* TAB 3: CHECKLIST AUDIT */}
-          {activeTab === 'checklist' && (
+          <div className={activeTab === 'checklist' ? 'block print:hidden' : 'hidden'}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {order.checklist.map((item) => (
                 <div key={item.id} className="p-3 rounded-xl bg-slate-900 border border-white/5 flex items-center justify-between text-xs">
@@ -224,12 +261,12 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
                 </div>
               ))}
             </div>
-          )}
+          </div>
 
           {/* TAB 4: DAMAGES CANVAS */}
-          {activeTab === 'damages' && (
+          <div className={activeTab === 'damages' ? 'block print:hidden' : 'hidden'}>
             <VehicleDiagram360 markers={order.damageMarkers} readOnly />
-          )}
+          </div>
         </div>
       </div>
     </div>

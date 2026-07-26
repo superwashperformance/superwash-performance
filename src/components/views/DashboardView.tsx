@@ -1,18 +1,23 @@
 import React from 'react';
 import { ServiceOrder, UserRole } from '../../types';
+import { CurrencyDisplay } from '../common/CurrencyDisplay';
 import { MascotTurbo } from '../common/MascotTurbo';
 import {
-  Car,
+  BarChart3,
   Clock,
-  CheckCircle2,
-  PackageCheck,
   DollarSign,
+  PenTool,
+  CheckCircle2,
+  TrendingUp,
+  Sparkles,
+  Activity,
+  Car,
+  PackageCheck,
   AlertTriangle,
   ArrowUpRight,
   Plus,
   Kanban,
   FileText,
-  TrendingUp,
 } from 'lucide-react';
 
 interface DashboardViewProps {
@@ -129,7 +134,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <span className="text-[10px] font-mono uppercase tracking-wider">POR COBRAR</span>
             <AlertTriangle className="w-4 h-4 text-amber-400" />
           </div>
-          <div className="font-display text-2xl md:text-3xl text-amber-400 font-mono">${totalAccountsReceivable}</div>
+          <div className="font-display text-amber-400">
+            <CurrencyDisplay amount={totalAccountsReceivable} size="2xl" />
+          </div>
           <span className="text-[10px] text-amber-400/70 mt-1 font-mono">Cuentas pendientes</span>
         </div>
 
@@ -139,7 +146,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <span className="text-[10px] font-mono uppercase tracking-wider">INGRESOS</span>
             <TrendingUp className="w-4 h-4 text-green-400" />
           </div>
-          <div className="font-display text-2xl md:text-3xl text-green-400 font-mono">${totalRevenue}</div>
+          <div className="font-display text-green-400">
+            <CurrencyDisplay amount={totalRevenue} size="2xl" />
+          </div>
           <span className="text-[10px] text-green-400/70 mt-1 font-mono">Cobrado en caja</span>
         </div>
       </div>
@@ -193,7 +202,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       </span>
                     </td>
                     <td className="p-3 font-mono text-slate-400">{order.entryDate}</td>
-                    <td className="p-3 text-right font-mono font-bold text-white">${order.totalAmount}</td>
+                    <td className="p-3 text-right text-white">
+                      <CurrencyDisplay amount={order.totalAmount} size="sm" />
+                    </td>
                     <td className="p-3 text-center">
                       <button
                         onClick={() => onSelectOrder(order)}

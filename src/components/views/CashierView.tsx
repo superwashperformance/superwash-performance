@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ServiceOrder, CashTransaction } from '../../types';
+import { CurrencyDisplay } from '../common/CurrencyDisplay';
 import { DollarSign, ArrowDownLeft, CreditCard, Wallet, Plus, CheckCircle, Receipt } from 'lucide-react';
 
 interface CashierViewProps {
@@ -46,13 +47,13 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="nike-card p-5 border-emerald-500/30">
           <span className="text-[10px] font-mono text-slate-400 uppercase">RECAUDADO EN CAJA</span>
-          <div className="font-display text-4xl text-emerald-400 font-mono">${totalCollected}</div>
+          <div className="font-display text-4xl text-emerald-400 font-mono"><CurrencyDisplay amount={totalCollected} size="lg" /></div>
           <span className="text-xs text-slate-400">Total recibido en la jornada</span>
         </div>
 
         <div className="nike-card p-5 border-amber-500/30">
           <span className="text-[10px] font-mono text-slate-400 uppercase">CUENTAS POR COBRAR</span>
-          <div className="font-display text-4xl text-amber-400 font-mono">${totalAccountsReceivable}</div>
+          <div className="font-display text-4xl text-amber-400 font-mono"><CurrencyDisplay amount={totalAccountsReceivable} size="lg" /></div>
           <span className="text-xs text-slate-400">Balance pendiente por cobrar</span>
         </div>
 
@@ -101,9 +102,9 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
                   <span className="text-slate-400">Monto Pagado:</span>
                   <span className="text-emerald-400 font-bold">${selectedOrder.paidAmount}</span>
                 </div>
-                <div className="flex justify-between border-t border-white/10 pt-1 text-amber-400">
-                  <span>Monto Pendiente:</span>
-                  <span className="font-bold">${pendingBalance}</span>
+                <div className="flex justify-between items-center text-sm bg-slate-900/50 p-3 rounded-lg border border-red-500/20">
+                  <span className="text-slate-400">Deuda Restante:</span>
+                  <span className="font-bold text-red-400"><CurrencyDisplay amount={pendingBalance} size="md" /></span>
                 </div>
               </div>
             )}
@@ -171,23 +172,27 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
             <table className="w-full text-left text-xs text-slate-300">
               <thead className="bg-black/60 font-display text-sm tracking-wider uppercase text-slate-400 border-b border-white/10">
                 <tr>
-                  <th className="p-3">ODS</th>
-                  <th className="p-3">CLIENTE</th>
-                  <th className="p-3">MÉTODO</th>
-                  <th className="p-3">REFERENCIA</th>
                   <th className="p-3">FECHA</th>
+                  <th className="p-3">CLIENTE</th>
+                  <th className="p-3">CONCEPTO</th>
+                  <th className="p-3 text-center">MÉTODO</th>
                   <th className="p-3 text-right">MONTO</th>
+                  <th className="p-3 text-center">REF</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5 font-sans">
                 {transactions.map((tx) => (
-                  <tr key={tx.id} className="hover:bg-white/5 transition-colors">
-                    <td className="p-3 font-mono font-bold text-[#00E5FF]">{tx.orderNumber}</td>
-                    <td className="p-3 font-bold text-white">{tx.customerName}</td>
-                    <td className="p-3 uppercase text-[10px] font-mono text-slate-400">{tx.paymentMethod}</td>
-                    <td className="p-3 font-mono text-slate-400">{tx.referenceNumber || 'N/A'}</td>
+                  <tr key={tx.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                     <td className="p-3 font-mono text-slate-400">{tx.date}</td>
-                    <td className="p-3 text-right font-mono font-bold text-emerald-400">+${tx.amount}</td>
+                    <td className="p-3 font-medium text-white">{tx.customerName}</td>
+                    <td className="p-3 text-slate-300">Abono ODS: {tx.orderNumber}</td>
+                    <td className="p-3 text-center text-xs">
+                      <span className="bg-slate-800 text-slate-300 px-2 py-1 rounded uppercase tracking-wider">{tx.paymentMethod}</span>
+                    </td>
+                    <td className="p-3 text-right text-emerald-400">
+                      +<CurrencyDisplay amount={tx.amount} size="sm" />
+                    </td>
+                    <td className="p-3 text-center text-slate-400 font-mono text-xs">{tx.referenceNumber || '-'}</td>
                   </tr>
                 ))}
               </tbody>

@@ -1,16 +1,18 @@
 @import "tailwindcss";
-@import "@fontsource/bebas-neue";
-@import "@fontsource/outfit/600.css";
-@import "@fontsource/outfit/800.css";
-@import "@fontsource/inter/400.css";
-@import "@fontsource/inter/600.css";
+@import "@fontsource/nunito-sans/400.css";
+@import "@fontsource/nunito-sans/500.css";
+@import "@fontsource/nunito-sans/600.css";
+@import "@fontsource/nunito-sans/700.css";
+@import "@fontsource/nunito-sans/800.css";
 @import "@fontsource/jetbrains-mono/500.css";
+@import "@fontsource/jetbrains-mono/700.css";
+@import "@fontsource/jetbrains-mono/800.css";
 
 @layer base {
   :root {
-    --font-display: 'Bebas Neue', sans-serif;
-    --font-heading: 'Outfit', sans-serif;
-    --font-sans: 'Inter', sans-serif;
+    --font-display: 'Nunito Sans', sans-serif;
+    --font-heading: 'Nunito Sans', sans-serif;
+    --font-sans: 'Nunito Sans', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
   }
 
@@ -18,6 +20,7 @@
     background-color: #06080C;
     color: #F0F6FC;
     font-family: var(--font-sans);
+    font-weight: 600;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
   }
@@ -26,6 +29,7 @@
 /* Custom Typography Utility Classes */
 .font-display {
   font-family: var(--font-display);
+  font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -36,6 +40,7 @@
 
 .font-mono {
   font-family: var(--font-mono);
+  font-weight: 700;
 }
 
 /* Nike Athletic Glass Panel */

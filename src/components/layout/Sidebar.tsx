@@ -9,8 +9,10 @@ import {
   Users,
   Car,
   Settings,
-  Sparkles,
+  ShieldCheck,
+  Zap,
 } from 'lucide-react';
+import { FaviconLogo } from '../common/FaviconLogo';
 
 export type NavTab = 'dashboard' | 'ods' | 'kanban' | 'inventory' | 'cashier' | 'customers' | 'vehicles' | 'settings';
 
@@ -61,15 +63,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, curren
         })}
       </div>
 
-      {/* Footer Branding Badge */}
-      <div className="px-3 py-3 border-t border-white/10 hidden md:block">
-        <div className="p-3 rounded-xl bg-slate-900/80 border border-white/10 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-[#00E5FF]/10 text-[#00E5FF] flex items-center justify-center font-bold">
-            <Sparkles className="w-4 h-4" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xs font-bold text-white font-heading">SUPER WASH</span>
-            <span className="text-[9px] text-slate-400 font-mono">v2.4 Enterprise SaaS</span>
+      {/* Footer Logo Area */}
+      <div className="px-6 pt-6 pb-2 border-t border-white/5 mt-4">
+        <div className="flex items-center gap-3">
+          <FaviconLogo size={40} />
+          <div className="hidden md:block">
+            <h1 className="font-display font-bold text-lg tracking-widest text-white leading-tight">SUPER WASH</h1>
+            <p className="text-[10px] font-mono text-cyan-500 font-bold uppercase tracking-widest mt-0.5">v2.4 Enterprise SaaS</p>
           </div>
         </div>
       </div>
