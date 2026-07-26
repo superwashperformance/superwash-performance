@@ -1,0 +1,169 @@
+@import "tailwindcss";
+@import "@fontsource/bebas-neue";
+@import "@fontsource/outfit/600.css";
+@import "@fontsource/outfit/800.css";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/jetbrains-mono/500.css";
+
+@layer base {
+  :root {
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-heading: 'Outfit', sans-serif;
+    --font-sans: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    background-color: #06080C;
+    color: #F0F6FC;
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Custom Typography Utility Classes */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Nike Athletic Glass Panel */
+.nike-card {
+  background: rgba(17, 22, 31, 0.75);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border-radius: 1rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nike-card:hover {
+  border-color: rgba(0, 229, 255, 0.3);
+  box-shadow: 0 12px 35px rgba(0, 229, 255, 0.08);
+}
+
+/* Volt Cyan Glow Effect */
+.glow-cyan {
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.35);
+}
+
+.glow-cyan-lg {
+  box-shadow: 0 0 35px rgba(0, 229, 255, 0.5);
+}
+
+.glow-amber {
+  box-shadow: 0 0 20px rgba(255, 184, 0, 0.35);
+}
+
+.glow-green {
+  box-shadow: 0 0 20px rgba(0, 230, 118, 0.35);
+}
+
+/* Nike Athletic Pill Button */
+.btn-nike-primary {
+  background: #00E5FF;
+  color: #000000;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  padding: 0.65rem 1.6rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 20px rgba(0, 229, 255, 0.3);
+  cursor: pointer;
+}
+
+.btn-nike-primary:hover {
+  background: #33EBFF;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 25px rgba(0, 229, 255, 0.5);
+}
+
+.btn-nike-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-nike-secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-nike-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Athletic Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #06080C;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #232D3F;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00E5FF;
+}
+
+/* 3D Rim Animation Keyframes */
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 12s linear infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
