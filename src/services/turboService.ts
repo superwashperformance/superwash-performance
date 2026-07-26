@@ -61,7 +61,7 @@ export const turboService = {
     }
 
     // Check for high priority orders
-    const highPriority = orders.filter(o => o.priority === 'high' || o.priority === 'urgent');
+    const highPriority = orders.filter(o => o.priority === 'urgente' || o.priority === 'vip');
     if (highPriority.length > 0) {
       alerts.push(`🔥 Tienes ${highPriority.length} orden(es) de ALTA prioridad en el taller.`);
     }

@@ -26,6 +26,7 @@ import {
   Camera,
   DollarSign,
   CheckCircle,
+  CheckCircle2,
   Plus,
   Trash2,
   ArrowRight,
