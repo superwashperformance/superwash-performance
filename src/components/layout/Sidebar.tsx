@@ -25,9 +25,9 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, currentRole }) => {
   const navItems = [
     { id: 'dashboard', label: 'DASHBOARD', icon: LayoutDashboard, roles: ['admin', 'owner', 'sales'] },
-    { id: 'ods', label: 'ÓRDENES DE SERVICIO (ODS)', icon: ClipboardList, roles: ['admin', 'owner', 'sales', 'free_reception', 'polisher', 'painter', 'ppf_installer'] },
-    { id: 'kanban', label: 'TALLER EN VIVO (KANBAN)', icon: Kanban, roles: ['admin', 'owner', 'sales', 'polisher', 'dismantler', 'painter', 'prep_tech', 'ppf_installer'] },
-    { id: 'inventory', label: 'INVENTARIO DUAL', icon: Package, roles: ['admin', 'owner', 'sales', 'polisher', 'painter'] },
+    { id: 'ods', label: 'ÓRDENES DE SERVICIO (ODS)', icon: ClipboardList, roles: ['admin', 'owner', 'sales', 'free_reception',   ] },
+    { id: 'kanban', label: 'TALLER EN VIVO', icon: Kanban, roles: ['admin', 'owner', 'sales',     ] },
+    { id: 'inventory', label: 'INVENTARIO DUAL', icon: Package, roles: ['admin', 'owner', 'sales',  ] },
     { id: 'cashier', label: 'CAJA & COBROS', icon: DollarSign, roles: ['admin', 'owner', 'sales'] },
     { id: 'customers', label: 'DIRECTORIO CLIENTES', icon: Users, roles: ['admin', 'owner', 'sales'] },
     { id: 'vehicles', label: 'GARAJE DE VEHÍCULOS', icon: Car, roles: ['admin', 'owner', 'sales', 'free_reception'] },

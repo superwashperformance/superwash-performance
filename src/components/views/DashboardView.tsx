@@ -80,7 +80,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               onClick={() => onNavigateTab('kanban')}
               className="btn-nike-secondary text-xs py-2 justify-center"
             >
-              <Kanban className="w-4 h-4 text-[#00E5FF]" /> TABLERO KANBAN EN VIVO
+              <Kanban className="w-4 h-4 text-[#00E5FF]" /> TABLERO EN VIVO
             </button>
           </div>
         </div>

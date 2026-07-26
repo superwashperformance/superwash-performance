@@ -23,11 +23,6 @@ export const Header: React.FC<HeaderProps> = ({
     admin: 'Administrador General',
     owner: 'Dueño / Director',
     sales: 'Ventas & Asesor',
-    polisher: 'Especialista Pulitura',
-    dismantler: 'Desmantelador',
-    painter: 'Maestro Pintor',
-    prep_tech: 'Preparador Pintura',
-    ppf_installer: 'Instalador PPF',
     free_reception: 'Agente Recepción Libre',
   };
 

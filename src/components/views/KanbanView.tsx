@@ -74,7 +74,7 @@ export const KanbanView: React.FC<KanbanViewProps> = ({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
         <div>
           <h2 className="font-display text-3xl text-white tracking-wide flex items-center gap-2">
-            TABLERO KANBAN EN VIVO <span className="w-2.5 h-2.5 rounded-full bg-[#00E5FF] animate-pulse" />
+            TABLERO EN VIVO <span className="w-2.5 h-2.5 rounded-full bg-[#00E5FF] animate-pulse" />
           </h2>
           <p className="text-xs text-slate-400">
             Control operativo de flujos por estaciones de trabajo. Sincronizado en tiempo real.

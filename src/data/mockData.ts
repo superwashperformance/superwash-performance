@@ -4,21 +4,21 @@ export const mockUsers: UserProfile[] = [
   { id: 'usr-1', name: 'Carlos Mendoza', email: 'admin@superwash.com', role: 'admin' },
   { id: 'usr-2', name: 'Alejandro Rivas', email: 'owner@superwash.com', role: 'owner' },
   { id: 'usr-3', name: 'Valeria Gómez', email: 'ventas@superwash.com', role: 'sales' },
-  { id: 'usr-4', name: 'Jonathan Silva', email: 'pulidor@superwash.com', role: 'polisher' },
-  { id: 'usr-5', name: 'Marcos Benítez', email: 'pintor@superwash.com', role: 'painter' },
-  { id: 'usr-6', name: 'Diego Torres', email: 'ppf@superwash.com', role: 'ppf_installer' },
+  { id: 'usr-4', name: 'Jonathan Silva', email: 'pulidor@superwash.com', role: 'free_reception' },
+  { id: 'usr-5', name: 'Marcos Benítez', email: 'pintor@superwash.com', role: 'free_reception' },
+  { id: 'usr-6', name: 'Diego Torres', email: 'ppf@superwash.com', role: 'free_reception' },
   { id: 'usr-7', name: 'Agente Patio', email: 'recepcion@superwash.com', role: 'free_reception' },
 ];
 
 export const mockServicesCatalog: ServiceItem[] = [
-  { id: 'srv-1', name: 'Corrección de Pintura de 3 Pasos (Detailing Premier)', category: 'Pulitura', price: 380, estimatedHours: 12, assignedRole: 'polisher' },
-  { id: 'srv-2', name: 'Tratamiento Cerámico Graphene 9H (3 Años)', category: 'Detailing', price: 450, estimatedHours: 8, assignedRole: 'polisher' },
-  { id: 'srv-3', name: 'Instalación de PPF Carrocería Completa (Xpel Ultimate)', category: 'PPF', price: 2800, estimatedHours: 40, assignedRole: 'ppf_installer' },
-  { id: 'srv-4', name: 'Pintura y Reparación de Parachoques Delantero', category: 'Pintura', price: 240, estimatedHours: 16, assignedRole: 'painter' },
-  { id: 'srv-5', name: 'Latonería & Corrección de Abolladura sin Pintar (PDR)', category: 'Latonería', price: 180, estimatedHours: 6, assignedRole: 'dismantler' },
-  { id: 'srv-6', name: 'Polarizado Cerámico Nano-Carbon (Parabrisas + Ventanas)', category: 'Polarizado', price: 220, estimatedHours: 4, assignedRole: 'ppf_installer' },
-  { id: 'srv-7', name: 'Lavado Premium Interiores + Detallado Motor', category: 'Lavado Premium', price: 95, estimatedHours: 3, assignedRole: 'polisher' },
-  { id: 'srv-8', name: 'Restauración y Cristalizado de Ópticas/Faros', category: 'Reparación Menor', price: 70, estimatedHours: 2, assignedRole: 'polisher' },
+  { id: 'srv-1', name: 'Corrección de Pintura de 3 Pasos (Detailing Premier)', category: 'Pulitura', price: 380, estimatedHours: 12, assignedRole: 'free_reception' },
+  { id: 'srv-2', name: 'Tratamiento Cerámico Graphene 9H (3 Años)', category: 'Detailing', price: 450, estimatedHours: 8, assignedRole: 'free_reception' },
+  { id: 'srv-3', name: 'Instalación de PPF Carrocería Completa (Xpel Ultimate)', category: 'PPF', price: 2800, estimatedHours: 40, assignedRole: 'free_reception' },
+  { id: 'srv-4', name: 'Pintura y Reparación de Parachoques Delantero', category: 'Pintura', price: 240, estimatedHours: 16, assignedRole: 'free_reception' },
+  { id: 'srv-5', name: 'Latonería & Corrección de Abolladura sin Pintar (PDR)', category: 'Latonería', price: 180, estimatedHours: 6, assignedRole: 'free_reception' },
+  { id: 'srv-6', name: 'Polarizado Cerámico Nano-Carbon (Parabrisas + Ventanas)', category: 'Polarizado', price: 220, estimatedHours: 4, assignedRole: 'free_reception' },
+  { id: 'srv-7', name: 'Lavado Premium Interiores + Detallado Motor', category: 'Lavado Premium', price: 95, estimatedHours: 3, assignedRole: 'free_reception' },
+  { id: 'srv-8', name: 'Restauración y Cristalizado de Ópticas/Faros', category: 'Reparación Menor', price: 70, estimatedHours: 2, assignedRole: 'free_reception' },
 ];
 
 export const mockCustomers: Customer[] = [
@@ -92,8 +92,8 @@ export const mockServiceOrders: ServiceOrder[] = [
     totalAmount: 1050,
     paidAmount: 500,
     assignedStaff: [
-      { id: 'usr-4', name: 'Jonathan Silva', role: 'polisher' },
-      { id: 'usr-6', name: 'Diego Torres', role: 'ppf_installer' }
+      { id: 'usr-4', name: 'Jonathan Silva', role: 'free_reception' },
+      { id: 'usr-6', name: 'Diego Torres', role: 'free_reception' }
     ],
     statusHistory: [
       { status: 'received', changedAt: '2026-07-24 09:30 AM', changedBy: 'Valeria Gómez' },
@@ -140,7 +140,7 @@ export const mockServiceOrders: ServiceOrder[] = [
     totalAmount: 620,
     paidAmount: 0,
     assignedStaff: [
-      { id: 'usr-5', name: 'Marcos Benítez', role: 'painter' }
+      { id: 'usr-5', name: 'Marcos Benítez', role: 'free_reception' }
     ],
     statusHistory: [
       { status: 'received', changedAt: '2026-07-25 10:00 AM', changedBy: 'Valeria Gómez' },
@@ -181,7 +181,7 @@ export const mockServiceOrders: ServiceOrder[] = [
     totalAmount: 2800,
     paidAmount: 2800,
     assignedStaff: [
-      { id: 'usr-6', name: 'Diego Torres', role: 'ppf_installer' }
+      { id: 'usr-6', name: 'Diego Torres', role: 'free_reception' }
     ],
     statusHistory: [
       { status: 'received', changedAt: '2026-07-23 08:00 AM', changedBy: 'Agente Patio' },

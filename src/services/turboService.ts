@@ -18,12 +18,6 @@ export const turboService = {
         return "¡Hola Jefe! Soy Turbo. Puedo darte un resumen rápido de las ODS activas o buscar vehículos por placa o número de orden.";
       case 'sales':
         return "¡Qué tal equipo de ventas! Si necesitas consultar el estado de un vehículo para un cliente, dime la placa o el número de ODS.";
-      case 'polisher':
-      case 'dismantler':
-      case 'painter':
-      case 'prep_tech':
-      case 'ppf_installer':
-        return "¡Hola equipo técnico! Revisa el Kanban para ver tus vehículos asignados. Si necesitas buscar una placa en específico, envíamela por aquí.";
       case 'free_reception':
         return "¡Hola Recepción! Recuerda llenar cuidadosamente el Checklist y tomar fotos al ingresar vehículos. Dime si necesitas buscar una orden.";
       default:
@@ -38,12 +32,6 @@ export const turboService = {
         return "Como Administrador/Dueño, tienes acceso total. Puedes ver métricas financieras, gestionar roles, ver inventario y supervisar todo el flujo de trabajo en el Kanban.";
       case 'sales':
         return "Tu rol de Ventas te permite crear órdenes, realizar cotizaciones y mantener informados a los clientes. Usa el buscador o la tabla de ODS para hacer seguimiento.";
-      case 'polisher':
-      case 'dismantler':
-      case 'painter':
-      case 'prep_tech':
-      case 'ppf_installer':
-        return "Como Técnico, tu panel principal es el Kanban. Allí verás los vehículos en tu área. Al terminar un proceso, arrastra la tarjeta a la siguiente columna.";
       case 'free_reception':
         return "Tu responsabilidad principal es la Recepción de vehículos. Debes crear la ODS inicial, registrar daños, pertenencias y asignar el estatus inicial.";
       default:

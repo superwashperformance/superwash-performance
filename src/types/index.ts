@@ -4,11 +4,6 @@ export type UserRole =
   | 'admin'
   | 'owner'
   | 'sales'
-  | 'polisher'
-  | 'dismantler'
-  | 'painter'
-  | 'prep_tech'
-  | 'ppf_installer'
   | 'free_reception';
 
 export type ODSStatus =

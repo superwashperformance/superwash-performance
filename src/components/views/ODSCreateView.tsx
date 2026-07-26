@@ -660,7 +660,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
             <div>
               <div className="font-display text-lg text-white">LISTO PARA REGISTRAR EN EL TALLER</div>
               <div className="text-xs text-slate-300">
-                La ODS se guardará en estado <strong>RECIBIDO</strong> y aparecerá en el tablero Kanban en tiempo real.
+                La ODS se guardará en estado <strong>RECIBIDO</strong> y aparecerá en el tablero en tiempo real.
               </div>
             </div>
           </div>
