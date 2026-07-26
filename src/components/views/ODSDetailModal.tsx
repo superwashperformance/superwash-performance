@@ -54,16 +54,6 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
           </div>
 
           <div className="flex items-center gap-2 print:hidden">
-            {/* WhatsApp Share Button */}
-            <a
-              href={generateWhatsAppLink()}
-              target="_blank"
-              rel="noreferrer"
-              className="btn-nike-secondary text-xs py-2 px-3 bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500 hover:text-black flex items-center gap-1.5"
-            >
-              <Share2 className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Enviar WhatsApp</span>
-            </a>
 
             {/* Print Button */}
             <button onClick={handlePrint} className="btn-nike-secondary text-xs py-2 px-3 flex items-center gap-1.5">
