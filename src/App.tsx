@@ -299,6 +299,7 @@ export function App() {
             <CashierView
               orders={orders}
               transactions={transactions}
+              customers={mockCustomers}
               onAddPayment={handleAddPayment}
             />
           )}
