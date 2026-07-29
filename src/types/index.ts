@@ -160,3 +160,10 @@ export interface UserProfile {
   role: UserRole;
   avatarUrl?: string;
 }
+
+export interface Agent {
+  id: string;
+  name: string;
+  role?: string;
+  avatar?: string;
+}

@@ -5,6 +5,8 @@ import {
   mockTransactions,
   mockCustomers,
   mockVehicles,
+  initialTechnicians,
+  initialReceptionAgents,
 } from './data/mockData';
 import { odsService } from './services/odsService';
 import { inventoryService } from './services/inventoryService';
@@ -37,6 +39,8 @@ export function App() {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
   const [transactions, setTransactions] = useState<CashTransaction[]>(mockTransactions);
+  const [technicians, setTechnicians] = useState(initialTechnicians);
+  const [receptionAgents, setReceptionAgents] = useState(initialReceptionAgents);
 
   // Selected Order for Detail Modal
   const [selectedOrder, setSelectedOrder] = useState<ServiceOrder | null>(null);
@@ -275,6 +279,8 @@ export function App() {
             <ODSCreateView
               onSaveODS={handleCreateODS}
               onCancel={() => setActiveTab('ods')}
+              technicians={technicians}
+              receptionAgents={receptionAgents}
             />
           )}
 
@@ -310,7 +316,14 @@ export function App() {
 
           {activeTab === 'vehicles' && <VehiclesView vehicles={mockVehicles} />}
 
-          {activeTab === 'settings' && <SettingsView />}
+          {activeTab === 'settings' && (
+            <SettingsView 
+              technicians={technicians}
+              setTechnicians={setTechnicians}
+              receptionAgents={receptionAgents}
+              setReceptionAgents={setReceptionAgents}
+            />
+          )}
         </main>
       </div>
 

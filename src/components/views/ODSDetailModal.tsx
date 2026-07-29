@@ -176,41 +176,46 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
                     <CurrencyDisplay amount={order.totalAmount - order.paidAmount} size="sm" />
                   </span>
                 </div>
-              </div>
-
-              {/* Observations & Print Textual Details */}
-              <div className="p-3 rounded-xl bg-black/40 border border-white/5 text-xs">
-                <span className="font-bold text-slate-400 block mb-1">OBSERVACIONES:</span>
-                {order.observations ? (
-                  <p className="text-slate-300 italic">{order.observations}</p>
-                ) : (
-                  <p className="text-slate-500 italic">Sin observaciones iniciales.</p>
-                )}
-
-                {/* Print only: Detailed damages and checklist */}
-                <div className="hidden print:block mt-4 pt-4 border-t border-white/10 space-y-3">
-                  {order.checklist && order.checklist.filter(i => i.condition !== 'ok').length > 0 && (
-                    <div>
-                      <span className="font-bold text-slate-400 mb-1 block">PUNTOS DE INSPECCIÓN CON NOVEDAD:</span>
-                      <ul className="list-disc ml-5 text-slate-300">
-                        {order.checklist.filter(i => i.condition !== 'ok').map(i => (
-                          <li key={i.id}>{i.label}: <span className="font-bold uppercase text-amber-400">{i.condition}</span></li>
-                        ))}
-                      </ul>
-                    </div>
+                {/* Observations & Print Textual Details */}
+                <div className="p-3 rounded-xl bg-black/40 border border-white/5 text-xs w-full mt-4">
+                  <span className="font-bold text-slate-400 block mb-1">OBSERVACIONES:</span>
+                  {order.observations ? (
+                    <p className="text-slate-300 italic">{order.observations}</p>
+                  ) : (
+                    <p className="text-slate-500 italic">Sin observaciones iniciales.</p>
                   )}
-                  {order.damageMarkers && order.damageMarkers.length > 0 && (
-                    <div>
-                      <span className="font-bold text-slate-400 mb-1 block">DAÑOS REGISTRADOS EN CARROCERÍA:</span>
-                      <ul className="list-disc ml-5 text-slate-300">
-                        {order.damageMarkers.map(m => (
-                          <li key={m.id}>
-                            <span className="font-bold text-amber-400 uppercase">{m.type}</span> en {m.view} (Severidad: {m.severity}) - {m.description}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
+
+                  {/* Print only: Detailed damages and FULL checklist */}
+                  <div className="hidden print:block mt-4 pt-4 border-t border-slate-200/20 space-y-4">
+                    {/* Checklist details for print */}
+                    {order.checklist && order.checklist.length > 0 && (
+                      <div>
+                        <span className="font-bold text-slate-800 mb-2 block uppercase text-[10px] tracking-wider">ESTADO DE RECEPCIÓN DEL VEHÍCULO (CHECKLIST):</span>
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[10px] text-slate-700">
+                          {order.checklist.map(i => (
+                            <div key={i.id} className="flex justify-between border-b border-slate-200/50 pb-1">
+                              <span>{i.label}</span>
+                              <span className={`font-bold uppercase ${i.condition === 'ok' ? 'text-slate-600' : 'text-slate-900'}`}>
+                                {i.condition === 'ok' ? 'Correcto' : i.condition}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Damage Markers summary for print */}
+                    {order.damageMarkers && order.damageMarkers.length > 0 && (
+                      <div className="mt-4">
+                        <span className="font-bold text-slate-800 mb-2 block uppercase text-[10px] tracking-wider">DETALLES DE CARROCERÍA REGISTRADOS:</span>
+                        <ul className="list-disc ml-4 text-[10px] text-slate-700">
+                          {order.damageMarkers.map(m => (
+                            <li key={m.id}>{m.label} <span className="text-slate-500">({m.type})</span></li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

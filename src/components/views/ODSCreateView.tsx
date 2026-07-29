@@ -1,23 +1,8 @@
 import React, { useState } from 'react';
-import { ServiceOrder, ChecklistItem, DamageMarker, PresupuestoServiceItem } from '../../types';
+import { ServiceOrder, ChecklistItem, DamageMarker, PresupuestoServiceItem, Agent } from '../../types';
 import { VehicleDiagram360 } from '../common/VehicleDiagram360';
 import { SignatureCanvas } from '../common/SignatureCanvas';
 import { mockServicesCatalog } from '../../data/mockData';
-
-// Lista de técnicos/agentes del equipo Super Wash Performance
-const TECHNICIANS = [
-  { id: 'agent-1', name: 'Carlos Rodríguez', role: 'Detailing & Cerámica', avatar: 'CR' },
-  { id: 'agent-2', name: 'Miguel Herrera', role: 'Pintura & Latonería', avatar: 'MH' },
-  { id: 'agent-3', name: 'Andrés López', role: 'PPF & Vinilo', avatar: 'AL' },
-  { id: 'agent-4', name: 'José Martínez', role: 'Pulimento & Corrección', avatar: 'JM' },
-  { id: 'agent-5', name: 'Luis Fernández', role: 'Recepción & Coordinación', avatar: 'LF' },
-];
-
-const RECEPTION_AGENTS = [
-  { id: 'recep-1', name: 'Luis Fernández' },
-  { id: 'recep-2', name: 'María González' },
-  { id: 'recep-3', name: 'Pedro Castillo' },
-];
 import {
   ClipboardCheck,
   User,
@@ -38,9 +23,11 @@ import {
 interface ODSCreateViewProps {
   onSaveODS: (ods: ServiceOrder) => void;
   onCancel: () => void;
+  technicians: Agent[];
+  receptionAgents: Agent[];
 }
 
-export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCancel }) => {
+export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCancel, technicians, receptionAgents }) => {
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
 
   // Step 1: Customer & Vehicle Data
@@ -57,7 +44,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
   const [observations, setObservations] = useState('');
 
   // Step 1: Responsables
-  const [receptionAgent, setReceptionAgent] = useState(RECEPTION_AGENTS[0].name);
+  const [receptionAgent, setReceptionAgent] = useState(receptionAgents.length > 0 ? receptionAgents[0].name : '');
   const [assignedTechnicianId, setAssignedTechnicianId] = useState('');
   const [priorityLevel, setPriorityLevel] = useState<'normal' | 'urgente' | 'vip'>('normal');
 
@@ -165,7 +152,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
       branchName: 'Sede Principal (Las Mercedes)',
       receptionAgent: receptionAgent || 'Agente Recepción',
       assignedTechnician: assignedTechnicianId
-        ? TECHNICIANS.find((t) => t.id === assignedTechnicianId)?.name
+        ? technicians.find((t) => t.id === assignedTechnicianId)?.name
         : undefined,
       priority: priorityLevel,
       status: 'received',
@@ -374,7 +361,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
                   onChange={(e) => setReceptionAgent(e.target.value)}
                   className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none"
                 >
-                  {RECEPTION_AGENTS.map((a) => (
+                  {receptionAgents.map((a) => (
                     <option key={a.id} value={a.name}>{a.name}</option>
                   ))}
                 </select>
@@ -389,9 +376,9 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
                   className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none"
                 >
                   <option value="">— Sin asignar aún —</option>
-                  {TECHNICIANS.map((t) => (
+                  {technicians.map((t) => (
                     <option key={t.id} value={t.id}>
-                      {t.name} ({t.role})
+                      {t.name} {t.role ? `(${t.role})` : ''}
                     </option>
                   ))}
                 </select>
@@ -425,17 +412,17 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
 
             {/* Mostrar técnico seleccionado */}
             {assignedTechnicianId && (() => {
-              const tech = TECHNICIANS.find((t) => t.id === assignedTechnicianId);
+              const tech = technicians.find((t) => t.id === assignedTechnicianId);
               return tech ? (
                 <div className="flex items-center gap-3 p-3 rounded-lg bg-[#00E5FF]/5 border border-[#00E5FF]/20">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center font-display text-sm text-black">
-                    {tech.avatar}
+                    {tech.avatar || 'T'}
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-white">{tech.name}</p>
-                    <p className="text-xs text-slate-400">{tech.role}</p>
+                    <p className="text-xs text-slate-400">{tech.role || 'Técnico'}</p>
                   </div>
-                  <span className="ml-auto text-xs text-[#00E5FF] font-mono">ASIGNADO ✓</span>
+                  <span className="ml-auto text-xs text-[#00E5FF] font-mono">ASIGNADO ✔</span>
                 </div>
               ) : null;
             })()}

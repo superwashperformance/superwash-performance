@@ -1,4 +1,4 @@
-import { Customer, Vehicle, ServiceOrder, InventoryItem, CashTransaction, UserProfile, ServiceItem } from '../types';
+﻿import { Customer, Vehicle, ServiceOrder, InventoryItem, CashTransaction, UserProfile, ServiceItem } from '../types';
 
 export const mockUsers: UserProfile[] = [
   { id: 'usr-1', name: 'Carlos Mendoza', email: 'admin@superwash.com', role: 'admin' },
@@ -208,4 +208,31 @@ export const mockInventory: InventoryItem[] = [
 export const mockTransactions: CashTransaction[] = [
   { id: 'tx-101', orderId: 'ods-1001', orderNumber: 'ODS-1001', customerName: 'Gustavo Cisneros', amount: 500, type: 'deposit', paymentMethod: 'zelle', referenceNumber: 'ZEL-9948102', date: '2026-07-24 11:15 AM', notes: 'Abono 50% inicio de servicio Detailing GT3 RS', receivedBy: 'Valeria Gómez' },
   { id: 'tx-102', orderId: 'ods-1003', orderNumber: 'ODS-1003', customerName: 'Sofía Fernández', amount: 2800, type: 'payment', paymentMethod: 'transferencia', referenceNumber: 'TRF-0019284', date: '2026-07-26 11:45 AM', notes: 'Pago completo contra entrega PPF Mercedes G63', receivedBy: 'Carlos Mendoza' }
+];
+export const mockTechnicians = [
+  { id: 'agent-1', name: 'Carlos Rodr�guez', role: 'Detailing & Cer�mica', avatar: 'CR' },
+  { id: 'agent-2', name: 'Miguel Herrera', role: 'Pintura & Latoner�a', avatar: 'MH' },
+  { id: 'agent-3', name: 'Andr�s L�pez', role: 'PPF & Vinilo', avatar: 'AL' },
+  { id: 'agent-4', name: 'Jos� Mart�nez', role: 'Pulimento & Correcci�n', avatar: 'JM' },
+  { id: 'agent-5', name: 'Luis Fern�ndez', role: 'Recepci�n & Coordinaci�n', avatar: 'LF' },
+];
+
+export const mockReceptionAgents = [
+  { id: 'recep-1', name: 'Luis Fern�ndez' },
+  { id: 'recep-2', name: 'Mar�a Gonz�lez' },
+  { id: 'recep-3', name: 'Pedro Castillo' },
+];
+
+export const initialTechnicians = [
+  { id: 'agent-1', name: 'Carlos Rodríguez', role: 'Detailing & Cerámica', avatar: 'CR' },
+  { id: 'agent-2', name: 'Miguel Herrera', role: 'Pintura & Latonería', avatar: 'MH' },
+  { id: 'agent-3', name: 'Andrés López', role: 'PPF & Vinilo', avatar: 'AL' },
+  { id: 'agent-4', name: 'José Martínez', role: 'Pulimento & Corrección', avatar: 'JM' },
+  { id: 'agent-5', name: 'Luis Fernández', role: 'Recepción & Coordinación', avatar: 'LF' },
+];
+
+export const initialReceptionAgents = [
+  { id: 'recep-1', name: 'Luis Fernández' },
+  { id: 'recep-2', name: 'María González' },
+  { id: 'recep-3', name: 'Pedro Castillo' },
 ];
