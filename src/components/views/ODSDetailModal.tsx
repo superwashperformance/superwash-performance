@@ -11,7 +11,7 @@ interface ODSDetailModalProps {
 }
 
 export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }) => {
-  const [activeTab, setActiveTab] = useState<'quote' | 'photos' | 'checklist' | 'damages'>('quote');
+  const [activeTab, setActiveTab] = useState<'quote' | 'physical-form' | 'photos' | 'checklist' | 'damages'>('quote');
 
   if (!order) return null;
 
@@ -72,6 +72,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
         <div className="flex items-center gap-2 px-6 py-3 bg-slate-950 border-b border-white/10 overflow-x-auto print:hidden">
           {[
             { id: 'quote', label: 'PRESUPUESTO & NOTA DE ENTREGA', icon: FileText },
+            { id: 'physical-form', label: 'FORMATO FÍSICO (RECEPCIÓN)', icon: Printer },
             { id: 'photos', label: `FOTOGRAFÍAS (${order.photos.length})`, icon: Camera },
             { id: 'checklist', label: 'CHECKLIST 20 PUNTOS', icon: CheckCircle },
             { id: 'damages', label: `MAPA DAÑOS (${order.damageMarkers.length})`, icon: ShieldAlert },
@@ -98,7 +99,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
         {/* Modal Tab Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* TAB 1: PRESUPUESTO & NOTA DE ENTREGA PRINTABLE VIEW */}
-          <div id="printable-quote" className={`flex flex-col gap-6 bg-slate-950 p-6 rounded-2xl border border-white/10 ${activeTab === 'quote' ? 'flex' : 'hidden print:flex'}`}>
+          <div id="printable-quote" className={`flex flex-col gap-6 bg-slate-950 p-6 rounded-2xl border border-white/10 ${activeTab === 'quote' ? 'flex print:flex' : 'hidden'}`}>
             {/* Header Invoice Brand */}
               <div className="flex items-start justify-between border-b border-white/10 pb-4">
                 <div>
@@ -219,6 +220,129 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
                 </div>
               </div>
             </div>
+
+          {/* TAB 1.5: FORMATO FÍSICO (RECEPCIÓN) PRINTABLE VIEW */}
+          <div id="printable-physical" className={`flex flex-col bg-white text-black p-4 rounded-2xl ${activeTab === 'physical-form' ? 'flex print:flex' : 'hidden'} print:p-0 print:m-0`}>
+            {/* --- PAGE 1 --- */}
+            <div className="w-full relative bg-white pb-8">
+              <div className="flex items-start justify-between mb-4">
+                {/* Logo & Brand */}
+                <div className="flex items-center gap-2 w-[35%]">
+                  <FaviconLogo size={60} />
+                  <div className="font-display font-black text-2xl italic leading-none tracking-tighter">
+                    Super Wash<br/>
+                    <span className="text-[9px] tracking-widest text-slate-500 uppercase not-italic">Performance</span>
+                  </div>
+                </div>
+                {/* Center Title */}
+                <div className="text-center w-[30%] pt-2">
+                  <h2 className="text-4xl font-black italic tracking-tighter">ODS</h2>
+                  <p className="text-[10px] uppercase font-bold leading-tight">Orden de servicio<br/>Inspección del vehículo</p>
+                </div>
+                {/* Right Fields */}
+                <div className="w-[35%] flex flex-col gap-2 text-[10px] font-bold pl-8 pt-2">
+                  <div className="flex border-b border-black pb-0.5"><span className="w-16">FECHA:</span><span className="flex-1 font-mono font-normal">{order.entryDate.split(',')[0]}</span></div>
+                  <div className="flex border-b border-black pb-0.5"><span className="w-16">#ODS:</span><span className="flex-1 font-mono font-normal">{order.orderNumber}</span></div>
+                  <div className="flex border-b border-black pb-0.5"><span className="w-16">TELEFONO:</span><span className="flex-1 font-mono font-normal">{order.customerPhone}</span></div>
+                </div>
+              </div>
+
+              {/* Client & Vehicle */}
+              <div className="space-y-3 text-[10px] font-bold mt-6">
+                <div className="flex border-b border-black pb-0.5"><span className="mr-2">CLIENTE:</span><span className="font-mono font-normal flex-1">{order.customerName}</span></div>
+                <div className="flex border-b border-black pb-0.5"><span className="mr-2">HORA DE RECEPCIÓN:</span><span className="font-mono font-normal flex-1">{order.entryDate.split(',')[1]?.trim() || ''}</span></div>
+                <div className="flex gap-4">
+                  <div className="flex flex-1 border-b border-black pb-0.5"><span className="mr-2">MARCA:</span><span className="font-mono font-normal flex-1 truncate">{order.vehicleBrandModel.split(' ')[0] || ''}</span></div>
+                  <div className="flex flex-1 border-b border-black pb-0.5"><span className="mr-2">MODELO:</span><span className="font-mono font-normal flex-1 truncate">{order.vehicleBrandModel.split(' ').slice(1).join(' ') || ''}</span></div>
+                  <div className="flex w-32 border-b border-black pb-0.5"><span className="mr-2">COLOR:</span><span className="font-mono font-normal flex-1 truncate">{order.vehicleColor}</span></div>
+                  <div className="flex w-32 border-b border-black pb-0.5"><span className="mr-2">PLACA:</span><span className="font-mono font-normal flex-1 uppercase">{order.vehiclePlate}</span></div>
+                </div>
+              </div>
+
+              {/* Chequeo general */}
+              <div className="mt-4">
+                <h3 className="text-3xl font-script text-center mb-2">Chequeo general</h3>
+                <div className="flex flex-col gap-[2px] text-[8px] uppercase font-bold">
+                  {order.checklist.map((item) => (
+                    <div key={item.id} className="flex items-stretch border border-black">
+                      <div className="flex-1 p-1 border-r border-black flex items-center">{item.label}</div>
+                      <div className="w-28 p-1 border-r border-black flex items-center justify-between">
+                        <span>SIN NOVEDAD</span>
+                        <div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{item.condition === 'ok' ? 'X' : ''}</div>
+                      </div>
+                      <div className="w-28 p-1 flex items-center justify-between">
+                        <span>NOVEDAD</span>
+                        <div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{item.condition !== 'ok' ? 'X' : ''}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Servicios */}
+              <div className="mt-4">
+                <h3 className="text-3xl font-script text-center mb-2">Servicios</h3>
+                <div className="border border-black p-2 text-[8px] font-bold uppercase grid grid-cols-2 gap-x-4 gap-y-2">
+                  {/* Left Column */}
+                  <div className="space-y-1.5 border-r border-black/20 pr-4">
+                    <div className="flex items-center justify-between"><span className="w-24">LAVADO:</span><div className="flex gap-2"><div className="flex items-center gap-1"><span>BÁSICO</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('lavado') && s.serviceName.toLowerCase().includes('básico')) ? 'X' : ''}</div></div><div className="flex items-center gap-1"><span>EXTREMO</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('lavado') && s.serviceName.toLowerCase().includes('extremo')) ? 'X' : ''}</div></div></div></div>
+                    <div className="flex items-center justify-between"><span className="w-24">TAPICERÍA:</span><div className="flex gap-2"><div className="flex items-center gap-1"><span>BÁSICO</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('tapicería') && s.serviceName.toLowerCase().includes('básico')) ? 'X' : ''}</div></div><div className="flex items-center gap-1"><span>EXTREMO</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('tapicería') && s.serviceName.toLowerCase().includes('extremo')) ? 'X' : ''}</div></div></div></div>
+                    <div className="flex items-center justify-between"><span className="w-24">PULITURA:</span><div className="flex gap-2"><div className="flex items-center gap-1"><span>SINTÉTICA</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('pulitura') && s.serviceName.toLowerCase().includes('sintética')) ? 'X' : ''}</div></div><div className="flex items-center gap-1"><span>CERÁMICA</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('pulitura') && s.serviceName.toLowerCase().includes('cerámica')) ? 'X' : ''}</div></div></div></div>
+                    <div className="flex items-center justify-between"><span className="w-24">PULITURA DE FAROS:</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('faros')) ? 'X' : ''}</div></div>
+                    <div className="flex items-center justify-between"><span className="w-12">PPF:</span><div className="flex gap-2"><div className="flex items-center gap-1"><span>BÁSICO</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('ppf') && s.serviceName.toLowerCase().includes('básico')) ? 'X' : ''}</div></div><div className="flex items-center gap-1"><span>MEDIO</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('ppf') && s.serviceName.toLowerCase().includes('medio')) ? 'X' : ''}</div></div><div className="flex items-center gap-1"><span>PREMIUM</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('ppf') && s.serviceName.toLowerCase().includes('premium')) ? 'X' : ''}</div></div></div></div>
+                    <div className="flex items-center justify-between"><span className="w-24">PDR:</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('pdr')) ? 'X' : ''}</div></div>
+                    <div className="flex items-center justify-between"><span className="w-24">PDA:</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('pda')) ? 'X' : ''}</div></div>
+                    <div className="flex items-center justify-between"><span className="w-24">PAPEL AHUMADO:</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('papel')) ? 'X' : ''}</div></div>
+                  </div>
+                  {/* Right Column */}
+                  <div className="space-y-1.5 pl-4">
+                    <div className="flex items-center justify-between"><span className="w-28">PINTURA:</span><div className="flex gap-2"><div className="flex items-center gap-1"><span>GENERAL</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('pintura') && s.serviceName.toLowerCase().includes('general')) ? 'X' : ''}</div></div><div className="flex items-center gap-1"><span>RETOQUE</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('pintura') && s.serviceName.toLowerCase().includes('retoque')) ? 'X' : ''}</div></div></div></div>
+                    <div className="flex items-center justify-between"><span className="w-28">LAVADO:</span><div className="flex gap-2"><div className="flex items-center gap-1"><span>CHASIS</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('lavado') && s.serviceName.toLowerCase().includes('chasis')) ? 'X' : ''}</div></div><div className="flex items-center gap-1"><span>MOTOR</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('lavado') && s.serviceName.toLowerCase().includes('motor')) ? 'X' : ''}</div></div></div></div>
+                    <div className="flex items-center justify-between"><span className="w-28">AIRE ACONDICIONADO:</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('aire')) ? 'X' : ''}</div></div>
+                    <div className="flex items-center justify-between"><span className="w-28">ROTULADO O WRAPS:</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('rotulado') || s.serviceName.toLowerCase().includes('wrap')) ? 'X' : ''}</div></div>
+                    <div className="flex items-center justify-between"><span className="w-28">TAPIZADO:</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('tapizado')) ? 'X' : ''}</div></div>
+                    <div className="flex items-center justify-between"><span className="w-28">MOTO:</span><div className="flex gap-2"><div className="flex items-center gap-1"><span>LAVADO</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('moto') && s.serviceName.toLowerCase().includes('lavado')) ? 'X' : ''}</div></div><div className="flex items-center gap-1"><span>PULITURA</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('moto') && s.serviceName.toLowerCase().includes('pulitura')) ? 'X' : ''}</div></div></div></div>
+                    <div className="flex items-center justify-between"><span className="w-28">PINTURA DE MOTOS:</span><div className="flex gap-2"><div className="flex items-center gap-1"><span>GENERAL</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('moto') && s.serviceName.toLowerCase().includes('general')) ? 'X' : ''}</div></div><div className="flex items-center gap-1"><span>RETOQUES</span><div className="w-3 h-3 border border-black flex items-center justify-center font-normal">{order.services.some(s => s.serviceName.toLowerCase().includes('moto') && s.serviceName.toLowerCase().includes('retoque')) ? 'X' : ''}</div></div></div></div>
+                  </div>
+                </div>
+                {order.services.length > 0 && (
+                  <div className="mt-2 text-[9px] font-mono border border-dashed border-black/30 p-2">
+                    <strong>Servicios ingresados en sistema:</strong> {order.services.map(s => s.serviceName).join(', ')}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* --- PAGE 2 --- */}
+            <div className="w-full relative bg-white print:break-before-page pt-8">
+              <h3 className="text-2xl font-bold text-center mb-6">Observaciones</h3>
+              <div className="space-y-6 mb-12">
+                <div className="border-b border-black pb-1 min-h-[1.5rem] text-sm font-script text-center text-slate-800">
+                  {order.observations || ' '}
+                </div>
+                {[...Array(9)].map((_,i) => <div key={i} className="border-b border-black pb-1 min-h-[1.5rem]" />)}
+              </div>
+
+              <h3 className="text-2xl font-bold text-center mb-6">Pertenencias</h3>
+              <div className="space-y-6 mb-12">
+                {[...Array(6)].map((_,i) => <div key={i} className="border-b border-black pb-1 min-h-[1.5rem]" />)}
+              </div>
+
+              <h3 className="text-2xl font-bold text-center mb-4">Importante</h3>
+              <div className="text-[11px] font-bold leading-relaxed mb-16">
+                <p>Nuestras condiciones y políticas son las siguientes:</p>
+                <p className="font-normal mb-3">El propietario del vehículo, debe verificar el mismo al momento de ingresar y retirar su automóvil, la empresa no se hace responsable por fallas, desperfectos, daños mecánicos o eléctricos que presente el vehículo, ya que solo nos encargamos única y exclusivamente de la parte de estética externa e interna de su vehículo. (embellecimiento automotriz)</p>
+                <p className="font-normal">Una vez el vehículo haya dejado las instalaciones la empresa asume que aceptó conforme todo el trabajo realizado</p>
+              </div>
+
+              <div className="flex justify-center mt-20 mb-8">
+                <div className="flex flex-col items-center gap-1 text-sm font-bold">
+                  <div className="w-64 border-b border-black"></div>
+                  <span>FIRMA CONFORME</span>
+                </div>
+              </div>
+            </div>
+          </div>
 
           {/* TAB 2: PHOTOGRAPHS */}
           <div className={activeTab === 'photos' ? 'block print:hidden' : 'hidden'}>
