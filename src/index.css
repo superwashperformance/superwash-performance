@@ -7,14 +7,6 @@
 @import "@fontsource/jetbrains-mono/500.css";
 @import "@fontsource/jetbrains-mono/700.css";
 @import "@fontsource/jetbrains-mono/800.css";
-@import "@fontsource/playball";
-
-@theme {
-  --font-sans: "Nunito Sans", sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
-  --font-display: "Nunito Sans", sans-serif;
-  --font-script: "Playball", cursive;
-}
 
 @layer base {
   :root {

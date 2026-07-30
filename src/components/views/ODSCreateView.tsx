@@ -60,15 +60,19 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
     { id: 'chk-5', key: 'aire_acondicionado', label: 'AIRE ACONDICIONADO', condition: 'ok' },
     { id: 'chk-6', key: 'bocina', label: 'BOCINA', condition: 'ok' },
     { id: 'chk-7', key: 'alfombras', label: 'ALFOMBRAS', condition: 'ok' },
-    { id: 'chk-8', key: 'limpiaparabrisas', label: 'CEPILLOS LIMPIA PARABRISAS', condition: 'ok' },
-    { id: 'chk-9', key: 'caucho_repuesto', label: 'CAUCHO DE RESPUESTO', condition: 'ok' },
+    { id: 'chk-8', key: 'cepillos_limpiaparabrisas', label: 'CEPILLOS LIMPIA PARABRISAS', condition: 'ok' },
+    { id: 'chk-9', key: 'caucho_repuesto', label: 'CAUCHO DE REPUESTO', condition: 'ok' },
     { id: 'chk-10', key: 'gato_triangulo', label: 'GATO HIDRÁULICO Y TRIÁNGULO DE SEGURIDAD', condition: 'ok' },
     { id: 'chk-11', key: 'estereo', label: 'ESTÉREO', condition: 'ok' },
     { id: 'chk-12', key: 'rociadores', label: 'ROCIADORES (PARABRISAS)', condition: 'ok' },
-    { id: 'chk-13', key: 'ventanillas_parabrisas', label: 'CHEQUEO DE VENTANILLAS Y PARABRISAS (DELANTERO Y TRASERO)', condition: 'ok' },
+    { id: 'chk-13', key: 'chequeo_ventanillas', label: 'CHEQUEO DE VENTANILLAS Y PARABRISAS (DELANTERO Y TRASERO)', condition: 'ok' },
     { id: 'chk-14', key: 'tuerca_cauchos', label: 'TUERCA DE LOS CAUCHOS', condition: 'ok' },
     { id: 'chk-15', key: 'accesorios_internos', label: 'ACCESORIOS INTERNOS DEL VEHÍCULO (MANILLAS, PALANCAS)', condition: 'ok' },
     { id: 'chk-16', key: 'accesorios_otros', label: 'ACCESORIOS U OTRO', condition: 'ok' },
+    { id: 'chk-17', key: 'espejos', label: 'ESPEJOS RETROVISORES', condition: 'ok' },
+    { id: 'chk-18', key: 'asientos', label: 'ASIENTOS Y TAPICERÍA', condition: 'ok' },
+    { id: 'chk-19', key: 'pintura_carroceria', label: 'PINTURA Y CARROCERÍA', condition: 'ok' },
+    { id: 'chk-20', key: 'documentos', label: 'DOCUMENTOS Y MANUALES', condition: 'ok' },
   ];
 
   const [checklist, setChecklist] = useState<ChecklistItem[]>(defaultChecklist);
@@ -188,7 +192,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
         {[
           { num: 1, label: '1. Cliente y Vehículo', icon: User },
           { num: 2, label: '2. Inspección 360°', icon: Car },
-          { num: 3, label: '3. Checklist (16 Puntos)', icon: ClipboardCheck },
+          { num: 3, label: '3. Checklist (20 Puntos)', icon: ClipboardCheck },
           { num: 4, label: '4. Servicios & Presupuesto', icon: DollarSign },
           { num: 5, label: '5. Fotos & Firma Digital', icon: Camera },
         ].map((s) => {
@@ -451,7 +455,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
               <ArrowLeft className="w-4 h-4" /> Anterior
             </button>
             <button onClick={() => setStep(3)} className="btn-nike-primary text-sm">
-              Siguiente: Checklist 16 Puntos <ArrowRight className="w-4 h-4" />
+              Siguiente: Checklist 20 Puntos <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -496,7 +500,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
             </div>
           </div>
 
-          {/* 16-Point Mandatory Checklist Grid */}
+          {/* 20-Point Mandatory Checklist Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {checklist.map((item) => (
               <div key={item.id} className="p-3 rounded-xl bg-black/30 border border-white/5 flex flex-col gap-2">
