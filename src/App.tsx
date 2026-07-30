@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UserRole, ServiceOrder, InventoryItem, CashTransaction, ODSStatus } from './types';
+import { UserRole, ServiceOrder, InventoryItem, CashTransaction, ODSStatus, Agent } from './types';
 import {
   mockInventory,
   mockTransactions,
@@ -39,8 +39,8 @@ export function App() {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
   const [transactions, setTransactions] = useState<CashTransaction[]>(mockTransactions);
-  const [technicians, setTechnicians] = useState(initialTechnicians);
-  const [receptionAgents, setReceptionAgents] = useState(initialReceptionAgents);
+  const [technicians, setTechnicians] = useState<Agent[]>(initialTechnicians);
+  const [receptionAgents, setReceptionAgents] = useState<Agent[]>(initialReceptionAgents);
 
   // Selected Order for Detail Modal
   const [selectedOrder, setSelectedOrder] = useState<ServiceOrder | null>(null);
