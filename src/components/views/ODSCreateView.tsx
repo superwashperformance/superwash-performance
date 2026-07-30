@@ -53,26 +53,22 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
 
   // Step 3: 20-Point Checklist & Belongings
   const defaultChecklist: ChecklistItem[] = [
-    { id: 'chk-1', key: 'bateria', label: 'Batería y Carga de Voltaje', condition: 'ok' },
-    { id: 'chk-2', key: 'luces_internas', label: 'Luces Internas y de Ambiente', condition: 'ok' },
-    { id: 'chk-3', key: 'luces_externas', label: 'Luces Externas / Faros', condition: 'ok' },
-    { id: 'chk-4', key: 'luces_tablero', label: 'Indicadores de Tablero / Alertas', condition: 'ok' },
-    { id: 'chk-5', key: 'aire_acondicionado', label: 'Aire Acondicionado', condition: 'ok' },
-    { id: 'chk-6', key: 'bocina', label: 'Bocina / Claxon', condition: 'ok' },
-    { id: 'chk-7', key: 'alfombras', label: 'Alfombras de Habitáculo', condition: 'ok' },
-    { id: 'chk-8', key: 'limpiaparabrisas', label: 'Limpiaparabrisas / Plumas', condition: 'ok' },
-    { id: 'chk-9', key: 'caucho_repuesto', label: 'Caucho de Repuesto', condition: 'ok' },
-    { id: 'chk-10', key: 'gato_hidraulico', label: 'Gato Hidráulico y Palanca', condition: 'ok' },
-    { id: 'chk-11', key: 'triangulo', label: 'Triángulo de Seguridad', condition: 'ok' },
-    { id: 'chk-12', key: 'estereo', label: 'Estéreo / Multimedia', condition: 'ok' },
-    { id: 'chk-13', key: 'rociadores', label: 'Rociadores de Agua', condition: 'ok' },
-    { id: 'chk-14', key: 'ventanas', label: 'Ventanas y Elevalunas', condition: 'ok' },
-    { id: 'chk-15', key: 'parabrisas', label: 'Parabrisas Frontal y Trasero', condition: 'ok' },
-    { id: 'chk-16', key: 'tuercas', label: 'Tuercas de Rines / Seguridad', condition: 'ok' },
-    { id: 'chk-17', key: 'manillas', label: 'Manillas de Puertas', condition: 'ok' },
-    { id: 'chk-18', key: 'puertas', label: 'Puertas y Capó', condition: 'ok' },
-    { id: 'chk-19', key: 'accesorios', label: 'Accesorios Especiales / Cámaras', condition: 'ok' },
-    { id: 'chk-20', key: 'otros', label: 'Otros Detalles Mecánicos / Escape', condition: 'ok' },
+    { id: 'chk-1', key: 'bateria', label: 'BATERÍA', condition: 'ok' },
+    { id: 'chk-2', key: 'luces_internas', label: 'LUCES INTERNAS', condition: 'ok' },
+    { id: 'chk-3', key: 'luces_externas', label: 'LUCES EXTERNAS', condition: 'ok' },
+    { id: 'chk-4', key: 'luces_tablero', label: 'LUCES EN EL TABLERO', condition: 'ok' },
+    { id: 'chk-5', key: 'aire_acondicionado', label: 'AIRE ACONDICIONADO', condition: 'ok' },
+    { id: 'chk-6', key: 'bocina', label: 'BOCINA', condition: 'ok' },
+    { id: 'chk-7', key: 'alfombras', label: 'ALFOMBRAS', condition: 'ok' },
+    { id: 'chk-8', key: 'limpiaparabrisas', label: 'CEPILLOS LIMPIA PARABRISAS', condition: 'ok' },
+    { id: 'chk-9', key: 'caucho_repuesto', label: 'CAUCHO DE RESPUESTO', condition: 'ok' },
+    { id: 'chk-10', key: 'gato_triangulo', label: 'GATO HIDRÁULICO Y TRIÁNGULO DE SEGURIDAD', condition: 'ok' },
+    { id: 'chk-11', key: 'estereo', label: 'ESTÉREO', condition: 'ok' },
+    { id: 'chk-12', key: 'rociadores', label: 'ROCIADORES (PARABRISAS)', condition: 'ok' },
+    { id: 'chk-13', key: 'ventanillas_parabrisas', label: 'CHEQUEO DE VENTANILLAS Y PARABRISAS (DELANTERO Y TRASERO)', condition: 'ok' },
+    { id: 'chk-14', key: 'tuerca_cauchos', label: 'TUERCA DE LOS CAUCHOS', condition: 'ok' },
+    { id: 'chk-15', key: 'accesorios_internos', label: 'ACCESORIOS INTERNOS DEL VEHÍCULO (MANILLAS, PALANCAS)', condition: 'ok' },
+    { id: 'chk-16', key: 'accesorios_otros', label: 'ACCESORIOS U OTRO', condition: 'ok' },
   ];
 
   const [checklist, setChecklist] = useState<ChecklistItem[]>(defaultChecklist);
@@ -192,7 +188,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
         {[
           { num: 1, label: '1. Cliente y Vehículo', icon: User },
           { num: 2, label: '2. Inspección 360°', icon: Car },
-          { num: 3, label: '3. Checklist (20 Puntos)', icon: ClipboardCheck },
+          { num: 3, label: '3. Checklist (16 Puntos)', icon: ClipboardCheck },
           { num: 4, label: '4. Servicios & Presupuesto', icon: DollarSign },
           { num: 5, label: '5. Fotos & Firma Digital', icon: Camera },
         ].map((s) => {
@@ -455,7 +451,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
               <ArrowLeft className="w-4 h-4" /> Anterior
             </button>
             <button onClick={() => setStep(3)} className="btn-nike-primary text-sm">
-              Siguiente: Checklist 20 Puntos <ArrowRight className="w-4 h-4" />
+              Siguiente: Checklist 16 Puntos <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -500,7 +496,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
             </div>
           </div>
 
-          {/* 20-Point Mandatory Checklist Grid */}
+          {/* 16-Point Mandatory Checklist Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {checklist.map((item) => (
               <div key={item.id} className="p-3 rounded-xl bg-black/30 border border-white/5 flex flex-col gap-2">

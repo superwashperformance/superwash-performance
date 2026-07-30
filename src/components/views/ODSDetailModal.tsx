@@ -74,7 +74,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
             { id: 'quote', label: 'PRESUPUESTO & NOTA DE ENTREGA', icon: FileText },
             { id: 'physical-form', label: 'FORMATO FÍSICO (RECEPCIÓN)', icon: Printer },
             { id: 'photos', label: `FOTOGRAFÍAS (${order.photos.length})`, icon: Camera },
-            { id: 'checklist', label: 'CHECKLIST 20 PUNTOS', icon: CheckCircle },
+            { id: 'checklist', label: 'CHECKLIST 16 PUNTOS', icon: CheckCircle },
             { id: 'damages', label: `MAPA DAÑOS (${order.damageMarkers.length})`, icon: ShieldAlert },
           ].map((tab) => {
             const Icon = tab.icon;
