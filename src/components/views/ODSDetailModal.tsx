@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { CurrencyDisplay } from '../common/CurrencyDisplay';
 import { ServiceOrder } from '../../types';
 import { FaviconLogo } from '../common/FaviconLogo';
 import { VehicleDiagram360 } from '../common/VehicleDiagram360';
-import { X, Printer, FileCheck, FileText, Camera, ShieldAlert } from 'lucide-react';
+import { X, Printer, Share2, Phone, CheckCircle, FileText, Camera, ShieldAlert, Sparkles, User, Car } from 'lucide-react';
 
 interface ODSDetailModalProps {
   order: ServiceOrder | null;
@@ -12,28 +12,32 @@ interface ODSDetailModalProps {
 
 export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }) => {
   const [activeTab, setActiveTab] = useState<'quote' | 'photos' | 'checklist' | 'damages'>('quote');
-  const [printMode, setPrintMode] = useState<'invoice' | 'inspection' | null>(null);
 
   if (!order) return null;
 
-  const handlePrint = (mode: 'invoice' | 'inspection') => {
-    setPrintMode(mode);
-    setTimeout(() => {
-      window.print();
-    }, 100);
+  // Generate WhatsApp Share Link for the client
+  const generateWhatsAppLink = () => {
+    const text = `*SUPER WASH PERFORMANCE*%0A` +
+      `Hola ${order.customerName}, adjuntamos el presupuesto de tu vehículo *${order.vehicleBrandModel}* (Placa: ${order.vehiclePlate}):%0A%0A` +
+      order.services.map(s => `- ${s.serviceName}: $${s.totalPrice}`).join('%0A') +
+      `%0A%0A*TOTAL PRESUPUESTO:* $${order.totalAmount}%0A` +
+      `*Abonado:* $${order.paidAmount}%0A` +
+      `*Pendiente:* $${order.totalAmount - order.paidAmount}%0A%0A` +
+      `Quedamos atentos a tu aprobación. ¡Gracias por confiar en Super Wash Performance!`;
+
+    const cleanPhone = order.customerPhone.replace(/[^0-9]/g, '');
+    return `https://wa.me/${cleanPhone}?text=${text}`;
   };
 
-  useEffect(() => {
-    const handleAfterPrint = () => setPrintMode(null);
-    window.addEventListener('afterprint', handleAfterPrint);
-    return () => window.removeEventListener('afterprint', handleAfterPrint);
-  }, []);
+  const handlePrint = () => {
+    window.print();
+  };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 overflow-y-auto">
-      <div className="nike-card w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 border-cyan-500/30 shadow-2xl">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 overflow-y-auto print:static print:inset-auto print:bg-transparent print:p-0 print:overflow-visible print:block">
+      <div className="nike-card w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 border-cyan-500/30 shadow-2xl print:max-h-none print:border-none print:shadow-none print:overflow-visible print:block">
         {/* Modal Header */}
-        <div className="p-4 md:p-6 border-b border-white/10 flex items-center justify-between bg-black/60">
+        <div className="p-4 md:p-6 border-b border-white/10 flex items-center justify-between bg-black/60 print:hidden">
           <div className="flex items-center gap-3">
             <FaviconLogo size={36} />
             <div>
@@ -50,15 +54,14 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
           </div>
 
           <div className="flex items-center gap-2 print:hidden">
-            <button onClick={() => handlePrint('invoice')} className="btn-nike-secondary text-xs py-2 px-3 flex items-center gap-1.5" title="Imprimir Recibo (Precios)">
+
+            {/* Print Button */}
+            <button onClick={handlePrint} className="btn-nike-secondary text-xs py-2 px-3 flex items-center gap-1.5">
               <Printer className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Recibo</span>
-            </button>
-            <button onClick={() => handlePrint('inspection')} className="btn-nike bg-white text-black text-xs py-2 px-3 flex items-center gap-1.5" title="Imprimir Formato de Inspección">
-              <FileCheck className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Formato</span>
+              <span className="hidden sm:inline">Imprimir PDF</span>
             </button>
 
+            {/* Close Modal */}
             <button onClick={onClose} className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full">
               <X className="w-5 h-5" />
             </button>
@@ -70,7 +73,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
           {[
             { id: 'quote', label: 'PRESUPUESTO & NOTA DE ENTREGA', icon: FileText },
             { id: 'photos', label: `FOTOGRAFÍAS (${order.photos.length})`, icon: Camera },
-            { id: 'checklist', label: 'CHECKLIST 20 PUNTOS', icon: FileCheck },
+            { id: 'checklist', label: 'CHECKLIST 20 PUNTOS', icon: CheckCircle },
             { id: 'damages', label: `MAPA DAÑOS (${order.damageMarkers.length})`, icon: ShieldAlert },
           ].map((tab) => {
             const Icon = tab.icon;
@@ -93,11 +96,11 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
         </div>
 
         {/* Modal Tab Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 print:p-0 print:overflow-visible">
           {/* TAB 1: PRESUPUESTO & NOTA DE ENTREGA PRINTABLE VIEW */}
-          <div id="printable-quote" className={`flex flex-col gap-6 bg-slate-950 p-6 rounded-2xl border border-white/10 ${activeTab === 'quote' ? 'flex' : 'hidden'} ${printMode === 'invoice' || printMode === null ? (activeTab === 'quote' ? 'print:flex' : 'print:hidden') : 'print:hidden'}`}>
+          <div id="printable-quote" className={`flex flex-col gap-6 bg-slate-950 p-6 rounded-2xl border border-white/10 ${activeTab === 'quote' ? 'flex' : 'hidden print:flex'} print:bg-transparent print:border-none print:p-0 print:gap-4 print:block`}>
             {/* Header Invoice Brand */}
-              <div className="flex items-start justify-between border-b border-white/10 pb-4">
+              <div className="flex items-start justify-between border-b border-white/10 pb-4 print:border-slate-300">
                 <div>
                   <h1 className="font-display text-3xl text-white print:text-black">SUPER WASH PERFORMANCE</h1>
                   <p className="text-xs text-slate-400 print:text-slate-700">Centro Especializado en Estética Automotriz, Detailing & Pintura</p>
@@ -216,147 +219,6 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
                 </div>
               </div>
             </div>
-
-          {/* PRINT ONLY: FORMATO FÍSICO (INSPECCIÓN) */}
-          <div id="printable-inspection" className={`hidden ${printMode === 'inspection' ? 'print:block' : 'print:hidden'} bg-white text-black p-8 font-sans`}>
-            {/* Header */}
-            <div className="flex justify-between items-start mb-6 border-b border-black pb-4">
-              <div className="flex items-center gap-4">
-                {/* Simulated Logo Area */}
-                <div className="w-24 h-24 rounded-full border-4 border-black flex items-center justify-center font-bold text-center leading-tight">
-                  <span className="font-display italic text-2xl">Super<br/>Wash</span>
-                </div>
-                <div>
-                  <h1 className="font-bold text-4xl italic tracking-tighter">ODS</h1>
-                  <p className="text-xs uppercase font-semibold">Orden de servicio<br/>Inspección del vehículo</p>
-                </div>
-              </div>
-              <div className="text-xs uppercase font-bold space-y-2 text-right mt-4">
-                <p>FECHA: <span className="underline ml-2 inline-block w-32">{order.entryDate.split(',')[0]}</span></p>
-                <p>#ODS: <span className="underline ml-2 inline-block w-32">{order.orderNumber}</span></p>
-                <p>TELÉFONO: <span className="underline ml-2 inline-block w-32">{order.customerPhone}</span></p>
-              </div>
-            </div>
-
-            {/* Customer & Vehicle Info */}
-            <div className="text-xs uppercase font-bold space-y-4 mb-6">
-              <div className="flex">
-                <span className="w-24">CLIENTE:</span>
-                <span className="flex-1 border-b border-black">{order.customerName}</span>
-              </div>
-              <div className="flex">
-                <span className="w-40">HORA DE RECEPCIÓN:</span>
-                <span className="flex-1 border-b border-black">{order.entryDate.split(',')[1] || ''}</span>
-              </div>
-              <div className="flex gap-4">
-                <div className="flex flex-1">
-                  <span className="mr-2">MARCA:</span>
-                  <span className="flex-1 border-b border-black">{order.vehicleBrandModel.split(' ')[0] || ''}</span>
-                </div>
-                <div className="flex flex-1">
-                  <span className="mr-2">MODELO:</span>
-                  <span className="flex-1 border-b border-black">{order.vehicleBrandModel.split(' ').slice(1).join(' ') || ''}</span>
-                </div>
-                <div className="flex flex-1">
-                  <span className="mr-2">COLOR:</span>
-                  <span className="flex-1 border-b border-black">{order.vehicleColor}</span>
-                </div>
-                <div className="flex flex-1">
-                  <span className="mr-2">PLACA:</span>
-                  <span className="flex-1 border-b border-black">{order.vehiclePlate}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Checklist */}
-            <div className="mb-6">
-              <h2 className="text-3xl text-center font-serif italic mb-2">Chequeo general</h2>
-              <div className="grid grid-cols-1 text-[10px] font-bold uppercase gap-y-0.5">
-                {order.checklist && order.checklist.map(item => (
-                  <div key={item.id} className="flex justify-between items-center">
-                    <span className="w-1/2 border-b border-black border-dashed pb-0.5">{item.label}</span>
-                    <div className="w-1/2 flex justify-end gap-4">
-                      <div className="flex items-center gap-1">
-                        <span>SIN NOVEDAD</span>
-                        <div className="w-4 h-4 border border-black flex items-center justify-center font-bold">{item.condition === 'ok' ? 'X' : ''}</div>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <span>NOVEDAD</span>
-                        <div className="w-4 h-4 border border-black flex items-center justify-center font-bold">{item.condition !== 'ok' ? 'X' : ''}</div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Services Matrix Placeholder - Simplified for printing */}
-            <div className="mb-6">
-              <h2 className="text-3xl text-center font-serif italic mb-2">Servicios</h2>
-              <div className="border border-black p-4 grid grid-cols-3 gap-4 text-[10px] font-bold uppercase">
-                <div className="space-y-2">
-                  <div className="flex justify-between"><span className="w-24">LAVADO:</span><span>BÁSICO <div className="inline-block w-4 h-4 border border-black ml-1 align-middle"></div></span></div>
-                  <div className="flex justify-between"><span className="w-24">TAPICERÍA:</span><span>BÁSICO <div className="inline-block w-4 h-4 border border-black ml-1 align-middle"></div></span></div>
-                  <div className="flex justify-between"><span className="w-24">PULITURA:</span><span>SINTÉTICA <div className="inline-block w-4 h-4 border border-black ml-1 align-middle"></div></span></div>
-                  <div className="flex justify-between"><span className="w-32">PULITURA DE FAROS:</span><div className="inline-block w-4 h-4 border border-black align-middle"></div></div>
-                  <div className="flex items-center gap-1">PPF: BÁSICO <div className="w-4 h-4 border border-black"></div> MEDIO <div className="w-4 h-4 border border-black"></div> PREMIUM <div className="w-4 h-4 border border-black"></div></div>
-                  <div className="flex justify-between"><span className="w-24">PDR:</span><div className="inline-block w-4 h-4 border border-black align-middle"></div></div>
-                  <div className="flex justify-between"><span className="w-24">PDA:</span><div className="inline-block w-4 h-4 border border-black align-middle"></div></div>
-                  <div className="flex justify-between"><span className="w-24">PAPEL AHUMADO:</span><div className="inline-block w-4 h-4 border border-black align-middle"></div></div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between"><span className="w-24"></span><span>EXTREMO <div className="inline-block w-4 h-4 border border-black ml-1 align-middle"></div></span></div>
-                  <div className="flex justify-between"><span className="w-24"></span><span>EXTREMO <div className="inline-block w-4 h-4 border border-black ml-1 align-middle"></div></span></div>
-                  <div className="flex justify-between"><span className="w-24"></span><span>CERÁMICA <div className="inline-block w-4 h-4 border border-black ml-1 align-middle"></div></span></div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between"><span>PINTURA:</span><span>GENERAL <div className="inline-block w-4 h-4 border border-black ml-1 align-middle"></div> RETOQUE <div className="inline-block w-4 h-4 border border-black ml-1 align-middle"></div></span></div>
-                  <div className="flex justify-between"><span>LAVADO:</span><span>CHASIS <div className="inline-block w-4 h-4 border border-black ml-1 align-middle"></div> MOTOR <div className="inline-block w-4 h-4 border border-black ml-1 align-middle"></div></span></div>
-                  <div className="flex justify-between"><span>AIRE ACONDICIONADO:</span><div className="inline-block w-4 h-4 border border-black align-middle"></div></div>
-                  <div className="flex justify-between"><span>ROTULADO O WRAPS:</span><div className="inline-block w-4 h-4 border border-black align-middle"></div></div>
-                  <div className="flex justify-between"><span>TAPIZADO:</span><div className="inline-block w-4 h-4 border border-black align-middle"></div></div>
-                  <div className="flex justify-between"><span>MOTO:</span><span>LAVADO <div className="inline-block w-4 h-4 border border-black ml-1 align-middle"></div> PULITURA <div className="inline-block w-4 h-4 border border-black ml-1 align-middle"></div></span></div>
-                  <div className="flex justify-between"><span>PINTURA DE MOTOS:</span><span>GENERAL <div className="inline-block w-4 h-4 border border-black ml-1 align-middle"></div> RETOQUES <div className="inline-block w-4 h-4 border border-black ml-1 align-middle"></div></span></div>
-                </div>
-              </div>
-            </div>
-
-            {/* Observaciones y Pertenencias (Back Side logic) */}
-            <div className="mt-12 space-y-6">
-              <div>
-                <h2 className="text-2xl text-center font-bold mb-2">Observaciones</h2>
-                <div className="space-y-4">
-                  <div className="border-b border-black w-full min-h-[20px]">{order.observations || ''}</div>
-                  <div className="border-b border-black w-full min-h-[20px]"></div>
-                  <div className="border-b border-black w-full min-h-[20px]"></div>
-                  <div className="border-b border-black w-full min-h-[20px]"></div>
-                </div>
-              </div>
-
-              <div>
-                <h2 className="text-2xl text-center font-bold mb-2">Pertenencias</h2>
-                <div className="space-y-4">
-                  <div className="border-b border-black w-full min-h-[20px]">{order.belongings && order.belongings.length > 0 ? order.belongings.join(', ') : ''}</div>
-                  <div className="border-b border-black w-full min-h-[20px]"></div>
-                  <div className="border-b border-black w-full min-h-[20px]"></div>
-                </div>
-              </div>
-
-              <div className="pt-4">
-                <h2 className="text-2xl text-center font-bold mb-2">Importante</h2>
-                <div className="text-[10px] text-justify font-bold uppercase space-y-2">
-                  <p>Nuestras condiciones y políticas son las siguientes:</p>
-                  <p>El propietario del vehículo, debe verificar el mismo al momento de ingresar y retirar su automóvil, la empresa no se hace responsable por fallas, desperfectos, daños mecánicos o eléctricos que presente el vehículo, ya que solo nos encargamos única y exclusivamente de la parte de estética externa e interna de su vehículo. (embellecimiento automotriz)</p>
-                  <p>Una vez el vehículo haya dejado las instalaciones la empresa asume que aceptó conforme todo el trabajo realizado.</p>
-                </div>
-              </div>
-
-              <div className="pt-16 pb-8 flex items-center justify-center">
-                <span className="font-bold uppercase mr-4">FIRMA CONFORME</span>
-                <span className="inline-block w-64 border-b border-black"></span>
-              </div>
-            </div>
-          </div>
 
           {/* TAB 2: PHOTOGRAPHS */}
           <div className={activeTab === 'photos' ? 'block print:hidden' : 'hidden'}>
