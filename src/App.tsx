@@ -241,15 +241,17 @@ export function App() {
   return (
     <div className="min-h-screen bg-[#06080C] text-[#F0F6FC] flex flex-col font-sans antialiased selection:bg-[#00E5FF] selection:text-black">
       {/* Header */}
-      <Header
-        currentRole={currentRole}
-        onRoleChange={setCurrentRole}
-        onNewODS={() => setActiveTab('ods_new' as any)}
-        onSearchOpen={() => setIsSearchOpen(true)}
-      />
+      <div className="print:hidden">
+        <Header
+          currentRole={currentRole}
+          onRoleChange={setCurrentRole}
+          onNewODS={() => setActiveTab('ods_new' as any)}
+          onSearchOpen={() => setIsSearchOpen(true)}
+        />
+      </div>
 
       {/* Main Layout Area */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden print:hidden">
         {/* Sidebar */}
         <Sidebar activeTab={activeTab} onTabChange={setActiveTab} currentRole={currentRole} />
 
