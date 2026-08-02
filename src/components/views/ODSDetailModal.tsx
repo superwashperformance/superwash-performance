@@ -37,7 +37,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 overflow-y-auto">
       <div className="nike-card w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 border-cyan-500/30 shadow-2xl">
         {/* Modal Header */}
-        <div className="p-4 md:p-6 border-b border-white/10 flex items-center justify-between bg-black/60 print:hidden">
+        <div className="p-4 md:p-6 border-b border-white/10 flex items-center justify-between bg-black/60">
           <div className="flex items-center gap-3">
             <FaviconLogo size={36} />
             <div>
@@ -98,7 +98,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
         {/* Modal Tab Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* TAB 1: PRESUPUESTO & NOTA DE ENTREGA PRINTABLE VIEW */}
-          <div id="printable-quote" className={`flex flex-col gap-4 print:gap-2 bg-slate-950 p-6 print:p-2 rounded-2xl border border-white/10 ${activeTab === 'quote' ? 'flex' : 'hidden print:flex'}`}>
+          <div id="printable-quote" className={`flex flex-col gap-6 bg-slate-950 p-6 rounded-2xl border border-white/10 ${activeTab === 'quote' ? 'flex' : 'hidden print:flex'}`}>
             {/* Header Invoice Brand */}
               <div className="flex items-start justify-between border-b border-white/10 pb-4">
                 <div>
@@ -210,7 +210,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
                         <span className="font-bold text-slate-800 mb-2 block uppercase text-[10px] tracking-wider">DETALLES DE CARROCERÍA REGISTRADOS:</span>
                         <ul className="list-disc ml-4 text-[10px] text-slate-700">
                           {order.damageMarkers.map(m => (
-                            <li key={m.id}><span className="font-bold uppercase">{m.view}</span> ({m.type}): {m.description}</li>
+                            <li key={m.id}>{m.description || 'Daño'} <span className="text-slate-500">({m.type} en {m.view})</span></li>
                           ))}
                         </ul>
                       </div>
