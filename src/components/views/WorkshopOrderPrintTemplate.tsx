@@ -61,9 +61,9 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
   return (
     <div className="bg-white text-black w-full text-sm font-sans break-words print-taller-container hidden print:block">
       {/* PAGE 1 */}
-      <div className="p-8 min-h-[1050px] flex flex-col" style={{ pageBreakAfter: 'always' }}>
+      <div className="p-4 sm:p-6 flex flex-col" style={{ pageBreakAfter: 'always' }}>
         {/* Header Section */}
-        <div className="flex items-start justify-between mb-6">
+        <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-4">
             <FaviconLogo size={64} className="text-black" />
           </div>
@@ -89,7 +89,7 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
         </div>
 
         {/* Customer & Vehicle Info */}
-        <div className="flex flex-col gap-4 mb-6 text-xs font-bold uppercase">
+        <div className="flex flex-col gap-3 mb-4 text-xs font-bold uppercase">
           <div className="flex items-end border-b border-black w-full">
             <span className="w-20">CLIENTE:</span>
             <span className="flex-1 pb-0.5 font-normal">{order.customerName}</span>
@@ -119,9 +119,9 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
         </div>
 
         {/* Chequeo General */}
-        <h2 className="text-center text-3xl font-bold mb-4" style={{ fontFamily: 'cursive' }}>Chequeo general</h2>
+        <h2 className="text-center text-2xl font-bold mb-2" style={{ fontFamily: 'cursive' }}>Chequeo general</h2>
         
-        <div className="grid grid-cols-2 gap-x-8 gap-y-1 mb-8">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-0.5 mb-4">
           {checklistData.map((item, index) => (
             <div key={item.key} className="flex items-center justify-between border-b border-black/20 pb-1">
               <span className="text-[10px] font-bold uppercase flex-1">{item.label}</span>
@@ -136,10 +136,10 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
         </div>
 
         {/* Servicios */}
-        <h2 className="text-center text-3xl font-bold mb-4 mt-auto" style={{ fontFamily: 'cursive' }}>Servicios</h2>
+        <h2 className="text-center text-2xl font-bold mb-2 mt-2" style={{ fontFamily: 'cursive' }}>Servicios</h2>
         
-        <div className="border border-black p-4 grid grid-cols-2 gap-4 text-[10px] font-bold uppercase bg-black/5">
-          <div className="flex flex-col gap-3">
+        <div className="border border-black p-3 grid grid-cols-2 gap-2 text-[10px] font-bold uppercase bg-black/5">
+          <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <span className="w-24">LAVADO:</span>
               <div className="flex items-center gap-2"><span>BÁSICO</span> <CheckBox checked={hasService(['lavado básico', 'lavado basico'])} /></div>
@@ -179,7 +179,7 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
             </div>
           </div>
           
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <span className="w-24">PINTURA:</span>
               <div className="flex items-center gap-2"><span>GENERAL</span> <CheckBox checked={hasService(['pintura general', 'pintura completa'])} /></div>
@@ -217,7 +217,7 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
       </div>
 
       {/* PAGE 2 */}
-      <div className="p-8 min-h-[1050px] flex flex-col" style={{ pageBreakBefore: 'always' }}>
+      <div className="p-4 sm:p-6 flex flex-col" style={{ pageBreakBefore: 'always' }}>
         
         <h2 className="text-center text-3xl font-bold mb-6 mt-8">Observaciones</h2>
         <div className="flex flex-col gap-8 mb-16">
