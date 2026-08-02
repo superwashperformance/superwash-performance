@@ -172,3 +172,8 @@
 .animate-pulse-glow {
   animation: pulseGlow 3s ease-in-out infinite;
 }
+
+@media print {
+  @page { margin: 0; }
+}
+

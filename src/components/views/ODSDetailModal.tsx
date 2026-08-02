@@ -100,7 +100,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
         {/* Modal Tab Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* TAB 1: PRESUPUESTO & NOTA DE ENTREGA PRINTABLE VIEW */}
-          <div id="printable-quote" className={`flex flex-col gap-6 bg-slate-950 print:bg-white p-6 print:p-0 print:m-0 rounded-2xl border border-white/10 print:border-none print:shadow-none print:break-inside-avoid ${activeTab === 'quote' ? 'flex' : 'hidden print:flex'}`}>
+          <div id="printable-quote" className={`flex flex-col gap-6 bg-slate-950 print:bg-white p-6 print:p-8 print:pt-12 print:m-0 rounded-2xl border border-white/10 print:border-none print:shadow-none print:break-inside-avoid ${activeTab === 'quote' ? 'flex' : 'hidden print:flex'}`}>
             {/* Header Invoice Brand */}
               <div className="flex items-start justify-between border-b border-white/10 pb-4">
                 <div>
