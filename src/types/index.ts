@@ -15,7 +15,8 @@ export type ODSStatus =
   | 'waiting_parts'
   | 'quality_control'
   | 'completed'
-  | 'delivered';
+  | 'delivered'
+  | 'archived';
 
 export type ItemCondition = 'ok' | 'damaged' | 'missing' | 'observation';
 

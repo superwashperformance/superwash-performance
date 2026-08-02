@@ -163,7 +163,16 @@ export const KanbanView: React.FC<KanbanViewProps> = ({
                             </button>
                           ) : <div />}
 
-                          {next && (
+                          {col.id === 'delivered' ? (
+                            <button
+                              onClick={() => onUpdateStatus(order.id, 'archived')}
+                              className="px-2.5 py-1 rounded-lg bg-emerald-500 text-white font-display text-xs font-bold hover:bg-emerald-400 flex items-center gap-1 transition-colors ml-auto shadow-md"
+                              title="Finalizar y guardar en base de datos"
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5 stroke-[3]" />
+                              <span>FINALIZAR</span>
+                            </button>
+                          ) : next && (
                             <button
                               onClick={() => onUpdateStatus(order.id, next)}
                               className="px-2.5 py-1 rounded-lg bg-[#00E5FF] text-black font-display text-xs font-bold hover:bg-[#33EBFF] flex items-center gap-1 transition-colors ml-auto shadow-md"

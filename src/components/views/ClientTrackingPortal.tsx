@@ -76,6 +76,7 @@ export const ClientTrackingPortal: React.FC<ClientTrackingPortalProps> = ({ init
       quality_control: 4,
       completed: 4,
       delivered: 5,
+      archived: 5,
     };
     return steps[status as keyof typeof steps] || 1;
   };
@@ -91,6 +92,7 @@ export const ClientTrackingPortal: React.FC<ClientTrackingPortalProps> = ({ init
       quality_control: 'Trabajo terminado. En fase de control de calidad (Detailing final).',
       completed: '¡Vehículo listo para retirar!',
       delivered: 'Vehículo entregado. ¡Gracias por preferirnos!',
+      archived: 'Servicio finalizado y guardado en historial. ¡Gracias por tu confianza!',
     };
     return messages[status as keyof typeof messages] || 'Estado desconocido';
   };

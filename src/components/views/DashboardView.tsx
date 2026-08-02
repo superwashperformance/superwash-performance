@@ -54,6 +54,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     quality_control: { label: 'Control de Calidad', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
     completed: { label: 'Finalizado', color: 'bg-green-500/20 text-green-400 border-green-500/30' },
     delivered: { label: 'Entregado', color: 'bg-slate-700/40 text-slate-300 border-slate-600/30' },
+    archived: { label: 'Archivado (Historial)', color: 'bg-zinc-900/60 text-zinc-500 border-zinc-800' },
   };
 
   return (

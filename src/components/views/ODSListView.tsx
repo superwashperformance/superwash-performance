@@ -35,6 +35,7 @@ export const ODSListView: React.FC<ODSListViewProps> = ({ orders, onSelectOrder,
     quality_control: { label: 'Control de Calidad', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
     completed: { label: 'Finalizado', color: 'bg-green-500/20 text-green-400 border-green-500/30' },
     delivered: { label: 'Entregado', color: 'bg-slate-700/40 text-slate-300 border-slate-600/30' },
+    archived: { label: 'Archivado (Historial)', color: 'bg-zinc-900/60 text-zinc-500 border-zinc-800' },
   };
 
   return (
@@ -82,9 +83,10 @@ export const ODSListView: React.FC<ODSListViewProps> = ({ orders, onSelectOrder,
             <option value="quote_approved">4. Presupuesto Aprobado</option>
             <option value="in_progress">5. En Proceso</option>
             <option value="waiting_parts">6. Esperando Repuestos</option>
-            <option value="quality_control">7. Control Calidad</option>
+            <option value="quality_control">7. Control de Calidad</option>
             <option value="completed">8. Finalizado</option>
             <option value="delivered">9. Entregado</option>
+            <option value="archived">10. Archivado (Historial)</option>
           </select>
         </div>
       </div>
