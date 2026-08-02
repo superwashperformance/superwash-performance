@@ -34,20 +34,22 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 print:bg-white print:static backdrop-blur-xl flex items-center justify-center p-4 print:p-0 overflow-y-auto print:overflow-visible">
-      <div className="nike-card w-full max-w-4xl max-h-[90vh] print:max-h-none flex flex-col overflow-hidden print:overflow-visible animate-in fade-in zoom-in-95 border-cyan-500/30 print:border-none shadow-2xl print:shadow-none print:bg-white">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 overflow-y-auto">
+      <div className="nike-card w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 border-cyan-500/30 shadow-2xl">
         {/* Modal Header */}
-        <div className="p-4 md:p-6 border-b border-white/10 flex items-center justify-between bg-black/60 print:hidden">
+        <div className="p-4 md:p-6 border-b border-white/10 print:border-b-black/20 flex items-center justify-between bg-black/60 print:bg-transparent">
           <div className="flex items-center gap-3">
-            <FaviconLogo size={36} />
+            <div className="print:scale-125 origin-left">
+              <FaviconLogo size={48} />
+            </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-display text-2xl text-[#00E5FF]">{order.orderNumber}</span>
-                <span className="text-xs font-mono bg-white/10 text-white px-2 py-0.5 rounded-full uppercase">
+                <span className="font-display text-2xl text-[#00E5FF] print:text-[#00E5FF]">{order.orderNumber}</span>
+                <span className="text-xs font-mono bg-white/10 print:bg-black/5 text-white print:text-black px-2 py-0.5 rounded-full uppercase border border-transparent print:border-black/20">
                   {order.vehiclePlate}
                 </span>
               </div>
-              <span className="text-xs text-slate-400 font-medium">
+              <span className="text-xs text-slate-400 print:text-black font-medium">
                 {order.vehicleBrandModel} ({order.vehicleColor}) - {order.customerName}
               </span>
             </div>
