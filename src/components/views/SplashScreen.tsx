@@ -1,6 +1,5 @@
 import React from 'react';
 import { FaviconLogo } from '../common/FaviconLogo';
-import { MascotTurbo } from '../common/MascotTurbo';
 import { ArrowRight, Play } from 'lucide-react';
 
 interface SplashScreenProps {
@@ -55,11 +54,6 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
         <p className="font-heading text-lg md:text-xl text-slate-300 font-medium max-w-xl mb-6">
           Plataforma Enterprise de Estética Automotriz, Detailing, Pintura y Gestión 360° de Órdenes de Servicio.
         </p>
-
-        {/* Turbo Mascot Greeting Component */}
-        <div className="w-full max-w-lg mb-8">
-          <MascotTurbo message="¡Bienvenido a Super Wash Performance! El logo oficial encaja ahora perfectamente al 100% dentro del marco circular. Presiona Iniciar para entrar." />
-        </div>
 
         {/* Action Buttons Container */}
         <div className="flex flex-col md:flex-row items-center gap-4 w-full max-w-2xl justify-center mt-6">
