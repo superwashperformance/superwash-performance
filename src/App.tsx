@@ -115,32 +115,32 @@ export function App() {
   };
 
   const handleUpdateStatus = async (orderId: string, newStatus: ODSStatus) => {
+    // 1. Update local state (Optimistic Update)
+    setOrders(
+      orders.map((o) =>
+        o.id === orderId
+          ? {
+              ...o,
+              status: newStatus,
+              statusHistory: [
+                ...o.statusHistory,
+                {
+                  status: newStatus,
+                  changedAt: new Date().toLocaleString('es-ES'),
+                  changedBy: currentRole,
+                },
+              ],
+            }
+          : o
+      )
+    );
+
     try {
-      // 1. Update in DB
+      // 2. Update in DB
       await odsService.updateODSStatus(orderId, newStatus);
-      
-      // 2. Update local state
-      setOrders(
-        orders.map((o) =>
-          o.id === orderId
-            ? {
-                ...o,
-                status: newStatus,
-                statusHistory: [
-                  ...o.statusHistory,
-                  {
-                    status: newStatus,
-                    changedAt: new Date().toLocaleString('es-ES'),
-                    changedBy: currentRole,
-                  },
-                ],
-              }
-            : o
-        )
-      );
     } catch (error) {
       console.error('Error al actualizar estado:', error);
-      alert('Error al actualizar el estado en la base de datos.');
+      alert('Nota: El estado se actualizó en la pantalla, pero hubo un error al guardarlo en la base de datos de Supabase. (Si añadiste "archived", asegúrate de agregarlo al ENUM en Supabase).');
     }
   };
 
