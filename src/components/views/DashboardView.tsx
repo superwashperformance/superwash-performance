@@ -1,6 +1,7 @@
 import React from 'react';
 import { ServiceOrder, UserRole } from '../../types';
 import { CurrencyDisplay } from '../common/CurrencyDisplay';
+import { MascotTurbo } from '../common/MascotTurbo';
 import {
   BarChart3,
   Clock,
@@ -57,8 +58,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8 max-w-7xl mx-auto w-full">
-      {/* Top Banner (Acciones Rápidas) */}
-      <div className="nike-card p-5 flex flex-col justify-between w-full">
+      {/* Top Banner & Turbo Assistant Message */}
+      <div className="flex flex-col lg:flex-row items-stretch gap-6">
+        <div className="flex-1">
+          <MascotTurbo
+            message={`¡Buen día! Hay ${inProgressCount} vehículos activos en la línea de trabajo del taller. Se registran $${totalAccountsReceivable} en cuentas por cobrar pendientes.`}
+          />
+        </div>
+
+        {/* Quick Launcher Card */}
+        <div className="nike-card p-5 flex flex-col justify-between shrink-0 lg:w-80">
           <div>
             <span className="text-[10px] font-mono tracking-widest text-slate-400 uppercase">ACCIONES RÁPIDAS</span>
             <h4 className="font-display text-xl text-white">PANEL DE CONTROL</h4>
@@ -75,6 +84,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </button>
           </div>
         </div>
+      </div>
 
       {/* 6 Main Metric KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">

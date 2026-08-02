@@ -3,6 +3,7 @@ import { CurrencyDisplay } from '../common/CurrencyDisplay';
 import { ServiceOrder } from '../../types';
 import { FaviconLogo } from '../common/FaviconLogo';
 import { VehicleDiagram360 } from '../common/VehicleDiagram360';
+import { WorkshopOrderPrintTemplate } from './WorkshopOrderPrintTemplate';
 import { X, Printer, Share2, Phone, CheckCircle, FileText, Camera, ShieldAlert, Sparkles, User, Car } from 'lucide-react';
 
 interface ODSDetailModalProps {
@@ -12,6 +13,7 @@ interface ODSDetailModalProps {
 
 export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }) => {
   const [activeTab, setActiveTab] = useState<'quote' | 'photos' | 'checklist' | 'damages'>('quote');
+  const [printMode, setPrintMode] = useState<'quote' | 'taller'>('quote');
 
   if (!order) return null;
 
@@ -29,8 +31,11 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
     return `https://wa.me/${cleanPhone}?text=${text}`;
   };
 
-  const handlePrint = () => {
-    window.print();
+  const handlePrint = (mode: 'quote' | 'taller') => {
+    setPrintMode(mode);
+    setTimeout(() => {
+      window.print();
+    }, 100);
   };
 
   return (
@@ -57,14 +62,18 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
 
           <div className="flex items-center gap-2 print:hidden">
 
-            {/* Print Button */}
-            <button onClick={handlePrint} className="btn-nike-secondary text-xs py-2 px-3 flex items-center gap-1.5">
+            {/* Print Buttons */}
+            <button onClick={() => handlePrint('quote')} className="btn-nike-secondary text-xs py-2 px-3 flex items-center gap-1.5">
               <Printer className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Imprimir PDF</span>
+              <span className="hidden sm:inline">Imprimir Presupuesto</span>
+            </button>
+            <button onClick={() => handlePrint('taller')} className="btn-nike-primary text-xs py-2 px-3 flex items-center gap-1.5">
+              <Printer className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Imprimir Taller</span>
             </button>
 
             {/* Close Modal */}
-            <button onClick={onClose} className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full">
+            <button onClick={onClose} className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full ml-2">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -98,7 +107,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
         </div>
 
         {/* Modal Tab Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 print:p-0 print:space-y-0 print:overflow-visible">
+        <div className={`flex-1 overflow-y-auto p-6 space-y-6 print:p-0 print:space-y-0 print:overflow-visible ${printMode === 'taller' ? 'print:hidden' : ''}`}>
           {/* TAB 1: PRESUPUESTO & NOTA DE ENTREGA PRINTABLE VIEW */}
           <div id="printable-quote" className={`flex flex-col gap-6 bg-slate-950 print:bg-white p-6 print:p-4 print:m-0 rounded-2xl border border-white/10 print:border-none print:shadow-none print:break-inside-avoid print:gap-4 ${activeTab === 'quote' ? 'flex' : 'hidden print:flex'}`}>
             {/* Header Invoice Brand */}
@@ -191,26 +200,15 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
                   <div className="hidden print:block mt-4 pt-4 border-t border-slate-200/20 print:border-black/20 space-y-4">
                     {/* Checklist details for print */}
                     {order.checklist && order.checklist.length > 0 && (
-                      <div className="mt-4 print:mt-2">
-                        <div className="text-center font-serif italic font-bold text-lg mb-2 print:text-black">Chequeo general</div>
-                        <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-[9px] text-slate-700 print:text-black uppercase">
+                      <div>
+                        <span className="font-bold text-slate-800 print:text-black mb-2 block uppercase text-[10px] tracking-wider">ESTADO DE RECEPCIÓN DEL VEHÍCULO (CHECKLIST):</span>
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[10px] text-slate-700 print:text-black">
                           {order.checklist.map(i => (
-                            <div key={i.id} className="flex justify-between items-end border-b border-slate-200/50 print:border-black/20 pb-0.5">
-                              <span className="font-bold whitespace-nowrap overflow-hidden text-ellipsis mr-2">{i.label}</span>
-                              <div className="flex gap-2 shrink-0">
-                                <div className="flex items-center gap-0.5">
-                                  <span className="text-[7px]">SIN NOVEDAD</span>
-                                  <div className="w-2.5 h-2.5 border border-black flex items-center justify-center font-bold text-[8px]">
-                                    {i.condition === 'ok' && 'X'}
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-0.5">
-                                  <span className="text-[7px]">NOVEDAD</span>
-                                  <div className="w-2.5 h-2.5 border border-black flex items-center justify-center font-bold text-[8px]">
-                                    {i.condition !== 'ok' && 'X'}
-                                  </div>
-                                </div>
-                              </div>
+                            <div key={i.id} className="flex justify-between border-b border-slate-200/50 print:border-black/10 pb-1">
+                              <span>{i.label}</span>
+                              <span className={`font-bold uppercase ${i.condition === 'ok' ? 'text-slate-600 print:text-black' : 'text-slate-900 print:text-black'}`}>
+                                {i.condition === 'ok' ? 'Correcto' : i.condition}
+                              </span>
                             </div>
                           ))}
                         </div>
@@ -276,6 +274,12 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
             <VehicleDiagram360 markers={order.damageMarkers} readOnly />
           </div>
         </div>
+
+        {/* WORKSHOP ORDER PRINT TEMPLATE (HIDDEN IN UI, SHOWN IN PRINT MODE 'TALLER') */}
+        {printMode === 'taller' && (
+          <WorkshopOrderPrintTemplate order={order} />
+        )}
+
       </div>
     </div>
   );
