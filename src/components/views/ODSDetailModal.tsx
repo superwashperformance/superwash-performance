@@ -34,10 +34,10 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 overflow-y-auto">
-      <div className="nike-card w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 border-cyan-500/30 shadow-2xl">
+    <div className="fixed inset-0 z-50 bg-black/80 print:bg-white print:static backdrop-blur-xl flex items-center justify-center p-4 print:p-0 overflow-y-auto print:overflow-visible">
+      <div className="nike-card w-full max-w-4xl max-h-[90vh] print:max-h-none flex flex-col overflow-hidden print:overflow-visible animate-in fade-in zoom-in-95 border-cyan-500/30 print:border-none shadow-2xl print:shadow-none print:bg-white">
         {/* Modal Header */}
-        <div className="p-4 md:p-6 border-b border-white/10 flex items-center justify-between bg-black/60">
+        <div className="p-4 md:p-6 border-b border-white/10 flex items-center justify-between bg-black/60 print:hidden">
           <div className="flex items-center gap-3">
             <FaviconLogo size={36} />
             <div>
