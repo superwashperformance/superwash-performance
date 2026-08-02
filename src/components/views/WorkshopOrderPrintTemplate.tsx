@@ -137,80 +137,87 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
 
         {/* Servicios */}
         <h2 className="text-center text-2xl font-bold mb-2 mt-2" style={{ fontFamily: 'cursive' }}>Servicios</h2>
-        
-        <div className="border border-black p-3 grid grid-cols-2 gap-2 text-[10px] font-bold uppercase bg-black/5">
+        <div className="border border-black p-3 grid grid-cols-2 gap-x-6 gap-y-2 text-[10px] font-bold uppercase bg-black/5">
+          {/* Left Column */}
           <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="w-24">LAVADO:</span>
-              <div className="flex items-center gap-2"><span>BÁSICO</span> <CheckBox checked={hasService(['lavado básico', 'lavado basico'])} /></div>
-              <div className="flex items-center gap-2"><span>EXTREMO</span> <CheckBox checked={hasService(['lavado extremo', 'lavado premium', 'lavado profundo'])} /></div>
+            <div className="grid grid-cols-[120px_1fr_1fr] items-center">
+              <span>LAVADO:</span>
+              <div className="flex items-center justify-end gap-2"><span>BÁSICO</span> <CheckBox checked={hasService(['lavado básico', 'lavado basico'])} /></div>
+              <div className="flex items-center justify-end gap-2"><span>EXTREMO</span> <CheckBox checked={hasService(['lavado extremo', 'lavado premium', 'lavado profundo'])} /></div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="w-24">TAPICERÍA:</span>
-              <div className="flex items-center gap-2"><span>BÁSICO</span> <CheckBox checked={hasService(['tapicería', 'tapiceria'])} /></div>
-              <div className="flex items-center gap-2"><span>EXTREMO</span> <CheckBox checked={hasService(['tapicería extrema', 'tapiceria profunda', 'limpieza extrema'])} /></div>
+            <div className="grid grid-cols-[120px_1fr_1fr] items-center">
+              <span>TAPICERÍA:</span>
+              <div className="flex items-center justify-end gap-2"><span>BÁSICO</span> <CheckBox checked={hasService(['tapicería', 'tapiceria'])} /></div>
+              <div className="flex items-center justify-end gap-2"><span>EXTREMO</span> <CheckBox checked={hasService(['tapicería extrema', 'tapiceria profunda', 'limpieza extrema'])} /></div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="w-24">PULITURA:</span>
-              <div className="flex items-center gap-2"><span>SINTÉTICA</span> <CheckBox checked={hasService(['pulitura sintetica', 'pulitura sintética'])} /></div>
-              <div className="flex items-center gap-2"><span>CERÁMICA</span> <CheckBox checked={hasService(['cerámica', 'ceramica', 'pulitura ceramica'])} /></div>
+            <div className="grid grid-cols-[120px_1fr_1fr] items-center">
+              <span>PULITURA:</span>
+              <div className="flex items-center justify-end gap-2"><span>SINTÉTICA</span> <CheckBox checked={hasService(['pulitura sintetica', 'pulitura sintética'])} /></div>
+              <div className="flex items-center justify-end gap-2"><span>CERÁMICA</span> <CheckBox checked={hasService(['cerámica', 'ceramica', 'pulitura ceramica'])} /></div>
             </div>
-            <div className="flex items-center justify-between pr-4">
-              <span className="w-32">PULITURA DE FAROS:</span>
-              <CheckBox checked={hasService(['faros'])} />
+            <div className="grid grid-cols-[120px_1fr_1fr] items-center">
+              <span className="truncate">PULITURA DE FAROS:</span>
+              <div></div>
+              <div className="flex items-center justify-end"><CheckBox checked={hasService(['faros'])} /></div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="w-12">PPF:</span>
-              <div className="flex items-center gap-2"><span>BÁSICO</span> <CheckBox checked={hasService(['ppf básico', 'ppf basico'])} /></div>
-              <div className="flex items-center gap-2"><span>MEDIO</span> <CheckBox checked={hasService(['ppf medio'])} /></div>
-              <div className="flex items-center gap-2"><span>PREMIUM</span> <CheckBox checked={hasService(['ppf premium', 'ppf completo'])} /></div>
+            <div className="grid grid-cols-[120px_1fr_1fr] items-center">
+              <span>PPF:</span>
+              <div className="flex items-center justify-end gap-2"><span>BÁSICO</span> <CheckBox checked={hasService(['ppf básico', 'ppf basico'])} /></div>
+              <div className="flex items-center justify-end gap-2"><span>PREMIUM</span> <CheckBox checked={hasService(['ppf premium', 'ppf completo'])} /></div>
             </div>
-            <div className="flex items-center justify-between pr-4">
-              <span className="w-12">PDR:</span>
-              <CheckBox checked={hasService(['pdr', 'abolladura'])} />
+            <div className="grid grid-cols-[120px_1fr_1fr] items-center">
+              <span>PDR:</span>
+              <div></div>
+              <div className="flex items-center justify-end"><CheckBox checked={hasService(['pdr', 'abolladura'])} /></div>
             </div>
-            <div className="flex items-center justify-between pr-4">
-              <span className="w-12">PDA:</span>
-              <CheckBox checked={hasService(['pda'])} />
+            <div className="grid grid-cols-[120px_1fr_1fr] items-center">
+              <span>PDA:</span>
+              <div></div>
+              <div className="flex items-center justify-end"><CheckBox checked={hasService(['pda'])} /></div>
             </div>
-            <div className="flex items-center justify-between pr-4">
-              <span className="w-28">PAPEL AHUMADO:</span>
-              <CheckBox checked={hasService(['papel ahumado', 'polarizado'])} />
+            <div className="grid grid-cols-[120px_1fr_1fr] items-center">
+              <span>PAPEL AHUMADO:</span>
+              <div></div>
+              <div className="flex items-center justify-end"><CheckBox checked={hasService(['papel ahumado', 'polarizado'])} /></div>
             </div>
           </div>
-          
+
+          {/* Right Column */}
           <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="w-24">PINTURA:</span>
-              <div className="flex items-center gap-2"><span>GENERAL</span> <CheckBox checked={hasService(['pintura general', 'pintura completa'])} /></div>
-              <div className="flex items-center gap-2"><span>RETOQUE</span> <CheckBox checked={hasService(['retoque', 'pintura parcial'])} /></div>
+            <div className="grid grid-cols-[130px_1fr_1fr] items-center">
+              <span>PINTURA:</span>
+              <div className="flex items-center justify-end gap-2"><span>GENERAL</span> <CheckBox checked={hasService(['pintura general', 'pintura completa'])} /></div>
+              <div className="flex items-center justify-end gap-2"><span>RETOQUE</span> <CheckBox checked={hasService(['retoque', 'pintura parcial'])} /></div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="w-24">LAVADO:</span>
-              <div className="flex items-center gap-2"><span>CHASIS</span> <CheckBox checked={hasService(['chasis'])} /></div>
-              <div className="flex items-center gap-2"><span>MOTOR</span> <CheckBox checked={hasService(['motor'])} /></div>
+            <div className="grid grid-cols-[130px_1fr_1fr] items-center">
+              <span>LAVADO:</span>
+              <div className="flex items-center justify-end gap-2"><span>CHASIS</span> <CheckBox checked={hasService(['chasis'])} /></div>
+              <div className="flex items-center justify-end gap-2"><span>MOTOR</span> <CheckBox checked={hasService(['motor'])} /></div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="w-36">AIRE ACONDICIONADO:</span>
-              <CheckBox checked={hasService(['aire acondicionado', 'a/c'])} />
+            <div className="grid grid-cols-[130px_1fr_1fr] items-center">
+              <span className="truncate">AIRE ACONDICIONADO:</span>
+              <div></div>
+              <div className="flex items-center justify-end"><CheckBox checked={hasService(['aire acondicionado', 'a/c'])} /></div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="w-36">ROTULADO O WRAPS:</span>
-              <CheckBox checked={hasService(['rotulado', 'wrap', 'vinil'])} />
+            <div className="grid grid-cols-[130px_1fr_1fr] items-center">
+              <span className="truncate">ROTULADO O WRAPS:</span>
+              <div></div>
+              <div className="flex items-center justify-end"><CheckBox checked={hasService(['rotulado', 'wrap', 'vinil'])} /></div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="w-36">TAPIZADO:</span>
-              <CheckBox checked={hasService(['tapizado', 'restauración de tapicería'])} />
+            <div className="grid grid-cols-[130px_1fr_1fr] items-center">
+              <span>TAPIZADO:</span>
+              <div></div>
+              <div className="flex items-center justify-end"><CheckBox checked={hasService(['tapizado', 'restauración de tapicería'])} /></div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="w-16">MOTO:</span>
-              <div className="flex items-center gap-2"><span>LAVADO</span> <CheckBox checked={hasService(['moto', 'lavado moto'])} /></div>
-              <div className="flex items-center gap-2"><span>PULITURA</span> <CheckBox checked={hasService(['pulitura moto'])} /></div>
+            <div className="grid grid-cols-[130px_1fr_1fr] items-center">
+              <span>MOTO:</span>
+              <div className="flex items-center justify-end gap-2"><span>LAVADO</span> <CheckBox checked={hasService(['moto', 'lavado moto'])} /></div>
+              <div className="flex items-center justify-end gap-2"><span>PULITURA</span> <CheckBox checked={hasService(['pulitura moto'])} /></div>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="w-24 text-transparent">PINTURA</span>
-              <div className="flex items-center gap-2"><span>PINTURA GENERAL</span> <CheckBox checked={hasService(['pintura moto general'])} /></div>
-              <div className="flex items-center gap-2"><span>RETOQUES</span> <CheckBox checked={hasService(['retoque moto'])} /></div>
+            <div className="grid grid-cols-[130px_1fr_1fr] items-center">
+              <span className="text-transparent">PINTURA</span>
+              <div className="flex items-center justify-end gap-2"><span>PINTURA GRAL</span> <CheckBox checked={hasService(['pintura moto general'])} /></div>
+              <div className="flex items-center justify-end gap-2"><span>RETOQUES</span> <CheckBox checked={hasService(['retoque moto'])} /></div>
             </div>
           </div>
         </div>
