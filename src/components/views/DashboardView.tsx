@@ -22,6 +22,7 @@ import {
 
 interface DashboardViewProps {
   orders: ServiceOrder[];
+  transactions: any[]; // CashTransaction array
   onNewODS: () => void;
   onSelectOrder: (order: ServiceOrder) => void;
   onNavigateTab: (tab: any) => void;
@@ -30,6 +31,7 @@ interface DashboardViewProps {
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
   orders,
+  transactions,
   onNewODS,
   onSelectOrder,
   onNavigateTab,
@@ -41,8 +43,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const completedCount = orders.filter((o) => o.status === 'quality_control' || o.status === 'completed').length;
   const deliveredCount = orders.filter((o) => o.status === 'delivered').length;
 
-  const totalRevenue = orders.reduce((sum, o) => sum + o.paidAmount, 0);
-  const totalAccountsReceivable = orders.reduce((sum, o) => sum + (o.totalAmount - o.paidAmount), 0);
+  const totalRevenue = transactions
+    .filter(t => t.type === 'payment' && (t.paymentCondition === 'contado' || t.paymentCondition === 'abono_cuenta'))
+    .reduce((sum, t) => sum + t.amount, 0);
+  
+  const totalBilledCC = transactions.filter(t => t.paymentCondition === 'cuenta_corriente').reduce((sum, t) => sum + t.amount, 0);
+  const totalPaidCC = transactions.filter(t => t.paymentCondition === 'abono_cuenta').reduce((sum, t) => sum + t.amount, 0);
+  const totalAccountsReceivable = totalBilledCC - totalPaidCC;
 
   const statusLabels: Record<string, { label: string; color: string }> = {
     received: { label: 'Recibido', color: 'bg-[#00E5FF]/20 text-[#00E5FF] border-cyan-500/30' },
@@ -82,6 +89,18 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               className="btn-nike-secondary text-xs py-2 justify-center"
             >
               <Kanban className="w-4 h-4 text-[#00E5FF]" /> TABLERO EN VIVO
+            </button>
+            <button 
+              onClick={() => {
+                if(window.confirm('¿Estás seguro de que deseas BORRAR todo el historial de caja y cuentas corrientes? Esto dejará todo en cero.')) {
+                  localStorage.setItem('sw_transactions', '[]');
+                  localStorage.setItem('sw_register_state', JSON.stringify({ isOpen: false, openedAt: null, initialAmount: 0 }));
+                  window.location.reload();
+                }
+              }}
+              className="bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/30 text-xs py-2 justify-center rounded-lg font-bold transition-colors mt-2"
+            >
+              REINICIAR CAJA A CERO
             </button>
           </div>
         </div>

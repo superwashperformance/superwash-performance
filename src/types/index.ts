@@ -64,7 +64,7 @@ export interface DamageMarker {
 export interface OrderPhoto {
   id: string;
   photoUrl: string;
-  category: 'general' | 'damage' | 'belonging' | 'progress' | 'final';
+  category: 'general' | 'damage_front' | 'damage_rear' | 'damage_left' | 'damage_right' | 'belonging' | 'progress' | 'final';
   caption: string;
   createdAt: string;
 }
@@ -93,6 +93,8 @@ export interface ServiceOrder {
   customerId: string;
   customerName: string;
   customerPhone: string;
+  customerDocumentId?: string;
+  customerEmail?: string;
   vehicleId: string;
   vehiclePlate: string;
   vehicleBrandModel: string;
@@ -140,6 +142,17 @@ export interface InventoryItem {
   lastUpdated: string;
 }
 
+export interface InventoryMovement {
+  id: string;
+  itemId: string;
+  itemName: string;
+  type: 'in' | 'out' | 'adjustment';
+  quantity: number;
+  date: string;
+  reason: string;
+  responsiblePerson: string;
+}
+
 export interface CashTransaction {
   id: string;
   orderId?: string;
@@ -148,6 +161,7 @@ export interface CashTransaction {
   amount: number;
   type: 'payment' | 'deposit' | 'refund' | 'expense';
   paymentMethod: 'efectivo' | 'zelle' | 'pago_movil' | 'tarjeta' | 'transferencia';
+  paymentCondition?: 'contado' | 'cuenta_corriente';
   referenceNumber?: string;
   date: string;
   notes: string;
@@ -167,4 +181,12 @@ export interface Agent {
   name: string;
   role?: string;
   avatar?: string;
+}
+
+export interface CompanyData {
+  name: string;
+  documentId: string;
+  address: string;
+  phone: string;
+  email: string;
 }

@@ -13,12 +13,69 @@ interface ReceiptPDFProps {
 
 export const ReceiptPDF: React.FC<ReceiptPDFProps> = ({ transaction, order, customer, onClose }) => {
   const handlePrint = () => {
-    window.print();
+    const printContent = document.getElementById('receipt-print-area');
+    if (!printContent) return;
+
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    const iframeDoc = iframe.contentWindow?.document;
+    if (iframeDoc) {
+      // Clona los estilos de Tailwind del documento actual
+      const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+        .map((node) => node.outerHTML)
+        .join('');
+
+      iframeDoc.write(`
+        <html>
+          <head>
+            <title>Recibo ${transaction.id}</title>
+            ${styles}
+            <style>
+              @page { margin: 0; size: 80mm auto; }
+              body { 
+                background: white !important; 
+                color: black !important; 
+                padding: 10px;
+                font-family: monospace;
+              }
+              /* Forzar modo claro para ticketeras térmicas */
+              #receipt-print-area {
+                width: 100%;
+                max-width: 80mm;
+                margin: 0 auto;
+              }
+              .bg-slate-900 { background: white !important; color: black !important; border-bottom: 2px dashed black !important; }
+              .text-white, .text-slate-400, .text-slate-700, .text-slate-800, .text-[#00E5FF] { color: black !important; }
+              .bg-slate-50 { background: transparent !important; border: 1px solid black !important; }
+              .border-b-\\[8px\\] { border-bottom: 2px solid black !important; }
+              .shadow-inner { box-shadow: none !important; border: 1px solid black !important; }
+              svg { color: black !important; stroke: black !important; }
+              .hide-on-print { display: none !important; }
+            </style>
+          </head>
+          <body>
+            ${printContent.outerHTML}
+          </body>
+        </html>
+      `);
+      iframeDoc.close();
+
+      // Esperar a que los estilos se apliquen
+      setTimeout(() => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+        }, 1000);
+      }, 500);
+    }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col relative printable-receipt">
+      <div className="w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col relative" id="receipt-print-area">
         
         {/* Receipt Header */}
         <div className="bg-slate-900 p-6 flex flex-col items-center justify-center text-center border-b-[8px] border-[#00E5FF]">
@@ -102,30 +159,7 @@ export const ReceiptPDF: React.FC<ReceiptPDFProps> = ({ transaction, order, cust
           </button>
         </div>
       </div>
-      
-      {/* Print Styles */}
-      <style>{`
-        @media print {
-          body * {
-            visibility: hidden;
-          }
-          .printable-receipt, .printable-receipt * {
-            visibility: visible;
-          }
-          .printable-receipt {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            max-width: 80mm; /* Thermal printer width */
-            box-shadow: none;
-            border-radius: 0;
-          }
-          .hide-on-print {
-            display: none !important;
-          }
-        }
-      `}</style>
+      {/* Eliminated global print styles because we now use iframe isolation */}
     </div>
   );
 };

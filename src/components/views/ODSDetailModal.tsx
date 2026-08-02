@@ -1,31 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { CurrencyDisplay } from '../common/CurrencyDisplay';
-import { ServiceOrder } from '../../types';
+import { ServiceOrder, CompanyData, OrderPhoto } from '../../types';
 import { FaviconLogo } from '../common/FaviconLogo';
-import { VehicleDiagram360 } from '../common/VehicleDiagram360';
 import { WorkshopOrderPrintTemplate } from './WorkshopOrderPrintTemplate';
 import { X, Printer, Share2, Phone, CheckCircle, FileText, Camera, ShieldAlert, Sparkles, User, Car } from 'lucide-react';
 
 interface ODSDetailModalProps {
   order: ServiceOrder | null;
   onClose: () => void;
+  companyData: CompanyData;
+  onAddPhoto?: (orderId: string, photo: OrderPhoto) => void;
 }
 
-export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }) => {
+export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, companyData, onAddPhoto }) => {
   const [activeTab, setActiveTab] = useState<'quote' | 'photos' | 'checklist' | 'damages'>('quote');
   const [printMode, setPrintMode] = useState<'quote' | 'taller'>('quote');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadCategory, setUploadCategory] = useState<OrderPhoto['category']>('general');
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !onAddPhoto) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const newPhoto: OrderPhoto = {
+        id: `photo-${Date.now()}`,
+        photoUrl: reader.result as string,
+        category: uploadCategory,
+        caption: file.name,
+        createdAt: new Date().toLocaleString('es-ES')
+      };
+      if (order) {
+        onAddPhoto(order.id, newPhoto);
+      }
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const triggerUpload = (category: OrderPhoto['category']) => {
+    setUploadCategory(category);
+    setTimeout(() => {
+      fileInputRef.current?.click();
+    }, 50);
+  };
 
   if (!order) return null;
 
   // Generate WhatsApp Share Link for the client
   const generateWhatsAppLink = () => {
-    const text = `*SUPER WASH PERFORMANCE*%0A` +
+    const text = `*${companyData.name}*%0A` +
       `Hola ${order.customerName}, adjuntamos el presupuesto de tu vehículo *${order.vehicleBrandModel}* (Placa: ${order.vehiclePlate}):%0A%0A` +
       order.services.map(s => `- ${s.serviceName}: $${s.totalPrice}`).join('%0A') +
       `%0A%0A*TOTAL PRESUPUESTO:* $${order.totalAmount}%0A` +
       `*Abonado:* $${order.paidAmount}%0A` +
       `*Pendiente:* $${order.totalAmount - order.paidAmount}%0A%0A` +
-      `Quedamos atentos a tu aprobación. ¡Gracias por confiar en Super Wash Performance!`;
+      `Quedamos atentos a tu aprobación. ¡Gracias por confiar en ${companyData.name}!`;
 
     const cleanPhone = order.customerPhone.replace(/[^0-9]/g, '');
     return `https://wa.me/${cleanPhone}?text=${text}`;
@@ -82,10 +113,10 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
         {/* Modal Navigation Tabs */}
         <div className="flex items-center gap-2 px-6 py-3 bg-slate-950 border-b border-white/10 overflow-x-auto print:hidden">
           {[
-            { id: 'quote', label: 'PRESUPUESTO & NOTA DE ENTREGA', icon: FileText },
-            { id: 'photos', label: `FOTOGRAFÍAS (${order.photos.length})`, icon: Camera },
+            { id: 'quote', label: 'PRESUPUESTO Y ODS DEL TALLER', icon: FileText },
+            { id: 'damages', label: `FOTOS DAÑOS (${order.photos.filter(p => p.category.startsWith('damage')).length})`, icon: ShieldAlert },
             { id: 'checklist', label: 'CHECKLIST 20 PUNTOS', icon: CheckCircle },
-            { id: 'damages', label: `MAPA DAÑOS (${order.damageMarkers.length})`, icon: ShieldAlert },
+            { id: 'photos', label: `FOTOS REGISTRO FINAL (${order.photos.filter(p => p.category === 'general').length})`, icon: Camera },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -113,9 +144,9 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
             {/* Header Invoice Brand */}
               <div className="flex items-start justify-between border-b border-white/10 pb-4 print:pb-2">
                 <div>
-                  <h1 className="font-display text-3xl text-white print:text-black">SUPER WASH PERFORMANCE</h1>
+                  <h1 className="font-display text-3xl text-white print:text-black">{companyData.name.toUpperCase()}</h1>
                   <p className="text-xs text-slate-400 print:text-black">Centro Especializado en Estética Automotriz, Detailing & Pintura</p>
-                  <p className="text-xs text-slate-500 print:text-black font-mono">Sede Principal Las Mercedes | RIF: J-40199281-0</p>
+                  <p className="text-xs text-slate-500 print:text-black font-mono">{companyData.address} | RIF: {companyData.documentId}</p>
                 </div>
                 <div className="text-right">
                   <div className="font-display text-2xl text-[#00E5FF] print:text-[#00E5FF]">ODS-{order.orderNumber}</div>
@@ -233,8 +264,17 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
 
           {/* TAB 2: PHOTOGRAPHS */}
           <div className={activeTab === 'photos' ? 'block print:hidden' : 'hidden'}>
+            <div className="flex justify-end mb-4">
+              <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleFileUpload} />
+              <button 
+                onClick={() => triggerUpload('general')}
+                className="btn-nike-primary text-xs py-2 px-4 flex items-center gap-2"
+              >
+                <Camera className="w-4 h-4" /> Agregar Fotografía
+              </button>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {order.photos.map((p) => (
+              {order.photos.filter(p => p.category === 'general').map((p) => (
                 <div key={p.id} className="relative rounded-xl overflow-hidden border border-white/10 aspect-video group">
                   <img src={p.photoUrl} alt={p.caption} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-3 flex flex-col justify-end">
@@ -250,7 +290,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
           {/* TAB 3: CHECKLIST AUDIT */}
           <div className={activeTab === 'checklist' ? 'block print:hidden' : 'hidden'}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {order.checklist.map((item) => (
+              {(order.checklist || []).map((item) => (
                 <div key={item.id} className="p-3 rounded-xl bg-slate-900 border border-white/5 flex items-center justify-between text-xs">
                   <span className="font-bold text-white">{item.label}</span>
                   <span
@@ -269,9 +309,48 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
             </div>
           </div>
 
-          {/* TAB 4: DAMAGES CANVAS */}
+          {/* TAB 4: DAMAGES PHOTOS */}
           <div className={activeTab === 'damages' ? 'block print:hidden' : 'hidden'}>
-            <VehicleDiagram360 markers={order.damageMarkers} readOnly />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[
+                { title: 'Frontal', cat: 'damage_front' },
+                { title: 'Trasera', cat: 'damage_rear' },
+                { title: 'Lateral Izquierdo', cat: 'damage_left' },
+                { title: 'Lateral Derecho', cat: 'damage_right' },
+              ].map(view => {
+                const viewPhotos = order.photos.filter(p => p.category === view.cat);
+                return (
+                  <div key={view.cat} className="p-4 rounded-xl bg-slate-900 border border-white/10 flex flex-col h-full">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-display text-sm text-[#00E5FF] uppercase tracking-wider">{view.title}</h4>
+                      {viewPhotos.length < 2 && (
+                        <button 
+                          onClick={() => triggerUpload(view.cat as any)}
+                          className="btn-nike-secondary text-[10px] py-1 px-2 flex items-center gap-1"
+                        >
+                          <Camera className="w-3 h-3" /> Añadir Foto
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex-1 flex flex-col justify-center">
+                      {viewPhotos.length > 0 ? (
+                        <div className="grid grid-cols-2 gap-2">
+                          {viewPhotos.map(p => (
+                            <div key={p.id} className="relative aspect-square rounded-lg overflow-hidden border border-white/10">
+                              <img src={p.photoUrl} alt={view.title} className="w-full h-full object-cover" />
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="aspect-[2/1] w-full border border-dashed border-white/10 rounded-lg flex items-center justify-center text-slate-500 text-xs">
+                          Sin fotos registradas
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 

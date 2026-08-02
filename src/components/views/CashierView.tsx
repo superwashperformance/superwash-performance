@@ -2,31 +2,39 @@ import React, { useState } from 'react';
 import { ServiceOrder, CashTransaction, Customer } from '../../types';
 import { CurrencyDisplay } from '../common/CurrencyDisplay';
 import { ReceiptPDF } from '../common/ReceiptPDF';
-import { DollarSign, CreditCard, Plus, Receipt, FileText, ChevronDown, ChevronUp, User } from 'lucide-react';
+import { DollarSign, CreditCard, Plus, Receipt, FileText, ChevronDown, ChevronUp, User, Search } from 'lucide-react';
 
 interface CashierViewProps {
   orders: ServiceOrder[];
   transactions: CashTransaction[];
   customers: Customer[];
-  onAddPayment: (orderId: string, amount: number, method: any, ref: string, notes: string) => void;
+  onAddPayment: (orderId: string, amount: number, method: any, ref: string, notes: string, condition: 'contado' | 'cuenta_corriente') => void;
+  onAccountPayment: (customerId: string, amount: number, method: any, ref: string, notes: string) => void;
+  registerState: { isOpen: boolean; openedAt: string | null; initialAmount: number };
+  setRegisterState: (state: any) => void;
 }
 
-export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, customers, onAddPayment }) => {
+export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, customers, onAddPayment, onAccountPayment, registerState, setRegisterState }) => {
   const [activeTab, setActiveTab] = useState<'payments' | 'accounts'>('payments');
   const [selectedReceiptTx, setSelectedReceiptTx] = useState<CashTransaction | null>(null);
   const [expandedCustomer, setExpandedCustomer] = useState<string | null>(null);
+  const [accountSearchTerm, setAccountSearchTerm] = useState('');
 
   // Form State
   const [selectedOrderId, setSelectedOrderId] = useState<string>(orders[0]?.id || '');
   const [paymentAmount, setPaymentAmount] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] = useState<'efectivo' | 'zelle' | 'pago_movil' | 'tarjeta' | 'transferencia'>('zelle');
+  const [paymentCondition, setPaymentCondition] = useState<'contado' | 'cuenta_corriente'>('contado');
   const [refNumber, setRefNumber] = useState('');
   const [notes, setNotes] = useState('');
+
+  const [showCloseModal, setShowCloseModal] = useState(false);
+  const [initialAmountInput, setInitialAmountInput] = useState(0);
 
   const selectedOrder = orders.find((o) => o.id === selectedOrderId);
   const pendingBalance = selectedOrder ? selectedOrder.totalAmount - selectedOrder.paidAmount : 0;
 
-  const totalCollected = transactions.reduce((sum, t) => sum + t.amount, 0);
+  const totalCollected = transactions.filter(t => t.paymentCondition !== 'cuenta_corriente').reduce((sum, t) => sum + t.amount, 0);
   const totalAccountsReceivable = orders.reduce((sum, o) => sum + (o.totalAmount - o.paidAmount), 0);
 
   const handleSubmitPayment = (e: React.FormEvent) => {
@@ -34,7 +42,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
     if (!selectedOrder || paymentAmount <= 0) return;
     
     // Register Payment
-    onAddPayment(selectedOrderId, paymentAmount, paymentMethod, refNumber, notes);
+    onAddPayment(selectedOrderId, paymentAmount, paymentMethod, refNumber, notes, paymentCondition);
     
     // Reset Form
     setPaymentAmount(0);
@@ -45,10 +53,58 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
     // we can alert the user or they can just click "Ver Recibo" on the table.
   };
 
+  const handleOpenRegister = (e: React.FormEvent) => {
+    e.preventDefault();
+    setRegisterState({
+      isOpen: true,
+      openedAt: new Date().toISOString(),
+      initialAmount: initialAmountInput
+    });
+  };
+
+  const handleCloseRegister = () => {
+    setRegisterState({
+      isOpen: false,
+      openedAt: null,
+      initialAmount: 0
+    });
+    setShowCloseModal(false);
+  };
+
+  // Extract unique customers from orders and transactions
+  const uniqueCustomersMap = new Map<string, { id: string; fullName: string; documentId: string }>();
+  
+  orders.forEach(o => {
+    if (o.customerName) {
+      // Use customerName as fallback key if id is missing
+      const key = o.customerId || o.customerName;
+      if (!uniqueCustomersMap.has(key)) {
+        uniqueCustomersMap.set(key, {
+          id: o.customerId || key,
+          fullName: o.customerName,
+          documentId: 'N/A' // Not available directly in order unless fetched, but we can just show N/A
+        });
+      }
+    }
+  });
+
+  transactions.forEach(t => {
+    if (t.customerName) {
+      const key = t.customerName; // Transactions currently only store name
+      if (!uniqueCustomersMap.has(key)) {
+        uniqueCustomersMap.set(key, {
+          id: key,
+          fullName: t.customerName,
+          documentId: 'N/A'
+        });
+      }
+    }
+  });
+
   // Group Accounts by Customer
-  const customerAccounts = customers.map(customer => {
-    const customerOrders = orders.filter(o => o.customerId === customer.id);
-    const customerTxs = transactions.filter(t => t.customerName === customer.fullName);
+  const customerAccounts = Array.from(uniqueCustomersMap.values()).map(customer => {
+    const customerOrders = orders.filter(o => o.customerId === customer.id || o.customerName === customer.fullName);
+    const customerTxs = transactions.filter(t => t.customerName === customer.fullName && t.paymentCondition === 'abono_cuenta' as any);
     
     const totalBilled = customerOrders.reduce((sum, o) => sum + o.totalAmount, 0);
     const totalPaid = customerOrders.reduce((sum, o) => sum + o.paidAmount, 0);
@@ -62,7 +118,12 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
       totalPaid,
       totalDebt
     };
-  }).filter(acc => acc.customerOrders.length > 0 || acc.customerTxs.length > 0);
+  }).filter(acc => acc.totalDebt > 0 || acc.customerTxs.length > 0);
+
+  const filteredCustomerAccounts = customerAccounts.filter(acc => 
+    acc.customer.fullName.toLowerCase().includes(accountSearchTerm.toLowerCase()) || 
+    acc.customer.documentId.toLowerCase().includes(accountSearchTerm.toLowerCase())
+  );
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8 max-w-7xl mx-auto w-full relative">
@@ -78,13 +139,23 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
       )}
 
       {/* Header */}
-      <div>
-        <h2 className="font-display text-3xl text-white tracking-wide flex items-center gap-2">
-          CONTROL DE CAJA Y COBROS <DollarSign className="w-6 h-6 text-[#00E5FF]" />
-        </h2>
-        <p className="text-xs text-slate-400">
-          Registro de abonos, cuentas corrientes por cliente y emisión de recibos.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="font-display text-3xl text-white tracking-wide flex items-center gap-2">
+            CONTROL DE CAJA Y COBROS <DollarSign className="w-6 h-6 text-[#00E5FF]" />
+          </h2>
+          <p className="text-xs text-slate-400">
+            Registro de abonos, cuentas corrientes por cliente y emisión de recibos.
+          </p>
+        </div>
+        {registerState.isOpen && (
+          <button 
+            onClick={() => setShowCloseModal(true)}
+            className="bg-red-500/20 text-red-500 border border-red-500 hover:bg-red-500 hover:text-white px-4 py-2 rounded-lg font-bold text-sm transition-colors uppercase tracking-wider"
+          >
+            Cerrar Caja
+          </button>
+        )}
       </div>
 
       {/* KPI Cards */}
@@ -127,10 +198,35 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
       {activeTab === 'payments' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
           {/* Register Payment Form */}
-          <div className="nike-card p-6 flex flex-col gap-4">
+          <div className="nike-card p-6 flex flex-col gap-4 relative overflow-hidden">
             <h3 className="font-display text-2xl text-white flex items-center gap-2">
               <Plus className="w-5 h-5 text-[#00E5FF]" /> NUEVO INGRESO
             </h3>
+
+            {!registerState.isOpen ? (
+              <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center p-6 text-center border border-white/10 rounded-2xl">
+                <DollarSign className="w-12 h-12 text-slate-500 mb-4" />
+                <h4 className="text-white font-display text-xl mb-2">CAJA CERRADA</h4>
+                <p className="text-xs text-slate-400 mb-6">Debes abrir la caja para poder procesar pagos o abonos.</p>
+                
+                <form onSubmit={handleOpenRegister} className="w-full flex flex-col gap-3">
+                  <div className="text-left">
+                    <label className="text-[10px] text-slate-400 uppercase tracking-wider mb-1 block">Fondo de Caja / Monto Inicial ($)</label>
+                    <input 
+                      type="number" 
+                      min="0"
+                      step="0.01"
+                      value={initialAmountInput}
+                      onChange={(e) => setInitialAmountInput(Number(e.target.value))}
+                      className="w-full bg-black border border-white/10 rounded px-3 py-2 text-sm text-white font-mono outline-none focus:border-[#00E5FF] text-center"
+                    />
+                  </div>
+                  <button type="submit" className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-3 rounded-lg transition-colors uppercase tracking-widest text-sm">
+                    Aperturar Caja
+                  </button>
+                </form>
+              </div>
+            ) : null}
 
             <form onSubmit={handleSubmitPayment} className="flex flex-col gap-3">
               <div>
@@ -176,6 +272,16 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
               </div>
 
               <div>
+                <label className="text-xs text-slate-400 mb-1 block">Condición de Pago</label>
+                <select
+                  value={paymentCondition}
+                  onChange={(e) => setPaymentCondition(e.target.value as any)}
+                  className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-[#00E5FF] outline-none mb-3"
+                >
+                  <option value="contado">Contado (Caja del Día)</option>
+                  <option value="cuenta_corriente">Cuenta Corriente (Crédito/Deuda)</option>
+                </select>
+
                 <label className="text-xs text-slate-400 mb-1 block">Método de Pago</label>
                 <select
                   value={paymentMethod}
@@ -240,19 +346,32 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
                     <tr key={tx.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                       <td className="p-3 font-mono text-slate-400">{new Date(tx.date).toLocaleDateString()}</td>
                       <td className="p-3 font-medium text-white">{tx.customerName}</td>
-                      <td className="p-3 text-xs">
+                      <td className="p-3 text-xs flex flex-col gap-1 items-start">
                         <span className="bg-slate-800 text-slate-300 px-2 py-1 rounded uppercase tracking-wider">{tx.paymentMethod.replace('_',' ')}</span>
+                        {tx.paymentCondition && (
+                          <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider ${
+                            tx.paymentCondition === 'contado' ? 'bg-[#00E5FF]/20 text-[#00E5FF]' : 'bg-purple-500/20 text-purple-400'
+                          }`}>
+                            {tx.paymentCondition.replace('_', ' ')}
+                          </span>
+                        )}
                       </td>
                       <td className="p-3 text-right font-mono font-bold text-emerald-400">
                         +<CurrencyDisplay amount={tx.amount} size="sm" />
                       </td>
                       <td className="p-3 text-center">
-                        <button 
-                          onClick={() => setSelectedReceiptTx(tx)}
-                          className="bg-slate-800 hover:bg-[#00E5FF] text-slate-300 hover:text-black px-3 py-1.5 rounded text-xs font-bold transition-colors inline-flex items-center gap-1"
-                        >
-                          <FileText className="w-3.5 h-3.5" /> RECIBO
-                        </button>
+                        {tx.paymentCondition === 'cuenta_corriente' ? (
+                          <span className="bg-amber-500/20 text-amber-400 px-3 py-1.5 rounded text-[10px] font-bold tracking-wider inline-flex items-center justify-center">
+                            PENDIENTE
+                          </span>
+                        ) : (
+                          <button 
+                            onClick={() => setSelectedReceiptTx(tx)}
+                            className="bg-slate-800 hover:bg-[#00E5FF] text-slate-300 hover:text-black px-3 py-1.5 rounded text-xs font-bold transition-colors inline-flex items-center gap-1"
+                          >
+                            <FileText className="w-3.5 h-3.5" /> RECIBO
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -265,6 +384,17 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
 
       {activeTab === 'accounts' && (
         <div className="animate-fade-in flex flex-col gap-4">
+          <div className="flex items-center gap-4 bg-slate-900 border border-white/10 rounded-xl px-4 py-2 w-full max-w-md">
+            <Search className="w-5 h-5 text-slate-400" />
+            <input 
+              type="text" 
+              placeholder="Buscar por Nombre o Documento..." 
+              value={accountSearchTerm}
+              onChange={(e) => setAccountSearchTerm(e.target.value)}
+              className="bg-transparent border-none outline-none text-white w-full text-sm placeholder:text-slate-500"
+            />
+          </div>
+
           <div className="bg-slate-900 border border-white/10 rounded-xl overflow-hidden">
             <table className="w-full text-left text-sm text-slate-300">
               <thead className="bg-black/80 font-display text-sm tracking-wider uppercase text-slate-400 border-b border-white/10">
@@ -277,7 +407,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {customerAccounts.map((acc) => (
+                {filteredCustomerAccounts.map((acc) => (
                   <React.Fragment key={acc.customer.id}>
                     <tr className="hover:bg-white/5 transition-colors cursor-pointer" onClick={() => setExpandedCustomer(expandedCustomer === acc.customer.id ? null : acc.customer.id)}>
                       <td className="p-4">
@@ -320,7 +450,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
                             {/* Abonos (Pagos) */}
                             <div>
                               <h4 className="text-emerald-400 text-xs font-bold tracking-widest uppercase mb-3 border-b border-white/10 pb-2">Abonos / Recibos (Pagos)</h4>
-                              <div className="flex flex-col gap-2">
+                              <div className="flex flex-col gap-2 mb-6">
                                 {acc.customerTxs.length === 0 && <span className="text-xs text-slate-500">Sin pagos registrados</span>}
                                 {acc.customerTxs.map(t => (
                                   <div key={t.id} className="flex justify-between items-center text-xs">
@@ -332,7 +462,8 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
                                       <span className="text-emerald-400 font-mono font-bold">-${t.amount.toFixed(2)}</span>
                                       <button 
                                         onClick={() => setSelectedReceiptTx(t)}
-                                        className="text-[#00E5FF] hover:underline text-[10px]"
+                                        className="view-latest-receipt text-[#00E5FF] hover:underline text-[10px]"
+                                        data-customer={acc.customer.id}
                                       >
                                         Ver Recibo
                                       </button>
@@ -340,6 +471,71 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
                                   </div>
                                 ))}
                               </div>
+
+                              {/* Formulario de Pago */}
+                              {acc.totalDebt > 0 && (
+                                <div className="bg-slate-900/50 p-4 rounded-xl border border-white/10 relative overflow-hidden">
+                                  {!registerState.isOpen && (
+                                    <div className="absolute inset-0 bg-slate-900/90 backdrop-blur-sm z-10 flex items-center justify-center p-4 text-center">
+                                      <p className="text-xs text-amber-400 font-bold tracking-widest uppercase">ABRE LA CAJA PARA PROCESAR ABONOS</p>
+                                    </div>
+                                  )}
+                                  <h4 className="text-white text-xs font-bold mb-3 flex items-center gap-2">
+                                    <Plus className="w-4 h-4 text-[#00E5FF]" /> NUEVO ABONO A CUENTA
+                                  </h4>
+                                  <form 
+                                    className="flex flex-col gap-3"
+                                    onSubmit={(e) => {
+                                      e.preventDefault();
+                                      const formData = new FormData(e.currentTarget);
+                                      const amount = Number(formData.get('amount'));
+                                      const method = formData.get('method');
+                                      const ref = formData.get('ref') as string;
+                                      const notes = formData.get('notes') as string;
+                                      
+                                      if (amount > 0 && amount <= acc.totalDebt) {
+                                        onAccountPayment(acc.customer.id, amount, method, ref, notes);
+                                        e.currentTarget.reset();
+                                        // Wait a tiny bit then select the latest transaction to show receipt
+                                        setTimeout(() => {
+                                          const latestTxBtn = document.querySelector(`[data-customer="${acc.customer.id}"] .view-latest-receipt`) as HTMLButtonElement;
+                                          if (latestTxBtn) latestTxBtn.click();
+                                        }, 100);
+                                      }
+                                    }}
+                                  >
+                                    <div className="grid grid-cols-2 gap-3">
+                                      <div>
+                                        <label className="text-[10px] text-slate-400 block mb-1">Monto ($)</label>
+                                        <input name="amount" type="number" max={acc.totalDebt} step="0.01" required className="w-full bg-black border border-white/10 rounded px-2 py-1.5 text-xs text-white outline-none focus:border-[#00E5FF]" />
+                                      </div>
+                                      <div>
+                                        <label className="text-[10px] text-slate-400 block mb-1">Método</label>
+                                        <select name="method" className="w-full bg-black border border-white/10 rounded px-2 py-1.5 text-xs text-white outline-none focus:border-[#00E5FF]">
+                                          <option value="zelle">Zelle</option>
+                                          <option value="pago_movil">Pago Móvil</option>
+                                          <option value="efectivo">Efectivo</option>
+                                          <option value="transferencia">Transferencia</option>
+                                          <option value="tarjeta">Punto de Venta</option>
+                                        </select>
+                                      </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-3">
+                                      <div>
+                                        <label className="text-[10px] text-slate-400 block mb-1">Referencia</label>
+                                        <input name="ref" type="text" className="w-full bg-black border border-white/10 rounded px-2 py-1.5 text-xs text-white outline-none focus:border-[#00E5FF]" />
+                                      </div>
+                                      <div>
+                                        <label className="text-[10px] text-slate-400 block mb-1">Concepto</label>
+                                        <input name="notes" type="text" defaultValue="Abono a deuda" className="w-full bg-black border border-white/10 rounded px-2 py-1.5 text-xs text-white outline-none focus:border-[#00E5FF]" />
+                                      </div>
+                                    </div>
+                                    <button type="submit" className="w-full bg-[#00E5FF] text-black font-bold text-xs py-2 rounded mt-1 hover:bg-[#00E5FF]/80 transition-colors">
+                                      PROCESAR ABONO
+                                    </button>
+                                  </form>
+                                </div>
+                              )}
                             </div>
                             
                           </div>
@@ -353,6 +549,50 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
           </div>
         </div>
       )}
+
+      {/* Close Register Modal */}
+      {showCloseModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 max-w-sm w-full flex flex-col gap-6 animate-scale-up shadow-2xl shadow-[#00E5FF]/10">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/30">
+                <DollarSign className="w-8 h-8 text-red-500" />
+              </div>
+              <h3 className="font-display text-2xl text-white mb-2">CERRAR CAJA</h3>
+              <p className="text-xs text-slate-400">
+                Al cerrar la caja ya no podrás recibir más pagos hasta volver a aperturarla.
+              </p>
+            </div>
+
+            <div className="bg-black/50 rounded-lg p-4 flex flex-col gap-2 font-mono text-sm">
+              <div className="flex justify-between border-b border-white/10 pb-2 mb-2">
+                <span className="text-slate-400">Fondo Inicial:</span>
+                <span className="text-white">${registerState.initialAmount.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between items-center text-lg">
+                <span className="text-slate-400 font-sans text-xs uppercase tracking-widest">Total en Caja:</span>
+                <span className="text-emerald-400 font-bold">${totalCollected.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setShowCloseModal(false)}
+                className="flex-1 bg-transparent border border-white/20 text-white py-3 rounded-xl font-bold text-sm hover:bg-white/5 transition-colors"
+              >
+                CANCELAR
+              </button>
+              <button 
+                onClick={handleCloseRegister}
+                className="flex-1 bg-red-500 text-white py-3 rounded-xl font-bold text-sm hover:bg-red-400 transition-colors uppercase tracking-wider"
+              >
+                CERRAR CAJA
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

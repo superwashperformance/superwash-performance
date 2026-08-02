@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { UserRole, ServiceOrder, InventoryItem, CashTransaction, ODSStatus, Agent } from './types';
+import { UserRole, ServiceOrder, InventoryItem, InventoryMovement, CashTransaction, ODSStatus, Agent, CompanyData, ServiceItem, Customer, Vehicle } from './types';
 import {
   mockInventory,
+  mockInventoryMovements,
   mockTransactions,
   mockCustomers,
   mockVehicles,
   initialTechnicians,
   initialReceptionAgents,
+  mockServicesCatalog,
 } from './data/mockData';
 import { odsService } from './services/odsService';
 import { inventoryService } from './services/inventoryService';
@@ -36,13 +38,71 @@ export function App() {
   // Application State
   const [orders, setOrders] = useState<ServiceOrder[]>([]);
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const [inventoryMovements, setInventoryMovements] = useState<InventoryMovement[]>(mockInventoryMovements);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
-  const [transactions, setTransactions] = useState<CashTransaction[]>(mockTransactions);
+
+  // Dynamic Customers & Vehicles Directory (persisted in localStorage)
+  const [customers, setCustomers] = useState<Customer[]>(() => {
+    const saved = localStorage.getItem('sw_customers');
+    return saved ? JSON.parse(saved) : mockCustomers;
+  });
+  const [vehicles, setVehicles] = useState<Vehicle[]>(() => {
+    const saved = localStorage.getItem('sw_vehicles');
+    return saved ? JSON.parse(saved) : mockVehicles;
+  });
+
+  const [transactions, setTransactions] = useState<CashTransaction[]>(() => {
+    const saved = localStorage.getItem('sw_transactions');
+    const EXCLUDED_CLIENTS = ['Gustavo Cisneros', 'Sofía Fernández', 'Sofia Fernandez', 'Sofía Fernandez', 'Sofia Fernández'];
+    const all: CashTransaction[] = saved ? JSON.parse(saved) : [];
+    const filtered = all.filter(t => !EXCLUDED_CLIENTS.includes(t.customerName));
+    // Persist cleaned list back so they don't reappear on next load
+    localStorage.setItem('sw_transactions', JSON.stringify(filtered));
+    return filtered;
+  });
   const [technicians, setTechnicians] = useState<Agent[]>(initialTechnicians);
   const [receptionAgents, setReceptionAgents] = useState<Agent[]>(initialReceptionAgents);
 
+  const [companyData, setCompanyData] = useState<CompanyData>({
+    name: 'Super Wash Performance C.A.',
+    documentId: 'J-40199281-0',
+    address: 'Sede Principal Las Mercedes',
+    phone: '+58 412-1234567',
+    email: 'contacto@superwash.com'
+  });
+  const [servicesCatalog, setServicesCatalog] = useState<ServiceItem[]>(mockServicesCatalog);
+
+  // Cash Register State
+  const [registerState, setRegisterState] = useState<{
+    isOpen: boolean;
+    openedAt: string | null;
+    initialAmount: number;
+  }>(() => {
+    const saved = localStorage.getItem('sw_register_state');
+    if (saved) return JSON.parse(saved);
+    return { isOpen: false, openedAt: null, initialAmount: 0 };
+  });
+
   // Selected Order for Detail Modal
   const [selectedOrder, setSelectedOrder] = useState<ServiceOrder | null>(null);
+
+  // Persist transactions to localStorage
+  React.useEffect(() => {
+    localStorage.setItem('sw_transactions', JSON.stringify(transactions));
+  }, [transactions]);
+
+  // Persist customers & vehicles to localStorage
+  React.useEffect(() => {
+    localStorage.setItem('sw_customers', JSON.stringify(customers));
+  }, [customers]);
+  React.useEffect(() => {
+    localStorage.setItem('sw_vehicles', JSON.stringify(vehicles));
+  }, [vehicles]);
+
+  // Persist register state
+  React.useEffect(() => {
+    localStorage.setItem('sw_register_state', JSON.stringify(registerState));
+  }, [registerState]);
 
   // Fetch initial data from Supabase
   React.useEffect(() => {
@@ -51,7 +111,21 @@ export function App() {
         setIsLoadingOrders(true);
         // 1. Fetch ODS
         const odsData = await odsService.getActiveODS();
-        setOrders(odsData);
+        setOrders(prevOrders => {
+          return odsData.map(fetched => {
+            const existing = prevOrders.find(o => o.id === fetched.id);
+            if (existing) {
+              return {
+                ...fetched,
+                checklist: existing.checklist?.length ? existing.checklist : fetched.checklist,
+                photos: existing.photos?.length ? existing.photos : fetched.photos,
+                services: existing.services?.length ? existing.services : fetched.services,
+                damageMarkers: existing.damageMarkers?.length ? existing.damageMarkers : fetched.damageMarkers,
+              };
+            }
+            return fetched;
+          });
+        });
 
         // 2. Fetch & Seed Inventory
         await inventoryService.seedMockDataIfNeeded(mockInventory);
@@ -73,9 +147,23 @@ export function App() {
         { event: '*', schema: 'public', table: 'service_orders' },
         (payload) => {
           console.log('Realtime ODS change received!', payload);
-          // Simple approach: re-fetch all active ODS to ensure relationships (customers, vehicles) are included.
-          odsService.getActiveODS().then((newData) => {
-            setOrders(newData);
+          // Re-fetch all but preserve local nested relations
+          odsService.getActiveODS().then(odsData => {
+            setOrders(prevOrders => {
+              return odsData.map(fetched => {
+                const existing = prevOrders.find(o => o.id === fetched.id);
+                if (existing) {
+                  return {
+                    ...fetched,
+                    checklist: existing.checklist?.length ? existing.checklist : fetched.checklist,
+                    photos: existing.photos?.length ? existing.photos : fetched.photos,
+                    services: existing.services?.length ? existing.services : fetched.services,
+                    damageMarkers: existing.damageMarkers?.length ? existing.damageMarkers : fetched.damageMarkers,
+                  };
+                }
+                return fetched;
+              });
+            });
           });
         }
       )
@@ -104,9 +192,46 @@ export function App() {
 
   const handleCreateODS = async (newODS: ServiceOrder) => {
     try {
-      // Optimistic update for better UX (optional) or wait for server
       const createdODS = await odsService.createODS(newODS);
       setOrders([createdODS, ...orders]);
+
+      // Auto-register customer in directory if not already present
+      setCustomers(prev => {
+        const exists = prev.some(
+          c => c.fullName.toLowerCase() === createdODS.customerName.toLowerCase()
+        );
+        if (exists) return prev;
+        const newCustomer: Customer = {
+          id: createdODS.customerId,
+          fullName: createdODS.customerName,
+          documentId: createdODS.customerDocumentId || 'N/A',
+          phone: createdODS.customerPhone || '',
+          email: createdODS.customerEmail || '',
+          address: '',
+          createdAt: new Date().toISOString().split('T')[0],
+        };
+        return [newCustomer, ...prev];
+      });
+
+      // Auto-register vehicle in directory if not already present
+      setVehicles(prev => {
+        const exists = prev.some(
+          v => v.plate.toLowerCase() === createdODS.vehiclePlate.toLowerCase()
+        );
+        if (exists) return prev;
+        const [brand, ...modelParts] = createdODS.vehicleBrandModel.split(' ');
+        const newVehicle: Vehicle = {
+          id: createdODS.vehicleId,
+          customerId: createdODS.customerId,
+          plate: createdODS.vehiclePlate,
+          brand: brand || '',
+          model: modelParts.join(' ') || '',
+          year: createdODS.vehicleYear || new Date().getFullYear(),
+          color: createdODS.vehicleColor || '',
+        };
+        return [newVehicle, ...prev];
+      });
+
       setActiveTab('ods');
     } catch (error) {
       console.error('Error al guardar la ODS:', error);
@@ -188,15 +313,27 @@ export function App() {
     amount: number,
     method: any,
     ref: string,
-    notes: string
+    notes: string,
+    condition: 'contado' | 'cuenta_corriente'
   ) => {
     const targetOrder = orders.find((o) => o.id === orderId);
     if (!targetOrder) return;
 
-    const newPaidAmount = targetOrder.paidAmount + amount;
+    const newPaidAmount = condition === 'contado' 
+      ? targetOrder.paidAmount + amount 
+      : targetOrder.paidAmount; // If it's a debt transfer, the ODS remains unpaid
+    
+    // Optimistic Update local state
     setOrders(
       orders.map((o) => (o.id === orderId ? { ...o, paidAmount: newPaidAmount } : o))
     );
+
+    // Save to DB in background (only if the paid amount changed)
+    if (newPaidAmount !== targetOrder.paidAmount) {
+      odsService.updateODSPaidAmount(orderId, newPaidAmount).catch(err => {
+        console.error('Error saving payment to DB:', err);
+      });
+    }
 
     const newTx: CashTransaction = {
       id: `tx-${Date.now()}`,
@@ -206,6 +343,7 @@ export function App() {
       amount: amount,
       type: 'payment',
       paymentMethod: method,
+      paymentCondition: condition,
       referenceNumber: ref,
       date: new Date().toLocaleString('es-ES'),
       notes: notes || 'Abono / Pago recibido',
@@ -213,6 +351,72 @@ export function App() {
     };
 
     setTransactions([newTx, ...transactions]);
+  };
+
+  const handleAccountPayment = (
+    customerId: string,
+    amount: number,
+    method: any,
+    ref: string,
+    notes: string
+  ) => {
+    // Find customer name from orders or transactions
+    const orderRef = orders.find(o => o.customerId === customerId || o.customerName === customerId);
+    const txRef = transactions.find(t => t.customerName === customerId);
+    const customerName = orderRef?.customerName || txRef?.customerName || customerId;
+
+    let remainingAmount = amount;
+    const unpaidOrders = orders
+      .filter(o => (o.customerId === customerId || o.customerName === customerName) && o.totalAmount > o.paidAmount)
+      .sort((a, b) => new Date(a.entryDate).getTime() - new Date(b.entryDate).getTime());
+
+    const updatedOrders = [...orders];
+
+    for (const order of unpaidOrders) {
+      if (remainingAmount <= 0) break;
+      const orderDebt = order.totalAmount - order.paidAmount;
+      const amountToApply = Math.min(orderDebt, remainingAmount);
+      
+      const newPaidAmount = order.paidAmount + amountToApply;
+      remainingAmount -= amountToApply;
+
+      // Update in local state copy
+      const index = updatedOrders.findIndex(o => o.id === order.id);
+      if (index !== -1) {
+        updatedOrders[index] = { ...updatedOrders[index], paidAmount: newPaidAmount };
+      }
+
+      // Save to DB
+      odsService.updateODSPaidAmount(order.id, newPaidAmount).catch(err => {
+        console.error('Error saving account payment to DB:', err);
+      });
+    }
+
+    setOrders(updatedOrders);
+
+    const newTx: CashTransaction = {
+      id: `tx-${Date.now()}`,
+      customerName: customerName,
+      amount: amount,
+      type: 'payment',
+      paymentMethod: method,
+      paymentCondition: 'abono_cuenta' as any,
+      referenceNumber: ref,
+      date: new Date().toLocaleString('es-ES'),
+      notes: notes || 'Abono a Cuenta Corriente',
+      receivedBy: currentRole,
+    };
+
+    setTransactions([newTx, ...transactions]);
+  };
+
+  const handleAddPhotoToOrder = (orderId: string, photo: any) => {
+    setOrders(
+      orders.map((o) => (o.id === orderId ? { ...o, photos: [...o.photos, photo] } : o))
+    );
+    if (selectedOrder?.id === orderId) {
+      setSelectedOrder({ ...selectedOrder, photos: [...selectedOrder.photos, photo] });
+    }
   };
 
   if (appMode === 'splash') {
@@ -260,6 +464,7 @@ export function App() {
           {activeTab === 'dashboard' && (
             <DashboardView
               orders={orders}
+              transactions={transactions}
               onNewODS={() => setActiveTab('ods_new' as any)}
               onSelectOrder={setSelectedOrder}
               onNavigateTab={setActiveTab}
@@ -282,6 +487,7 @@ export function App() {
               onCancel={() => setActiveTab('ods')}
               technicians={technicians}
               receptionAgents={receptionAgents}
+              servicesCatalog={servicesCatalog}
             />
           )}
 
@@ -295,27 +501,31 @@ export function App() {
           )}
 
           {activeTab === 'inventory' && (
-            <InventoryView 
-              inventory={inventory} 
-              onUpdateStock={handleUpdateStock} 
+            <InventoryView
+              inventory={inventory}
+              inventoryMovements={inventoryMovements}
+              onUpdateStock={handleUpdateStock}
               onDeleteProduct={handleDeleteProduct} 
             />
           )}
 
           {activeTab === 'cashier' && (
-            <CashierView
-              orders={orders}
-              transactions={transactions}
-              customers={mockCustomers}
-              onAddPayment={handleAddPayment}
+            <CashierView 
+              orders={orders} 
+              transactions={transactions} 
+              customers={customers}
+              onAddPayment={handleAddPayment} 
+              onAccountPayment={handleAccountPayment}
+              registerState={registerState}
+              setRegisterState={setRegisterState}
             />
           )}
 
           {activeTab === 'customers' && (
-            <CustomersView customers={mockCustomers} vehicles={mockVehicles} />
+            <CustomersView customers={customers} vehicles={vehicles} />
           )}
 
-          {activeTab === 'vehicles' && <VehiclesView vehicles={mockVehicles} />}
+          {activeTab === 'vehicles' && <VehiclesView vehicles={vehicles} />}
 
           {activeTab === 'settings' && (
             <SettingsView 
@@ -323,13 +533,23 @@ export function App() {
               setTechnicians={setTechnicians}
               receptionAgents={receptionAgents}
               setReceptionAgents={setReceptionAgents}
+              companyData={companyData}
+              setCompanyData={setCompanyData}
+              servicesCatalog={servicesCatalog}
+              setServicesCatalog={setServicesCatalog}
+              inventory={inventory}
             />
           )}
         </main>
       </div>
 
       {/* ODS Detail Modal */}
-      <ODSDetailModal order={selectedOrder} onClose={() => setSelectedOrder(null)} />
+        <ODSDetailModal
+          order={selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+          companyData={companyData}
+          onAddPhoto={handleAddPhotoToOrder}
+        />
 
       {/* Command Palette Search Modal */}
       {isSearchOpen && (

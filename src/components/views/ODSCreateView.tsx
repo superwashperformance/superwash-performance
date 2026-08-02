@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
-import { ServiceOrder, ChecklistItem, DamageMarker, PresupuestoServiceItem, Agent } from '../../types';
-import { VehicleDiagram360 } from '../common/VehicleDiagram360';
+import React, { useState, useRef } from 'react';
+import { ServiceOrder, ChecklistItem, DamageMarker, PresupuestoServiceItem, Agent, ServiceItem } from '../../types';
 import { SignatureCanvas } from '../common/SignatureCanvas';
-import { mockServicesCatalog } from '../../data/mockData';
 import {
   ClipboardCheck,
   User,
@@ -25,9 +23,10 @@ interface ODSCreateViewProps {
   onCancel: () => void;
   technicians: Agent[];
   receptionAgents: Agent[];
+  servicesCatalog: ServiceItem[];
 }
 
-export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCancel, technicians, receptionAgents }) => {
+export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCancel, technicians, receptionAgents, servicesCatalog }) => {
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
 
   // Step 1: Customer & Vehicle Data
@@ -92,6 +91,47 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
     },
   ]);
 
+  const [uploadCategory, setUploadCategory] = useState<'general' | 'damage_front' | 'damage_rear' | 'damage_left' | 'damage_right'>('general');
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const newPhoto = {
+        url: reader.result as string,
+        caption: file.name,
+        category: uploadCategory,
+      };
+      
+      const placeholderUrl = 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?q=80&w=800&auto=format&fit=crop';
+      
+      setPhotos(prevPhotos => {
+        if (uploadCategory === 'general' && prevPhotos.some(p => p.url === placeholderUrl)) {
+          return [newPhoto, ...prevPhotos.filter(p => p.url !== placeholderUrl)];
+        }
+        return [...prevPhotos, newPhoto];
+      });
+
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemovePhoto = (indexToRemove: number) => {
+    setPhotos(photos.filter((_, idx) => idx !== indexToRemove));
+  };
+
+  const triggerUpload = (category: typeof uploadCategory) => {
+    setUploadCategory(category);
+    setTimeout(() => {
+      fileInputRef.current?.click();
+    }, 50);
+  };
+
   const handleAddBelonging = () => {
     if (!belongingsInput.trim()) return;
     setBelongingsList([...belongingsList, belongingsInput.trim()]);
@@ -103,7 +143,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
   };
 
   const handleAddService = (serviceId: string) => {
-    const catalogItem = mockServicesCatalog.find((s) => s.id === serviceId);
+    const catalogItem = servicesCatalog.find((s) => s.id === serviceId);
     if (!catalogItem) return;
 
     const existing = selectedServices.find((s) => s.serviceId === serviceId);
@@ -134,6 +174,20 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
     setSelectedServices(selectedServices.filter((s) => s.serviceId !== serviceId));
   };
 
+  const handleUpdateService = (serviceId: string, updates: Partial<PresupuestoServiceItem>) => {
+    setSelectedServices(
+      selectedServices.map((s) =>
+        s.serviceId === serviceId
+          ? {
+              ...s,
+              ...updates,
+              totalPrice: (updates.unitPrice ?? s.unitPrice) * (updates.quantity ?? s.quantity),
+            }
+          : s
+      )
+    );
+  };
+
   const subtotal = selectedServices.reduce((sum, s) => sum + s.totalPrice, 0);
 
   const handleCompleteODS = () => {
@@ -144,6 +198,8 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
       customerId: `cust-${Date.now()}`,
       customerName: customerName || 'Cliente General',
       customerPhone: phone || '+58 414-0000000',
+      customerDocumentId: documentId || 'N/A',
+      customerEmail: email || '',
       vehicleId: `veh-${Date.now()}`,
       vehiclePlate: plate.toUpperCase() || 'ABC123X',
       vehicleBrandModel: `${brand} ${model}` || 'Vehículo Deportivo',
@@ -191,7 +247,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
       <div className="nike-card p-4 flex items-center justify-between overflow-x-auto gap-2">
         {[
           { num: 1, label: '1. Cliente y Vehículo', icon: User },
-          { num: 2, label: '2. Inspección 360°', icon: Car },
+          { num: 2, label: '2. Fotos Daños', icon: Camera },
           { num: 3, label: '3. Checklist (20 Puntos)', icon: ClipboardCheck },
           { num: 4, label: '4. Servicios & Presupuesto', icon: DollarSign },
           { num: 5, label: '5. Fotos & Firma Digital', icon: Camera },
@@ -433,24 +489,70 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
               Cancelar
             </button>
             <button onClick={() => setStep(2)} className="btn-nike-primary text-sm">
-              Siguiente: Inspección 360° <ArrowRight className="w-4 h-4" />
+              Siguiente: Fotos Daños <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
       )}
 
-      {/* STEP 2: 360° INSPECTION CANVAS */}
+      {/* STEP 2: DAMAGES PHOTOS */}
       {step === 2 && (
-        <div className="flex flex-col gap-4 animate-in fade-in">
-          <VehicleDiagram360
-            markers={damageMarkers}
-            onAddMarker={(newMarker) =>
-              setDamageMarkers([...damageMarkers, { ...newMarker, id: `dm-${Date.now()}` }])
-            }
-            onRemoveMarker={(id) => setDamageMarkers(damageMarkers.filter((m) => m.id !== id))}
-          />
+        <div className="nike-card p-6 flex flex-col gap-6 animate-in fade-in">
+          <div>
+            <h2 className="font-display text-3xl text-white">PASO 2: FOTOS DE DAÑOS Y ESTADO</h2>
+            <p className="text-xs text-slate-400">Adjunta hasta 2 fotografías por cada lado para registrar daños previos.</p>
+          </div>
+          
+          <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleFileUpload} />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              { title: 'Frontal', cat: 'damage_front' },
+              { title: 'Trasera', cat: 'damage_rear' },
+              { title: 'Lateral Izquierdo', cat: 'damage_left' },
+              { title: 'Lateral Derecho', cat: 'damage_right' },
+            ].map(view => {
+              const viewPhotos = photos.filter(p => p.category === view.cat);
+              return (
+                <div key={view.cat} className="p-4 rounded-xl bg-black/40 border border-white/10 flex flex-col h-full">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-display text-sm text-[#00E5FF] uppercase tracking-wider">{view.title}</h4>
+                    {viewPhotos.length < 2 && (
+                      <button 
+                        onClick={() => triggerUpload(view.cat as any)}
+                        className="btn-nike-secondary text-[10px] py-1 px-2 flex items-center gap-1"
+                      >
+                        <Camera className="w-3 h-3" /> Añadir Foto
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex-1 flex flex-col justify-center">
+                    {viewPhotos.length > 0 ? (
+                      <div className="grid grid-cols-2 gap-2">
+                        {viewPhotos.map((p, idx) => (
+                          <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-white/10 group">
+                            <img src={p.url} alt={view.title} className="w-full h-full object-cover" />
+                            <button
+                              onClick={() => setPhotos(photos.filter(img => img.url !== p.url))}
+                              className="absolute top-1 right-1 bg-red-500/80 text-white p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="aspect-[2/1] w-full border border-dashed border-white/10 rounded-lg flex items-center justify-center text-slate-500 text-xs">
+                        Sin fotos registradas
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
 
-          <div className="nike-card p-4 flex justify-between items-center">
+          <div className="flex justify-between items-center pt-4 border-t border-white/10">
             <button onClick={() => setStep(1)} className="btn-nike-secondary text-sm">
               <ArrowLeft className="w-4 h-4" /> Anterior
             </button>
@@ -539,8 +641,8 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
             <button onClick={() => setStep(2)} className="btn-nike-secondary text-sm">
               <ArrowLeft className="w-4 h-4" /> Anterior
             </button>
-            <button onClick={() => setStep(4)} className="btn-nike-primary text-sm">
-              Siguiente: Presupuesto & Servicios <ArrowRight className="w-4 h-4" />
+            <button onClick={() => setStep(4)} className="btn-nike-primary text-sm bg-[#00E5FF] hover:bg-cyan-400 text-black font-bold">
+              Guardar Checklist y Continuar <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -556,7 +658,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
 
           {/* Catalog Services Selection */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {mockServicesCatalog.map((service) => (
+            {servicesCatalog.map((service) => (
               <div
                 key={service.id}
                 className="p-3.5 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between gap-3 hover:border-cyan-500/40 transition-all"
@@ -582,11 +684,24 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
               <span className="font-display text-xl text-white">RESUMEN DEL PRESUPUESTO</span>
               <div className="divide-y divide-white/5">
                 {selectedServices.map((s) => (
-                  <div key={s.serviceId} className="py-2 flex items-center justify-between text-xs">
-                    <span className="text-white font-medium">{s.serviceName}</span>
-                    <div className="flex items-center gap-4">
-                      <span className="font-mono text-slate-400 font-bold">${s.unitPrice}</span>
-                      <button onClick={() => handleRemoveService(s.serviceId)} className="text-red-400 hover:text-red-300">
+                  <div key={s.serviceId} className="py-2 flex items-center justify-between text-xs gap-4">
+                    <input
+                      type="text"
+                      value={s.serviceName}
+                      onChange={(e) => handleUpdateService(s.serviceId, { serviceName: e.target.value })}
+                      className="flex-1 bg-black/30 border border-white/5 rounded px-2 py-1 text-white focus:border-[#00E5FF] outline-none"
+                    />
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-500 font-mono">$</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={s.unitPrice}
+                        onChange={(e) => handleUpdateService(s.serviceId, { unitPrice: Number(e.target.value) })}
+                        className="w-20 bg-black/30 border border-white/5 rounded px-2 py-1 text-white font-mono focus:border-[#00E5FF] outline-none text-right"
+                      />
+                      <button onClick={() => handleRemoveService(s.serviceId)} className="text-red-400 hover:text-red-300 ml-2">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
@@ -622,17 +737,35 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Photos */}
             <div className="flex flex-col gap-3">
-              <span className="font-display text-lg text-[#00E5FF]">EVIDENCIAS FOTOGRÁFICAS</span>
+              <div className="flex items-center justify-between">
+                <span className="font-display text-lg text-[#00E5FF]">EVIDENCIAS FOTOGRÁFICAS</span>
+                <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleFileUpload} />
+                <button 
+                  onClick={() => triggerUpload('general')}
+                  className="btn-nike-primary text-xs py-1.5 px-3 flex items-center gap-2"
+                >
+                  <Camera className="w-3.5 h-3.5" /> Agregar Foto
+                </button>
+              </div>
               <div className="grid grid-cols-1 gap-3">
-                {photos.map((p, idx) => (
-                  <div key={idx} className="relative rounded-xl overflow-hidden border border-white/10 aspect-video group">
-                    <img src={p.url} alt={p.caption} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-3 flex flex-col justify-end">
-                      <span className="font-mono text-[10px] text-[#00E5FF] uppercase">{p.category}</span>
-                      <span className="text-xs font-bold text-white">{p.caption}</span>
+                {photos.map((p, idx) => {
+                  if (p.category !== 'general') return null;
+                  return (
+                    <div key={idx} className="relative rounded-xl overflow-hidden border border-white/10 aspect-video group">
+                      <img src={p.url} alt={p.caption} className="w-full h-full object-cover" />
+                      <button 
+                        onClick={() => handleRemovePhoto(idx)}
+                        className="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-red-500/80 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-3 flex flex-col justify-end pointer-events-none">
+                        <span className="font-mono text-[10px] text-[#00E5FF] uppercase">{p.category}</span>
+                        <span className="text-xs font-bold text-white">{p.caption}</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 

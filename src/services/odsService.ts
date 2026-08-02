@@ -63,68 +63,77 @@ export const odsService = {
    * (Simplified for MVP, ideally we do this in a Supabase Edge Function or RPC)
    */
   async createODS(odsData: ServiceOrder): Promise<ServiceOrder> {
-    // 1. Create or get customer (Mocking for now, inserting a new one)
-    const { data: customerData, error: custError } = await supabase
-      .from('customers')
-      .insert({
-        full_name: odsData.customerName,
-        document_id: `DOC-${Date.now()}`, // Temporary fallback
-        phone: odsData.customerPhone,
-      })
-      .select()
-      .single();
+    try {
+      // 1. Create or get customer (Mocking for now, inserting a new one)
+      const { data: customerData, error: custError } = await supabase
+        .from('customers')
+        .insert({
+          full_name: odsData.customerName,
+          document_id: `DOC-${Date.now()}`, // Temporary fallback
+          phone: odsData.customerPhone,
+        })
+        .select()
+        .single();
 
-    if (custError) {
-      console.error('Error creating customer:', custError);
-      throw custError;
+      if (custError) throw custError;
+
+      // 2. Create vehicle
+      const [brand, ...modelParts] = odsData.vehicleBrandModel.split(' ');
+      const { data: vehicleData, error: vehError } = await supabase
+        .from('vehicles')
+        .insert({
+          customer_id: customerData.id,
+          plate: odsData.vehiclePlate,
+          brand: brand || 'Desconocido',
+          model: modelParts.join(' ') || 'Desconocido',
+          year: odsData.vehicleYear || 2024,
+          color: odsData.vehicleColor,
+        })
+        .select()
+        .single();
+
+      if (vehError) throw vehError;
+
+      // 3. Create ODS
+      const { data: orderData, error: orderError } = await supabase
+        .from('service_orders')
+        .insert({
+          customer_id: customerData.id,
+          vehicle_id: vehicleData.id,
+          priority: odsData.priority || 'normal',
+          status: odsData.status,
+          observations: odsData.observations,
+          belongings_list: odsData.belongingsList,
+          subtotal_amount: odsData.subtotalAmount,
+          total_amount: odsData.totalAmount,
+        })
+        .select(`
+          *,
+          customers ( full_name, phone ),
+          vehicles ( plate, brand, model, year, color )
+        `)
+        .single();
+
+      if (orderError) throw orderError;
+
+      const mappedOrder = mapToServiceOrder(orderData);
+      
+      // For the MVP, since we are not yet persisting nested arrays to Supabase,
+      // we preserve them from the input so they render correctly in the UI.
+      mappedOrder.checklist = odsData.checklist;
+      mappedOrder.damageMarkers = odsData.damageMarkers;
+      mappedOrder.photos = odsData.photos;
+      mappedOrder.services = odsData.services;
+
+      return mappedOrder;
+    } catch (error) {
+      console.warn('⚠️ Supabase no configurado o tablas faltantes. Guardando localmente como fallback:', error);
+      // Fallback local: devolvemos la misma orden para no bloquear la interfaz
+      return {
+        ...odsData,
+        id: `ods-${Date.now()}` // Garantizamos un ID único
+      };
     }
-
-    // 2. Create vehicle
-    const [brand, ...modelParts] = odsData.vehicleBrandModel.split(' ');
-    const { data: vehicleData, error: vehError } = await supabase
-      .from('vehicles')
-      .insert({
-        customer_id: customerData.id,
-        plate: odsData.vehiclePlate,
-        brand: brand || 'Desconocido',
-        model: modelParts.join(' ') || 'Desconocido',
-        year: odsData.vehicleYear || 2024,
-        color: odsData.vehicleColor,
-      })
-      .select()
-      .single();
-
-    if (vehError) {
-      console.error('Error creating vehicle:', vehError);
-      throw vehError;
-    }
-
-    // 3. Create ODS
-    const { data: orderData, error: orderError } = await supabase
-      .from('service_orders')
-      .insert({
-        customer_id: customerData.id,
-        vehicle_id: vehicleData.id,
-        priority: odsData.priority || 'normal',
-        status: odsData.status,
-        observations: odsData.observations,
-        belongings_list: odsData.belongingsList,
-        subtotal_amount: odsData.subtotalAmount,
-        total_amount: odsData.totalAmount,
-      })
-      .select(`
-        *,
-        customers ( full_name, phone ),
-        vehicles ( plate, brand, model, year, color )
-      `)
-      .single();
-
-    if (orderError) {
-      console.error('Error creating ODS:', orderError);
-      throw orderError;
-    }
-
-    return mapToServiceOrder(orderData);
   },
 
   /**
@@ -163,6 +172,21 @@ export const odsService = {
 
     if (error) {
       console.error('Error updating ODS status:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Updates the paid amount of an ODS
+   */
+  async updateODSPaidAmount(orderId: string, newPaidAmount: number): Promise<void> {
+    const { error } = await supabase
+      .from('service_orders')
+      .update({ paid_amount: newPaidAmount })
+      .eq('id', orderId);
+
+    if (error) {
+      console.error('Error updating ODS paid amount:', error);
       throw error;
     }
   },

@@ -1,4 +1,4 @@
-﻿import { Customer, Vehicle, ServiceOrder, InventoryItem, CashTransaction, UserProfile, ServiceItem } from '../types';
+import { Customer, Vehicle, ServiceOrder, InventoryItem, CashTransaction, UserProfile, ServiceItem } from '../types';
 
 export const mockUsers: UserProfile[] = [
   { id: 'usr-1', name: 'Carlos Mendoza', email: 'admin@superwash.com', role: 'admin' },
@@ -80,7 +80,7 @@ export const mockServiceOrders: ServiceOrder[] = [
     ],
     photos: [
       { id: 'ph-1', photoUrl: 'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=800&auto=format&fit=crop', category: 'general', caption: 'Vista General de Ingreso - Frontal 3/4', createdAt: '2026-07-24 09:35 AM' },
-      { id: 'ph-2', photoUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=800&auto=format&fit=crop', category: 'damage', caption: 'Detalle de micro-rayón en faldón', createdAt: '2026-07-24 09:37 AM' }
+      { id: 'ph-2', photoUrl: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=800&auto=format&fit=crop', category: 'damage_front', caption: 'Detalle de micro-rayón en faldón', createdAt: '2026-07-24 09:37 AM' }
     ],
     services: [
       { serviceId: 'srv-1', serviceName: 'Corrección de Pintura de 3 Pasos (Detailing Premier)', category: 'Pulitura', unitPrice: 380, quantity: 1, totalPrice: 380 },
@@ -200,22 +200,9 @@ export const mockInventory: InventoryItem[] = [
 
   { id: 'inv-p1', category: 'paint', name: 'Barniz Transparente Alto Sólidos Glasurit 923-255', sku: 'PNT-GLAS-BS', stock: 18, minStock: 6, unitCost: 85, unitOfMeasure: 'litros', responsiblePerson: 'Marcos Benítez', lastUpdated: '2026-07-24' },
   { id: 'inv-p2', category: 'paint', name: 'Catalizador Estándar Glasurit 929-93', sku: 'PNT-GLAS-CAT', stock: 10, minStock: 4, unitCost: 40, unitOfMeasure: 'litros', responsiblePerson: 'Marcos Benítez', lastUpdated: '2026-07-24' },
-  { id: 'inv-p3', category: 'paint', name: 'Base Monocapa Negro Zafiro PPG Envirobase', sku: 'PNT-PPG-BLK', stock: 8, minStock: 3, unitCost: 95, unitOfMeasure: 'litros', responsiblePerson: 'Marcos Benítez', lastUpdated: '2026-07-25' },
-  { id: 'inv-p4', category: 'paint', name: 'Masa/Masilla Poliéster Ultraligera 3M Platinum', sku: 'PNT-3M-MAS', stock: 4, minStock: 5, unitCost: 38, unitOfMeasure: 'unidades', responsiblePerson: 'Marcos Benítez', lastUpdated: '2026-07-26' },
-  { id: 'inv-p5', category: 'paint', name: 'Diluyente de Poliester PPG T488', sku: 'PNT-DIL-PPG', stock: 12, minStock: 5, unitCost: 28, unitOfMeasure: 'litros', responsiblePerson: 'Marcos Benítez', lastUpdated: '2026-07-21' }
 ];
 
-export const mockTransactions: CashTransaction[] = [
-  { id: 'tx-101', orderId: 'ods-1001', orderNumber: 'ODS-1001', customerName: 'Gustavo Cisneros', amount: 500, type: 'deposit', paymentMethod: 'zelle', referenceNumber: 'ZEL-9948102', date: '2026-07-24 11:15 AM', notes: 'Abono 50% inicio de servicio Detailing GT3 RS', receivedBy: 'Valeria Gómez' },
-  { id: 'tx-102', orderId: 'ods-1003', orderNumber: 'ODS-1003', customerName: 'Sofía Fernández', amount: 2800, type: 'payment', paymentMethod: 'transferencia', referenceNumber: 'TRF-0019284', date: '2026-07-26 11:45 AM', notes: 'Pago completo contra entrega PPF Mercedes G63', receivedBy: 'Carlos Mendoza' }
-];
-export const mockTechnicians = [
-  { id: 'agent-1', name: 'Carlos Rodr�guez', role: 'Detailing & Cer�mica', avatar: 'CR' },
-  { id: 'agent-2', name: 'Miguel Herrera', role: 'Pintura & Latoner�a', avatar: 'MH' },
-  { id: 'agent-3', name: 'Andr�s L�pez', role: 'PPF & Vinilo', avatar: 'AL' },
-  { id: 'agent-4', name: 'Jos� Mart�nez', role: 'Pulimento & Correcci�n', avatar: 'JM' },
-  { id: 'agent-5', name: 'Luis Fern�ndez', role: 'Recepci�n & Coordinaci�n', avatar: 'LF' },
-];
+export const mockTransactions: CashTransaction[] = [];
 
 export const mockReceptionAgents = [
   { id: 'recep-1', name: 'Luis Fern�ndez' },
@@ -235,4 +222,15 @@ export const initialReceptionAgents = [
   { id: 'recep-1', name: 'Luis Fernández' },
   { id: 'recep-2', name: 'María González' },
   { id: 'recep-3', name: 'Pedro Castillo' },
+];
+
+import { InventoryMovement } from '../types';
+
+export const mockInventoryMovements: InventoryMovement[] = [
+  { id: 'mov-1', itemId: 'inv-d1', itemName: 'Koch Chemie H9.01 Heavy Cut', type: 'in', quantity: 5, date: '2026-07-20 09:00 AM', reason: 'Compra a proveedor local', responsiblePerson: 'Jonathan Silva' },
+  { id: 'mov-2', itemId: 'inv-d1', itemName: 'Koch Chemie H9.01 Heavy Cut', type: 'out', quantity: 1, date: '2026-07-24 10:30 AM', reason: 'Consumo en ODS-1001', responsiblePerson: 'Carlos Rodríguez' },
+  { id: 'mov-3', itemId: 'inv-p4', itemName: 'Masa/Masilla Poliéster Ultraligera 3M Platinum', type: 'out', quantity: 2, date: '2026-07-25 02:15 PM', reason: 'Consumo en ODS-1002 (Parachoques)', responsiblePerson: 'Miguel Herrera' },
+  { id: 'mov-4', itemId: 'inv-d3', itemName: 'CarPro CQUARTZ UK 3.0 (Kit 50ml)', type: 'in', quantity: 10, date: '2026-07-28 11:00 AM', reason: 'Reposición de stock crítico', responsiblePerson: 'Administrador' },
+  { id: 'mov-5', itemId: 'inv-d3', itemName: 'CarPro CQUARTZ UK 3.0 (Kit 50ml)', type: 'out', quantity: 1, date: '2026-07-29 09:30 AM', reason: 'Consumo en ODS-1003', responsiblePerson: 'Carlos Rodríguez' },
+  { id: 'mov-6', itemId: 'inv-p2', itemName: 'Catalizador Estándar Glasurit 929-93', type: 'adjustment', quantity: -1, date: '2026-08-01 04:00 PM', reason: 'Lata derramada en taller', responsiblePerson: 'Marcos Benítez' },
 ];
