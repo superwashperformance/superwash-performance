@@ -34,19 +34,22 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 print:bg-white backdrop-blur-xl print:backdrop-blur-none flex items-center justify-center print:block p-4 print:p-0 overflow-y-auto print:overflow-visible print:static">
-      <div className="nike-card w-full max-w-4xl print:max-w-none max-h-[90vh] print:max-h-none flex flex-col print:block overflow-hidden print:overflow-visible animate-in fade-in zoom-in-95 print:animate-none border-cyan-500/30 print:border-none shadow-2xl print:shadow-none">
-        {/* Modal Header (UI ONLY, hidden in print) */}
-        <div className="p-4 md:p-6 border-b border-white/10 flex items-center justify-between bg-black/60 print:hidden">
-            <FaviconLogo size={36} />
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 overflow-y-auto print:static print:inset-auto print:bg-transparent print:p-0 print:block print:overflow-visible">
+      <div className="nike-card w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 border-cyan-500/30 shadow-2xl print:max-h-none print:shadow-none print:border-none print:max-w-full print:block print:overflow-visible">
+        {/* Modal Header */}
+        <div className="p-4 md:p-6 border-b border-white/10 print:border-b-black/20 flex items-center justify-between bg-black/60 print:bg-transparent print:pb-2">
+          <div className="flex items-center gap-3">
+            <div className="print:scale-125 origin-left">
+              <FaviconLogo size={48} />
+            </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-display text-2xl text-[#00E5FF]">{order.orderNumber}</span>
-                <span className="text-xs font-mono bg-white/10 text-white px-2 py-0.5 rounded-full uppercase border border-transparent">
+                <span className="font-display text-2xl text-[#00E5FF] print:text-[#00E5FF]">{order.orderNumber}</span>
+                <span className="text-xs font-mono bg-white/10 print:bg-black/5 text-white print:text-black px-2 py-0.5 rounded-full uppercase border border-transparent print:border-black/20">
                   {order.vehiclePlate}
                 </span>
               </div>
-              <span className="text-xs text-slate-400 font-medium">
+              <span className="text-xs text-slate-400 print:text-black font-medium">
                 {order.vehicleBrandModel} ({order.vehicleColor}) - {order.customerName}
               </span>
             </div>
@@ -95,23 +98,18 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
         </div>
 
         {/* Modal Tab Content */}
-        <div className="flex-1 overflow-y-auto print:overflow-visible p-6 print:p-0 space-y-6 print:space-y-0">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 print:p-0 print:space-y-0 print:overflow-visible">
           {/* TAB 1: PRESUPUESTO & NOTA DE ENTREGA PRINTABLE VIEW */}
-          <div id="printable-quote" className={`flex flex-col gap-6 bg-slate-950 print:bg-white p-6 print:p-8 print:pt-12 print:m-0 rounded-2xl border border-white/10 print:border-none print:shadow-none print:break-inside-avoid ${activeTab === 'quote' ? 'flex' : 'hidden print:flex'}`}>
-            {/* Header Invoice Brand (PRINT HEADER) */}
-              <div className="flex items-start justify-between border-b border-white/10 print:border-black/20 pb-4">
-                <div className="flex items-center gap-4">
-                  <div className="hidden print:block print:scale-125 origin-left">
-                    <FaviconLogo size={48} />
-                  </div>
-                  <div>
-                    <h1 className="font-display text-3xl text-white print:text-black">SUPER WASH PERFORMANCE</h1>
-                    <p className="text-xs text-slate-400 print:text-black">Centro Especializado en Estética Automotriz, Detailing & Pintura</p>
-                    <p className="text-xs text-slate-500 print:text-black font-mono">Sede Principal Las Mercedes | RIF: J-40199281-0</p>
-                  </div>
+          <div id="printable-quote" className={`flex flex-col gap-6 bg-slate-950 print:bg-white p-6 print:p-4 print:m-0 rounded-2xl border border-white/10 print:border-none print:shadow-none print:break-inside-avoid print:gap-4 ${activeTab === 'quote' ? 'flex' : 'hidden print:flex'}`}>
+            {/* Header Invoice Brand */}
+              <div className="flex items-start justify-between border-b border-white/10 pb-4 print:pb-2">
+                <div>
+                  <h1 className="font-display text-3xl text-white print:text-black">SUPER WASH PERFORMANCE</h1>
+                  <p className="text-xs text-slate-400 print:text-black">Centro Especializado en Estética Automotriz, Detailing & Pintura</p>
+                  <p className="text-xs text-slate-500 print:text-black font-mono">Sede Principal Las Mercedes | RIF: J-40199281-0</p>
                 </div>
                 <div className="text-right">
-                  <div className="font-display text-2xl text-[#00E5FF] print:text-[#00E5FF]">{order.orderNumber}</div>
+                  <div className="font-display text-2xl text-[#00E5FF] print:text-[#00E5FF]">ODS-{order.orderNumber}</div>
                   <div className="text-xs text-slate-400 print:text-black font-mono">Fecha: {order.entryDate}</div>
                 </div>
               </div>
@@ -181,7 +179,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
                   </span>
                 </div>
                 {/* Observations & Print Textual Details */}
-                <div className="p-3 rounded-xl bg-black/40 print:bg-transparent border border-white/5 print:border-black/20 text-xs w-full mt-4">
+                <div className="p-3 rounded-xl bg-black/40 print:bg-transparent border border-white/5 print:border-black/20 text-xs w-full mt-4 print:mt-2">
                   <span className="font-bold text-slate-400 print:text-black block mb-1">OBSERVACIONES:</span>
                   {order.observations ? (
                     <p className="text-slate-300 print:text-black italic">{order.observations}</p>
