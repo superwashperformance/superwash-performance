@@ -73,15 +73,15 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
             <p className="text-xs">Inspección del vehículo</p>
           </div>
           <div className="flex flex-col gap-2 w-64 text-xs font-bold">
-            <div className="flex items-end border-b border-black">
+            <div className="flex items-end">
               <span className="w-20">FECHA:</span>
               <span className="flex-1 pb-0.5 font-normal">{order.entryDate.substring(0, 10)}</span>
             </div>
-            <div className="flex items-end border-b border-black">
+            <div className="flex items-end">
               <span className="w-20">#ODS:</span>
               <span className="flex-1 pb-0.5 font-normal">{order.orderNumber}</span>
             </div>
-            <div className="flex items-end border-b border-black">
+            <div className="flex items-end">
               <span className="w-20">TELÉFONO:</span>
               <span className="flex-1 pb-0.5 font-normal">{order.customerPhone}</span>
             </div>
@@ -90,28 +90,28 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
 
         {/* Customer & Vehicle Info */}
         <div className="flex flex-col gap-3 mb-4 text-xs font-bold uppercase">
-          <div className="flex items-end border-b border-black w-full">
+          <div className="flex items-end w-full">
             <span className="w-20">CLIENTE:</span>
             <span className="flex-1 pb-0.5 font-normal">{order.customerName}</span>
           </div>
-          <div className="flex items-end border-b border-black w-3/4">
+          <div className="flex items-end w-3/4">
             <span className="w-40">HORA DE RECEPCIÓN:</span>
             <span className="flex-1 pb-0.5 font-normal">{order.entryDate.substring(11, 16)}</span>
           </div>
           <div className="flex items-end gap-2 w-full">
-            <div className="flex items-end border-b border-black flex-1">
+            <div className="flex items-end flex-1">
               <span className="mr-2">MARCA:</span>
               <span className="flex-1 pb-0.5 font-normal">{order.vehicleBrandModel.split(' ')[0]}</span>
             </div>
-            <div className="flex items-end border-b border-black flex-1">
+            <div className="flex items-end flex-1">
               <span className="mr-2">MODELO:</span>
               <span className="flex-1 pb-0.5 font-normal">{order.vehicleBrandModel.split(' ').slice(1).join(' ')}</span>
             </div>
-            <div className="flex items-end border-b border-black w-1/4">
+            <div className="flex items-end w-1/4">
               <span className="mr-2">COLOR:</span>
               <span className="flex-1 pb-0.5 font-normal">{order.vehicleColor}</span>
             </div>
-            <div className="flex items-end border-b border-black w-1/4">
+            <div className="flex items-end w-1/4">
               <span className="mr-2">PLACA:</span>
               <span className="flex-1 pb-0.5 font-normal">{order.vehiclePlate}</span>
             </div>
