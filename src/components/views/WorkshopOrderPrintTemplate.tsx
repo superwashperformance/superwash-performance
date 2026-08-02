@@ -219,8 +219,8 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
       {/* PAGE 2 */}
       <div className="p-4 sm:p-6 flex flex-col" style={{ pageBreakBefore: 'always' }}>
         
-        <h2 className="text-center text-3xl font-bold mb-6 mt-8">Observaciones</h2>
-        <div className="flex flex-col gap-8 mb-16">
+        <h2 className="text-center text-2xl font-bold mb-4 mt-4">Observaciones</h2>
+        <div className="flex flex-col gap-5 mb-8">
           {order.observations ? (
             <div className="border-b border-black text-sm italic h-6 px-2">{order.observations}</div>
           ) : (
@@ -235,8 +235,8 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
           <div className="border-b border-black h-6 w-full"></div>
         </div>
 
-        <h2 className="text-center text-3xl font-bold mb-6">Pertenencias</h2>
-        <div className="flex flex-col gap-8 mb-20">
+        <h2 className="text-center text-2xl font-bold mb-4">Pertenencias</h2>
+        <div className="flex flex-col gap-5 mb-8">
           {order.belongingsList && order.belongingsList.length > 0 ? (
             <div className="border-b border-black text-sm italic h-6 px-2">{order.belongingsList.join(', ')}</div>
           ) : (
@@ -248,14 +248,14 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
           <div className="border-b border-black h-6 w-full"></div>
         </div>
 
-        <h2 className="text-center text-3xl font-bold mb-4">Importante</h2>
-        <div className="text-sm font-bold leading-relaxed mb-16 px-4">
+        <h2 className="text-center text-2xl font-bold mb-2">Importante</h2>
+        <div className="text-sm font-bold leading-relaxed mb-8 px-4">
           <p>Nuestras condiciones y políticas son las siguientes:</p>
           <p className="mt-2 text-justify">El propietario del vehículo, debe verificar el mismo al momento de ingresar y retirar su automóvil, la empresa no se hace responsable por fallas, desperfectos, daños mecánicos o eléctricos que presente el vehículo, ya que solo nos encargamos única y exclusivamente de la parte de estética externa e interna de su vehículo. (embellecimiento automotriz).</p>
           <p className="mt-4 text-justify">Una vez el vehículo haya dejado las instalaciones la empresa asume que aceptó conforme todo el trabajo realizado.</p>
         </div>
 
-        <div className="mt-auto flex flex-col items-center mb-16">
+        <div className="mt-12 flex flex-col items-center mb-8">
           <div className="border-t border-black w-80 text-center pt-2 font-bold text-lg">
             FIRMA CONFORME
           </div>
