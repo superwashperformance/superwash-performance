@@ -187,17 +187,17 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
                     <p className="text-slate-500 print:text-black italic">Sin observaciones iniciales.</p>
                   )}
 
-                  {/* Print only: Detailed damages and FULL checklist */}
-                  <div className="hidden print:block mt-4 pt-4 border-t border-slate-200/20 print:border-black/20 space-y-4">
+                  {/* Detailed damages and FULL checklist (Visible in UI and Print) */}
+                  <div className="block mt-4 pt-4 border-t border-white/10 print:border-black/20 space-y-4">
                     {/* Checklist details for print */}
                     {order.checklist && order.checklist.length > 0 && (
                       <div>
-                        <span className="font-bold text-slate-800 print:text-black mb-2 block uppercase text-[10px] tracking-wider">ESTADO DE RECEPCIÓN DEL VEHÍCULO (CHECKLIST):</span>
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[10px] text-slate-700 print:text-black">
+                        <span className="font-bold text-slate-300 print:text-black mb-2 block uppercase text-[10px] tracking-wider">ESTADO DE RECEPCIÓN DEL VEHÍCULO (CHECKLIST):</span>
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[10px] text-slate-400 print:text-black">
                           {order.checklist.map(i => (
-                            <div key={i.id} className="flex justify-between border-b border-slate-200/50 print:border-black/10 pb-1">
+                            <div key={i.id} className="flex justify-between border-b border-white/5 print:border-black/10 pb-1">
                               <span>{i.label}</span>
-                              <span className={`font-bold uppercase ${i.condition === 'ok' ? 'text-slate-600 print:text-black' : 'text-slate-900 print:text-black'}`}>
+                              <span className={`font-bold uppercase ${i.condition === 'ok' ? 'text-emerald-400 print:text-black' : 'text-amber-400 print:text-black'}`}>
                                 {i.condition === 'ok' ? 'Correcto' : i.condition}
                               </span>
                             </div>
@@ -209,8 +209,8 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
                     {/* Damage Markers summary for print */}
                     {order.damageMarkers && order.damageMarkers.length > 0 && (
                       <div className="mt-4">
-                        <span className="font-bold text-slate-800 print:text-black mb-2 block uppercase text-[10px] tracking-wider">DETALLES DE CARROCERÍA REGISTRADOS:</span>
-                        <ul className="list-disc ml-4 text-[10px] text-slate-700 print:text-black">
+                        <span className="font-bold text-slate-300 print:text-black mb-2 block uppercase text-[10px] tracking-wider">DETALLES DE CARROCERÍA REGISTRADOS:</span>
+                        <ul className="list-disc ml-4 text-[10px] text-slate-400 print:text-black">
                           {order.damageMarkers.map(m => (
                             <li key={m.id}>{m.description || 'Daño'} <span className="text-slate-500 print:text-black">({m.type} en {m.view})</span></li>
                           ))}
