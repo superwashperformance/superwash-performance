@@ -238,7 +238,6 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
           <div className="border-b border-black h-8 w-full"></div>
           <div className="border-b border-black h-8 w-full"></div>
           <div className="border-b border-black h-8 w-full"></div>
-          <div className="border-b border-black h-8 w-full"></div>
         </div>
 
         <h2 className="text-center text-2xl font-bold mb-4 mt-2">Pertenencias</h2>
@@ -251,7 +250,6 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
           <div className="border-b border-black h-8 w-full"></div>
           <div className="border-b border-black h-8 w-full"></div>
           <div className="border-b border-black h-8 w-full"></div>
-          <div className="border-b border-black h-8 w-full"></div>
         </div>
 
         <h2 className="text-center text-xl font-bold mb-2">Importante</h2>
@@ -261,7 +259,7 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
           <p className="mt-2 text-justify">Una vez el vehículo haya dejado las instalaciones la empresa asume que aceptó conforme todo el trabajo realizado.</p>
         </div>
 
-        <div className="mt-12 flex flex-col items-center mb-8">
+        <div className="mt-8 flex flex-col items-center mb-8">
           <div className="border-t border-black w-80 text-center pt-2 font-bold text-lg">
             FIRMA CONFORME
           </div>
