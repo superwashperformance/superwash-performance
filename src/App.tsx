@@ -25,7 +25,6 @@ import { CustomersView } from './components/views/CustomersView';
 import { VehiclesView } from './components/views/VehiclesView';
 import { SettingsView } from './components/views/SettingsView';
 import { ODSDetailModal } from './components/views/ODSDetailModal';
-import { TurboWidget } from './components/common/TurboWidget';
 import { Search, X } from 'lucide-react';
 
 export function App() {
@@ -381,16 +380,6 @@ export function App() {
           </div>
         </div>
       )}
-
-      {/* Turbo Assistant Widget */}
-      <TurboWidget 
-        role={currentRole} 
-        orders={orders} 
-        onViewOrder={(orderId) => {
-          const found = orders.find(o => o.id === orderId);
-          if (found) setSelectedOrder(found);
-        }} 
-      />
     </div>
   );
 }
