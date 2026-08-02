@@ -187,19 +187,30 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
                     <p className="text-slate-500 print:text-black italic">Sin observaciones iniciales.</p>
                   )}
 
-                  {/* Detailed damages and FULL checklist (Visible in UI and Print) */}
-                  <div className="block mt-4 pt-4 border-t border-white/10 print:border-black/20 space-y-4">
+                  {/* Print only: Detailed damages and FULL checklist */}
+                  <div className="hidden print:block mt-4 pt-4 border-t border-slate-200/20 print:border-black/20 space-y-4">
                     {/* Checklist details for print */}
                     {order.checklist && order.checklist.length > 0 && (
-                      <div>
-                        <span className="font-bold text-slate-300 print:text-black mb-2 block uppercase text-[10px] tracking-wider">ESTADO DE RECEPCIÓN DEL VEHÍCULO (CHECKLIST):</span>
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[10px] text-slate-400 print:text-black">
+                      <div className="mt-4 print:mt-2">
+                        <div className="text-center font-serif italic font-bold text-lg mb-2 print:text-black">Chequeo general</div>
+                        <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-[9px] text-slate-700 print:text-black uppercase">
                           {order.checklist.map(i => (
-                            <div key={i.id} className="flex justify-between border-b border-white/5 print:border-black/10 pb-1">
-                              <span>{i.label}</span>
-                              <span className={`font-bold uppercase ${i.condition === 'ok' ? 'text-emerald-400 print:text-black' : 'text-amber-400 print:text-black'}`}>
-                                {i.condition === 'ok' ? 'Correcto' : i.condition}
-                              </span>
+                            <div key={i.id} className="flex justify-between items-end border-b border-slate-200/50 print:border-black/20 pb-0.5">
+                              <span className="font-bold whitespace-nowrap overflow-hidden text-ellipsis mr-2">{i.label}</span>
+                              <div className="flex gap-2 shrink-0">
+                                <div className="flex items-center gap-0.5">
+                                  <span className="text-[7px]">SIN NOVEDAD</span>
+                                  <div className="w-2.5 h-2.5 border border-black flex items-center justify-center font-bold text-[8px]">
+                                    {i.condition === 'ok' && 'X'}
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-0.5">
+                                  <span className="text-[7px]">NOVEDAD</span>
+                                  <div className="w-2.5 h-2.5 border border-black flex items-center justify-center font-bold text-[8px]">
+                                    {i.condition !== 'ok' && 'X'}
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -209,8 +220,8 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose }
                     {/* Damage Markers summary for print */}
                     {order.damageMarkers && order.damageMarkers.length > 0 && (
                       <div className="mt-4">
-                        <span className="font-bold text-slate-300 print:text-black mb-2 block uppercase text-[10px] tracking-wider">DETALLES DE CARROCERÍA REGISTRADOS:</span>
-                        <ul className="list-disc ml-4 text-[10px] text-slate-400 print:text-black">
+                        <span className="font-bold text-slate-800 print:text-black mb-2 block uppercase text-[10px] tracking-wider">DETALLES DE CARROCERÍA REGISTRADOS:</span>
+                        <ul className="list-disc ml-4 text-[10px] text-slate-700 print:text-black">
                           {order.damageMarkers.map(m => (
                             <li key={m.id}>{m.description || 'Daño'} <span className="text-slate-500 print:text-black">({m.type} en {m.view})</span></li>
                           ))}
