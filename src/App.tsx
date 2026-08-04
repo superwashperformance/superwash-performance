@@ -40,25 +40,27 @@ export function App() {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [inventoryMovements, setInventoryMovements] = useState<InventoryMovement[]>(mockInventoryMovements);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
-
-  // Dynamic Customers & Vehicles Directory (persisted in localStorage)
+  const [transactions, setTransactions] = useState<CashTransaction[]>(() => {
+    const saved = localStorage.getItem('sw_transactions');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed.filter((t: any) => t.id !== 'tx-101' && t.id !== 'tx-102');
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  });
   const [customers, setCustomers] = useState<Customer[]>(() => {
     const saved = localStorage.getItem('sw_customers');
-    return saved ? JSON.parse(saved) : mockCustomers;
+    if (saved) return JSON.parse(saved);
+    return mockCustomers;
   });
   const [vehicles, setVehicles] = useState<Vehicle[]>(() => {
     const saved = localStorage.getItem('sw_vehicles');
-    return saved ? JSON.parse(saved) : mockVehicles;
-  });
-
-  const [transactions, setTransactions] = useState<CashTransaction[]>(() => {
-    const saved = localStorage.getItem('sw_transactions');
-    const EXCLUDED_CLIENTS = ['Gustavo Cisneros', 'Sofía Fernández', 'Sofia Fernandez', 'Sofía Fernandez', 'Sofia Fernández'];
-    const all: CashTransaction[] = saved ? JSON.parse(saved) : [];
-    const filtered = all.filter(t => !EXCLUDED_CLIENTS.includes(t.customerName));
-    // Persist cleaned list back so they don't reappear on next load
-    localStorage.setItem('sw_transactions', JSON.stringify(filtered));
-    return filtered;
+    if (saved) return JSON.parse(saved);
+    return mockVehicles;
   });
   const [technicians, setTechnicians] = useState<Agent[]>(initialTechnicians);
   const [receptionAgents, setReceptionAgents] = useState<Agent[]>(initialReceptionAgents);
@@ -91,10 +93,12 @@ export function App() {
     localStorage.setItem('sw_transactions', JSON.stringify(transactions));
   }, [transactions]);
 
-  // Persist customers & vehicles to localStorage
+  // Persist customers to localStorage
   React.useEffect(() => {
     localStorage.setItem('sw_customers', JSON.stringify(customers));
   }, [customers]);
+
+  // Persist vehicles to localStorage
   React.useEffect(() => {
     localStorage.setItem('sw_vehicles', JSON.stringify(vehicles));
   }, [vehicles]);
@@ -192,46 +196,9 @@ export function App() {
 
   const handleCreateODS = async (newODS: ServiceOrder) => {
     try {
+      // Optimistic update for better UX (optional) or wait for server
       const createdODS = await odsService.createODS(newODS);
       setOrders([createdODS, ...orders]);
-
-      // Auto-register customer in directory if not already present
-      setCustomers(prev => {
-        const exists = prev.some(
-          c => c.fullName.toLowerCase() === createdODS.customerName.toLowerCase()
-        );
-        if (exists) return prev;
-        const newCustomer: Customer = {
-          id: createdODS.customerId,
-          fullName: createdODS.customerName,
-          documentId: createdODS.customerDocumentId || 'N/A',
-          phone: createdODS.customerPhone || '',
-          email: createdODS.customerEmail || '',
-          address: '',
-          createdAt: new Date().toISOString().split('T')[0],
-        };
-        return [newCustomer, ...prev];
-      });
-
-      // Auto-register vehicle in directory if not already present
-      setVehicles(prev => {
-        const exists = prev.some(
-          v => v.plate.toLowerCase() === createdODS.vehiclePlate.toLowerCase()
-        );
-        if (exists) return prev;
-        const [brand, ...modelParts] = createdODS.vehicleBrandModel.split(' ');
-        const newVehicle: Vehicle = {
-          id: createdODS.vehicleId,
-          customerId: createdODS.customerId,
-          plate: createdODS.vehiclePlate,
-          brand: brand || '',
-          model: modelParts.join(' ') || '',
-          year: createdODS.vehicleYear || new Date().getFullYear(),
-          color: createdODS.vehicleColor || '',
-        };
-        return [newVehicle, ...prev];
-      });
-
       setActiveTab('ods');
     } catch (error) {
       console.error('Error al guardar la ODS:', error);
@@ -408,6 +375,7 @@ export function App() {
     };
 
     setTransactions([newTx, ...transactions]);
+    return newTx;
   };
 
   const handleAddPhotoToOrder = (orderId: string, photo: any) => {
@@ -417,6 +385,18 @@ export function App() {
     if (selectedOrder?.id === orderId) {
       setSelectedOrder({ ...selectedOrder, photos: [...selectedOrder.photos, photo] });
     }
+  };
+
+  const handleAddCustomer = (newCust: Customer) => {
+    setCustomers([newCust, ...customers]);
+  };
+
+  const handleUpdateCustomer = (updatedCust: Customer) => {
+    setCustomers(customers.map((c) => (c.id === updatedCust.id ? updatedCust : c)));
+  };
+
+  const handleAddVehicle = (newVeh: Vehicle) => {
+    setVehicles([newVeh, ...vehicles]);
   };
 
   if (appMode === 'splash') {
@@ -488,6 +468,11 @@ export function App() {
               technicians={technicians}
               receptionAgents={receptionAgents}
               servicesCatalog={servicesCatalog}
+              customers={customers}
+              vehicles={vehicles}
+              orders={orders}
+              onAddCustomer={handleAddCustomer}
+              onAddVehicle={handleAddVehicle}
             />
           )}
 
@@ -522,7 +507,13 @@ export function App() {
           )}
 
           {activeTab === 'customers' && (
-            <CustomersView customers={customers} vehicles={vehicles} />
+            <CustomersView 
+              customers={customers} 
+              vehicles={vehicles} 
+              onAddCustomer={handleAddCustomer}
+              onUpdateCustomer={handleUpdateCustomer}
+              onAddVehicle={handleAddVehicle}
+            />
           )}
 
           {activeTab === 'vehicles' && <VehiclesView vehicles={vehicles} />}

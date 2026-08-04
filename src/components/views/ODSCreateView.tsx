@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { ServiceOrder, ChecklistItem, DamageMarker, PresupuestoServiceItem, Agent, ServiceItem } from '../../types';
+import { ServiceOrder, ChecklistItem, DamageMarker, PresupuestoServiceItem, Agent, ServiceItem, Customer, Vehicle } from '../../types';
 import { SignatureCanvas } from '../common/SignatureCanvas';
 import {
   ClipboardCheck,
@@ -16,6 +16,9 @@ import {
   ArrowLeft,
   Sparkles,
   PenTool,
+  Search,
+  UserCheck,
+  X,
 } from 'lucide-react';
 
 interface ODSCreateViewProps {
@@ -24,10 +27,30 @@ interface ODSCreateViewProps {
   technicians: Agent[];
   receptionAgents: Agent[];
   servicesCatalog: ServiceItem[];
+  customers?: Customer[];
+  vehicles?: Vehicle[];
+  orders?: ServiceOrder[];
+  onAddCustomer?: (customer: Customer) => void;
+  onAddVehicle?: (vehicle: Vehicle) => void;
 }
 
-export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCancel, technicians, receptionAgents, servicesCatalog }) => {
+export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
+  onSaveODS,
+  onCancel,
+  technicians,
+  receptionAgents,
+  servicesCatalog,
+  customers = [],
+  vehicles = [],
+  orders = [],
+  onAddCustomer,
+  onAddVehicle,
+}) => {
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
+
+  // Selected customer & vehicle IDs
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string>('');
+  const [selectedVehicleId, setSelectedVehicleId] = useState<string>('');
 
   // Step 1: Customer & Vehicle Data
   const [customerName, setCustomerName] = useState('');
@@ -40,7 +63,27 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
   const [year, setYear] = useState<number>(2024);
   const [color, setColor] = useState('');
   const [vin, setVin] = useState('');
+  const [mileage, setMileage] = useState('');
   const [observations, setObservations] = useState('');
+
+  // In-situ Modals
+  const [showAddCustomerModal, setShowAddCustomerModal] = useState(false);
+  const [showAddVehicleModal, setShowAddVehicleModal] = useState(false);
+
+  // New Customer Form State
+  const [newCustName, setNewCustName] = useState('');
+  const [newCustDoc, setNewCustDoc] = useState('');
+  const [newCustPhone, setNewCustPhone] = useState('');
+  const [newCustEmail, setNewCustEmail] = useState('');
+
+  // New Vehicle Form State
+  const [newVehPlate, setNewVehPlate] = useState('');
+  const [newVehBrand, setNewVehBrand] = useState('');
+  const [newVehModel, setNewVehModel] = useState('');
+  const [newVehYear, setNewVehYear] = useState<number>(new Date().getFullYear());
+  const [newVehColor, setNewVehColor] = useState('');
+  const [newVehVin, setNewVehVin] = useState('');
+  const [newVehMileage, setNewVehMileage] = useState('');
 
   // Step 1: Responsables
   const [receptionAgent, setReceptionAgent] = useState(receptionAgents.length > 0 ? receptionAgents[0].name : '');
@@ -198,8 +241,6 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
       customerId: `cust-${Date.now()}`,
       customerName: customerName || 'Cliente General',
       customerPhone: phone || '+58 414-0000000',
-      customerDocumentId: documentId || 'N/A',
-      customerEmail: email || '',
       vehicleId: `veh-${Date.now()}`,
       vehiclePlate: plate.toUpperCase() || 'ABC123X',
       vehicleBrandModel: `${brand} ${model}` || 'Vehículo Deportivo',
@@ -279,59 +320,234 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
         <div className="nike-card p-6 flex flex-col gap-6 animate-in fade-in">
           <div className="border-b border-white/10 pb-4">
             <h2 className="font-display text-3xl text-white">PASO 1: DATOS DEL CLIENTE Y VEHÍCULO</h2>
-            <p className="text-xs text-slate-400">Ingresa la información básica para aperturear la ODS.</p>
+            <p className="text-xs text-slate-400">Selecciona o crea el cliente y haz clic en la tarjeta de su vehículo para cargar sus datos automáticamente.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Customer Information */}
-            <div className="flex flex-col gap-3 p-4 rounded-xl bg-black/40 border border-white/5">
-              <span className="font-display text-lg text-[#00E5FF]">DATOS DEL CLIENTE</span>
-              <div>
-                <label className="text-xs text-slate-400 mb-1 block">Nombre Completo *</label>
-                <input
-                  type="text"
-                  placeholder="Ej. Gustavo Cisneros"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none"
-                />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Customer Section */}
+            <div className="flex flex-col gap-4 p-5 rounded-xl bg-black/40 border border-white/5">
+              <div className="flex items-center justify-between">
+                <span className="font-display text-lg text-[#00E5FF]">1. CLIENTE</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setNewCustName('');
+                    setNewCustDoc('');
+                    setNewCustPhone('');
+                    setNewCustEmail('');
+                    setShowAddCustomerModal(true);
+                  }}
+                  className="text-xs font-mono font-bold text-[#00E5FF] hover:underline flex items-center gap-1"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Crear Nuevo Cliente
+                </button>
               </div>
+
+              {/* Customer Search / Select */}
               <div>
-                <label className="text-xs text-slate-400 mb-1 block">Cédula / Documento ID *</label>
-                <input
-                  type="text"
-                  placeholder="Ej. V-14892011"
-                  value={documentId}
-                  onChange={(e) => setDocumentId(e.target.value)}
-                  className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none font-mono"
-                />
+                <label className="text-xs text-slate-400 mb-1 block">Buscar o Seleccionar Cliente del Directorio</label>
+                <select
+                  value={selectedCustomerId}
+                  onChange={(e) => {
+                    const custId = e.target.value;
+                    const selected = customers.find((c) => c.id === custId);
+                    if (selected) {
+                      setSelectedCustomerId(selected.id);
+                      setCustomerName(selected.fullName);
+                      setDocumentId(selected.documentId);
+                      setPhone(selected.phone);
+                      setEmail(selected.email || '');
+
+                      // Auto select first vehicle if available
+                      const custVehs = vehicles.filter((v) => v.customerId === selected.id);
+                      if (custVehs.length > 0) {
+                        const firstVeh = custVehs[0];
+                        setSelectedVehicleId(firstVeh.id);
+                        setPlate(firstVeh.plate);
+                        setBrand(firstVeh.brand);
+                        setModel(firstVeh.model);
+                        setYear(firstVeh.year);
+                        setColor(firstVeh.color);
+                        setVin(firstVeh.vin || '');
+                        setMileage(firstVeh.mileage || '');
+                      } else {
+                        setSelectedVehicleId('');
+                        setPlate('');
+                        setBrand('');
+                        setModel('');
+                        setYear(2024);
+                        setColor('');
+                        setVin('');
+                        setMileage('');
+                      }
+                    }
+                  }}
+                  className="w-full bg-slate-900 border border-cyan-500/30 rounded-lg px-3 py-2.5 text-sm text-white focus:border-[#00E5FF] outline-none font-medium"
+                >
+                  <option value="" disabled>-- Selecciona un cliente del directorio --</option>
+                  {customers.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.fullName} — {c.documentId} ({c.phone})
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div>
-                <label className="text-xs text-slate-400 mb-1 block">Teléfono Móvil (WhatsApp) *</label>
-                <input
-                  type="text"
-                  placeholder="Ej. +58 414-9982311"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none font-mono"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-slate-400 mb-1 block">Correo Electrónico</label>
-                <input
-                  type="email"
-                  placeholder="ejemplo@correo.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none"
-                />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-white/5">
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 block">Nombre Completo *</label>
+                  <input
+                    type="text"
+                    placeholder="Ej. Gustavo Cisneros"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-[#00E5FF] outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 block">Cédula / Documento ID *</label>
+                  <input
+                    type="text"
+                    placeholder="Ej. V-14892011"
+                    value={documentId}
+                    onChange={(e) => setDocumentId(e.target.value)}
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-[#00E5FF] outline-none font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 block">Teléfono (WhatsApp) *</label>
+                  <input
+                    type="text"
+                    placeholder="Ej. +58 414-9982311"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-[#00E5FF] outline-none font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 block">Correo Electrónico</label>
+                  <input
+                    type="email"
+                    placeholder="ejemplo@correo.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-[#00E5FF] outline-none"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Vehicle Information */}
-            <div className="flex flex-col gap-3 p-4 rounded-xl bg-black/40 border border-white/5">
-              <span className="font-display text-lg text-[#00E5FF]">DATOS DEL VEHÍCULO</span>
-              <div className="grid grid-cols-2 gap-2">
+            {/* Vehicle Section */}
+            <div className="flex flex-col gap-4 p-5 rounded-xl bg-black/40 border border-white/5">
+              <div className="flex items-center justify-between">
+                <span className="font-display text-lg text-[#00E5FF]">2. SELECCIÓN DE VEHÍCULO</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setNewVehPlate('');
+                    setNewVehBrand('');
+                    setNewVehModel('');
+                    setNewVehYear(new Date().getFullYear());
+                    setNewVehColor('');
+                    setNewVehVin('');
+                    setNewVehMileage('');
+                    setShowAddVehicleModal(true);
+                  }}
+                  className="text-xs font-mono font-bold text-[#00E5FF] hover:underline flex items-center gap-1"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Registrar Vehículo
+                </button>
+              </div>
+
+              {/* Customer Vehicles Cards List */}
+              {selectedCustomerId ? (
+                (() => {
+                  const custVehs = vehicles.filter((v) => v.customerId === selectedCustomerId);
+                  if (custVehs.length === 0) {
+                    return (
+                      <div className="p-4 rounded-xl bg-slate-900/60 border border-dashed border-white/10 text-center flex flex-col items-center gap-2">
+                        <Car className="w-8 h-8 text-slate-600" />
+                        <p className="text-xs text-slate-400">Este cliente aún no posee vehículos registrados.</p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setNewVehPlate('');
+                            setNewVehBrand('');
+                            setNewVehModel('');
+                            setNewVehYear(new Date().getFullYear());
+                            setNewVehColor('');
+                            setNewVehVin('');
+                            setNewVehMileage('');
+                            setShowAddVehicleModal(true);
+                          }}
+                          className="btn-nike-secondary text-xs py-1.5 px-3 flex items-center gap-1 mt-1"
+                        >
+                          <Plus className="w-3.5 h-3.5" /> Registrar Vehículo
+                        </button>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1">
+                      <span className="text-[10px] font-mono text-slate-400 uppercase">Vehículos Asociados (Haz clic para elegir):</span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {custVehs.map((v) => {
+                          const isSelected = selectedVehicleId === v.id || plate.toUpperCase() === v.plate.toUpperCase();
+                          const pastOrder = orders.find((o) => o.vehiclePlate === v.plate || o.vehicleId === v.id);
+                          const lastVisit = v.lastVisit || pastOrder?.entryDate || 'Sin visitas previas';
+                          const lastService = v.lastService || pastOrder?.services.map((s) => s.serviceName).join(', ') || 'N/A';
+
+                          return (
+                            <div
+                              key={v.id}
+                              onClick={() => {
+                                setSelectedVehicleId(v.id);
+                                setPlate(v.plate);
+                                setBrand(v.brand);
+                                setModel(v.model);
+                                setYear(v.year);
+                                setColor(v.color);
+                                setVin(v.vin || '');
+                                setMileage(v.mileage || '');
+                              }}
+                              className={`p-3 rounded-xl border transition-all cursor-pointer flex flex-col gap-1.5 relative overflow-hidden ${
+                                isSelected
+                                  ? 'bg-[#00E5FF]/10 border-[#00E5FF] shadow-lg shadow-cyan-500/10 ring-1 ring-[#00E5FF]'
+                                  : 'bg-slate-900/80 border-white/10 hover:border-white/30'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="font-bold text-white text-xs">{v.brand} {v.model}</span>
+                                <span className="font-mono text-[10px] text-[#00E5FF] font-bold">{v.plate}</span>
+                              </div>
+
+                              <div className="text-[10px] text-slate-400 font-mono flex flex-col gap-0.5">
+                                <div>Año: <span className="text-white">{v.year}</span> | Color: <span className="text-white">{v.color}</span></div>
+                                <div>VIN: <span className="text-slate-300">{v.vin || 'N/A'}</span></div>
+                                <div>Km Registrado: <span className="text-slate-300">{v.mileage || 'Por ingresar'}</span></div>
+                                <div className="truncate">Última Visita: <span className="text-cyan-400">{lastVisit}</span></div>
+                                <div className="truncate">Último Servicio: <span className="text-slate-300">{lastService}</span></div>
+                              </div>
+
+                              {isSelected && (
+                                <span className="absolute top-1 right-1 text-[#00E5FF]">
+                                  <CheckCircle className="w-3.5 h-3.5 fill-[#00E5FF] text-black" />
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })()
+              ) : (
+                <p className="text-xs text-slate-500 italic">Selecciona primero un cliente para ver sus vehículos.</p>
+              )}
+
+              {/* Form Fields for Vehicle */}
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/5">
                 <div>
                   <label className="text-xs text-slate-400 mb-1 block">Placa *</label>
                   <input
@@ -339,7 +555,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
                     placeholder="Ej. AA991GT"
                     value={plate}
                     onChange={(e) => setPlate(e.target.value)}
-                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none font-mono font-bold uppercase"
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-[#00E5FF] outline-none font-mono font-bold uppercase"
                   />
                 </div>
                 <div>
@@ -348,7 +564,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
                     type="number"
                     value={year}
                     onChange={(e) => setYear(Number(e.target.value))}
-                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none font-mono"
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-[#00E5FF] outline-none font-mono"
                   />
                 </div>
               </div>
@@ -361,7 +577,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
                     placeholder="Ej. Porsche / BMW"
                     value={brand}
                     onChange={(e) => setBrand(e.target.value)}
-                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none"
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-[#00E5FF] outline-none"
                   />
                 </div>
                 <div>
@@ -371,119 +587,46 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
                     placeholder="Ej. 911 GT3 RS"
                     value={model}
                     onChange={(e) => setModel(e.target.value)}
-                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none"
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-[#00E5FF] outline-none"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 <div>
                   <label className="text-xs text-slate-400 mb-1 block">Color</label>
                   <input
                     type="text"
-                    placeholder="Ej. Gris Nardo / Negro"
+                    placeholder="Ej. Negro"
                     value={color}
                     onChange={(e) => setColor(e.target.value)}
-                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none"
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-[#00E5FF] outline-none"
                   />
                 </div>
                 <div>
                   <label className="text-xs text-slate-400 mb-1 block">VIN / Chasis</label>
                   <input
                     type="text"
-                    placeholder="WP0ZZZ..."
+                    placeholder="Opcional"
                     value={vin}
                     onChange={(e) => setVin(e.target.value)}
-                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none font-mono text-xs uppercase"
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-[#00E5FF] outline-none font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 block">Kilometraje</label>
+                  <input
+                    type="text"
+                    placeholder="Ej. 45.200 km"
+                    value={mileage}
+                    onChange={(e) => setMileage(e.target.value)}
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-[#00E5FF] outline-none font-mono"
                   />
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Sección Responsable del Trabajo */}
-          <div className="p-4 rounded-xl bg-black/40 border border-[#00E5FF]/20 flex flex-col gap-4">
-            <span className="font-display text-lg text-[#00E5FF] flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5" />
-              RESPONSABLE DEL TRABAJO
-            </span>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Agente que recibe */}
-              <div>
-                <label className="text-xs text-slate-400 mb-1 block">Agente que Recibe *</label>
-                <select
-                  value={receptionAgent}
-                  onChange={(e) => setReceptionAgent(e.target.value)}
-                  className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none"
-                >
-                  {receptionAgents.map((a) => (
-                    <option key={a.id} value={a.name}>{a.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Técnico asignado */}
-              <div>
-                <label className="text-xs text-slate-400 mb-1 block">Técnico Asignado</label>
-                <select
-                  value={assignedTechnicianId}
-                  onChange={(e) => setAssignedTechnicianId(e.target.value)}
-                  className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none"
-                >
-                  <option value="">— Sin asignar aún —</option>
-                  {technicians.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.name} {t.role ? `(${t.role})` : ''}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Prioridad */}
-              <div>
-                <label className="text-xs text-slate-400 mb-1 block">Nivel de Prioridad</label>
-                <div className="flex gap-2">
-                  {(['normal', 'urgente', 'vip'] as const).map((p) => (
-                    <button
-                      key={p}
-                      type="button"
-                      onClick={() => setPriorityLevel(p)}
-                      className={`flex-1 py-2 rounded-lg text-xs font-bold font-mono uppercase transition-all border ${
-                        priorityLevel === p
-                          ? p === 'vip'
-                            ? 'bg-yellow-500/20 border-yellow-400 text-yellow-300'
-                            : p === 'urgente'
-                            ? 'bg-red-500/20 border-red-400 text-red-300'
-                            : 'bg-[#00E5FF]/20 border-[#00E5FF] text-[#00E5FF]'
-                          : 'bg-transparent border-white/10 text-slate-500'
-                      }`}
-                    >
-                      {p === 'vip' ? '⭐ VIP' : p === 'urgente' ? '🔴 Urgente' : '🔵 Normal'}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Mostrar técnico seleccionado */}
-            {assignedTechnicianId && (() => {
-              const tech = technicians.find((t) => t.id === assignedTechnicianId);
-              return tech ? (
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-[#00E5FF]/5 border border-[#00E5FF]/20">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center font-display text-sm text-black">
-                    {tech.avatar || 'T'}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-white">{tech.name}</p>
-                    <p className="text-xs text-slate-400">{tech.role || 'Técnico'}</p>
-                  </div>
-                  <span className="ml-auto text-xs text-[#00E5FF] font-mono">ASIGNADO ✔</span>
-                </div>
-              ) : null;
-            })()}
-          </div>
-
+          
           <div className="flex justify-between items-center pt-4 border-t border-white/10">
             <button onClick={onCancel} className="btn-nike-secondary text-sm">
               Cancelar
@@ -792,6 +935,270 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({ onSaveODS, onCance
             <button onClick={handleCompleteODS} className="btn-nike-primary text-base py-3 px-8 shadow-2xl">
               <CheckCircle2 className="w-5 h-5" /> GENERAR ORDEN DE SERVICIO OFICIAL
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: In-situ Add Customer */}
+      {showAddCustomerModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="nike-card p-6 w-full max-w-md flex flex-col gap-4 border-white/20 shadow-2xl animate-scale-up">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <h3 className="font-display text-xl text-white flex items-center gap-2">
+                <UserCheck className="w-5 h-5 text-[#00E5FF]" /> CREAR NUEVO CLIENTE
+              </h3>
+              <button onClick={() => setShowAddCustomerModal(false)} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!newCustName.trim() || !newCustDoc.trim() || !newCustPhone.trim()) return;
+
+                const newCust: Customer = {
+                  id: `cust-${Date.now()}`,
+                  fullName: newCustName.trim(),
+                  documentId: newCustDoc.trim(),
+                  phone: newCustPhone.trim(),
+                  email: newCustEmail.trim() || undefined,
+                  createdAt: new Date().toLocaleDateString('es-ES'),
+                };
+
+                if (onAddCustomer) {
+                  onAddCustomer(newCust);
+                }
+
+                setSelectedCustomerId(newCust.id);
+                setCustomerName(newCust.fullName);
+                setDocumentId(newCust.documentId);
+                setPhone(newCust.phone);
+                setEmail(newCust.email || '');
+
+                setShowAddCustomerModal(false);
+              }}
+              className="flex flex-col gap-3"
+            >
+              <div>
+                <label className="text-xs text-slate-400 mb-1 block">Nombre Completo *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ej. Gustavo Cisneros"
+                  value={newCustName}
+                  onChange={(e) => setNewCustName(e.target.value)}
+                  className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs text-slate-400 mb-1 block">Cédula / Documento ID *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ej. V-18940293"
+                  value={newCustDoc}
+                  onChange={(e) => setNewCustDoc(e.target.value)}
+                  className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono focus:border-[#00E5FF] outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 block">Teléfono Móvil *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ej. +58 412-1234567"
+                    value={newCustPhone}
+                    onChange={(e) => setNewCustPhone(e.target.value)}
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono focus:border-[#00E5FF] outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 block">Correo Electrónico</label>
+                  <input
+                    type="email"
+                    placeholder="cliente@email.com"
+                    value={newCustEmail}
+                    onChange={(e) => setNewCustEmail(e.target.value)}
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-3 pt-3 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setShowAddCustomerModal(false)}
+                  className="flex-1 bg-transparent border border-white/20 text-white py-2.5 rounded-lg text-xs font-bold hover:bg-white/5 transition-colors uppercase tracking-wider"
+                >
+                  CANCELAR
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-[#00E5FF] text-black py-2.5 rounded-lg text-xs font-bold hover:bg-cyan-400 transition-colors uppercase tracking-wider flex items-center justify-center gap-1.5"
+                >
+                  <CheckCircle className="w-4 h-4" /> GUARDAR CLIENTE
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: In-situ Add Vehicle */}
+      {showAddVehicleModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="nike-card p-6 w-full max-w-md flex flex-col gap-4 border-white/20 shadow-2xl animate-scale-up">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div>
+                <h3 className="font-display text-xl text-white flex items-center gap-2">
+                  <Car className="w-5 h-5 text-[#00E5FF]" /> REGISTRAR NUEVO VEHÍCULO
+                </h3>
+                {customerName && <p className="text-xs text-slate-400">Para: <strong className="text-white">{customerName}</strong></p>}
+              </div>
+              <button onClick={() => setShowAddVehicleModal(false)} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!newVehPlate.trim() || !newVehBrand.trim() || !newVehModel.trim()) return;
+
+                const custId = selectedCustomerId || `cust-${Date.now()}`;
+
+                const newVeh: Vehicle = {
+                  id: `veh-${Date.now()}`,
+                  customerId: custId,
+                  plate: newVehPlate.trim().toUpperCase(),
+                  brand: newVehBrand.trim(),
+                  model: newVehModel.trim(),
+                  year: newVehYear,
+                  color: newVehColor.trim() || 'Desconocido',
+                  vin: newVehVin.trim() || undefined,
+                  mileage: newVehMileage.trim() || undefined,
+                };
+
+                if (onAddVehicle) {
+                  onAddVehicle(newVeh);
+                }
+
+                setSelectedVehicleId(newVeh.id);
+                setPlate(newVeh.plate);
+                setBrand(newVeh.brand);
+                setModel(newVeh.model);
+                setYear(newVeh.year);
+                setColor(newVeh.color);
+                setVin(newVeh.vin || '');
+                setMileage(newVeh.mileage || '');
+
+                setShowAddVehicleModal(false);
+              }}
+              className="flex flex-col gap-3"
+            >
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 block">Placa / Matrícula *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ej. AB123CD"
+                    value={newVehPlate}
+                    onChange={(e) => setNewVehPlate(e.target.value)}
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono uppercase font-bold focus:border-[#00E5FF] outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 block">Año *</label>
+                  <input
+                    type="number"
+                    required
+                    value={newVehYear}
+                    onChange={(e) => setNewVehYear(Number(e.target.value))}
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono focus:border-[#00E5FF] outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 block">Marca *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ej. Toyota / Porsche"
+                    value={newVehBrand}
+                    onChange={(e) => setNewVehBrand(e.target.value)}
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 block">Modelo *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ej. Corolla / 911"
+                    value={newVehModel}
+                    onChange={(e) => setNewVehModel(e.target.value)}
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 block">Color</label>
+                  <input
+                    type="text"
+                    placeholder="Ej. Negro"
+                    value={newVehColor}
+                    onChange={(e) => setNewVehColor(e.target.value)}
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 block">VIN / Chasis</label>
+                  <input
+                    type="text"
+                    placeholder="Opcional"
+                    value={newVehVin}
+                    onChange={(e) => setNewVehVin(e.target.value)}
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono focus:border-[#00E5FF] outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 block">Kilometraje</label>
+                  <input
+                    type="text"
+                    placeholder="Ej. 45.000 km"
+                    value={newVehMileage}
+                    onChange={(e) => setNewVehMileage(e.target.value)}
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono focus:border-[#00E5FF] outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-3 pt-3 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setShowAddVehicleModal(false)}
+                  className="flex-1 bg-transparent border border-white/20 text-white py-2.5 rounded-lg text-xs font-bold hover:bg-white/5 transition-colors uppercase tracking-wider"
+                >
+                  CANCELAR
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-[#00E5FF] text-black py-2.5 rounded-lg text-xs font-bold hover:bg-cyan-400 transition-colors uppercase tracking-wider flex items-center justify-center gap-1.5"
+                >
+                  <CheckCircle className="w-4 h-4" /> GUARDAR VEHÍCULO
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

@@ -9,7 +9,7 @@ interface CashierViewProps {
   transactions: CashTransaction[];
   customers: Customer[];
   onAddPayment: (orderId: string, amount: number, method: any, ref: string, notes: string, condition: 'contado' | 'cuenta_corriente') => void;
-  onAccountPayment: (customerId: string, amount: number, method: any, ref: string, notes: string) => void;
+  onAccountPayment: (customerId: string, amount: number, method: any, ref: string, notes: string) => CashTransaction | void;
   registerState: { isOpen: boolean; openedAt: string | null; initialAmount: number };
   setRegisterState: (state: any) => void;
 }
@@ -19,6 +19,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
   const [selectedReceiptTx, setSelectedReceiptTx] = useState<CashTransaction | null>(null);
   const [expandedCustomer, setExpandedCustomer] = useState<string | null>(null);
   const [accountSearchTerm, setAccountSearchTerm] = useState('');
+  const [accountDateFilter, setAccountDateFilter] = useState('');
 
   // Form State
   const [selectedOrderId, setSelectedOrderId] = useState<string>(orders[0]?.id || '');
@@ -31,26 +32,54 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
   const [showCloseModal, setShowCloseModal] = useState(false);
   const [initialAmountInput, setInitialAmountInput] = useState(0);
 
+  // Set of order IDs that have already been transferred to Cuenta Corriente
+  const ccOrderIds = new Set(
+    transactions
+      .filter((t) => t.paymentCondition === 'cuenta_corriente' && t.orderId)
+      .map((t) => t.orderId)
+  );
+
+  // Available ODS for initial payment / transfer (pending balance AND not yet in Cuenta Corriente)
+  const availableOrders = orders.filter(
+    (o) => o.totalAmount - o.paidAmount > 0 && !ccOrderIds.has(o.id)
+  );
+
+  // Keep selectedOrderId in sync with availableOrders
+  React.useEffect(() => {
+    if (availableOrders.length > 0) {
+      if (!availableOrders.some((o) => o.id === selectedOrderId)) {
+        setSelectedOrderId(availableOrders[0].id);
+        setPaymentAmount(availableOrders[0].totalAmount - availableOrders[0].paidAmount);
+      }
+    } else {
+      setSelectedOrderId('');
+      setPaymentAmount(0);
+    }
+  }, [availableOrders, selectedOrderId]);
+
   const selectedOrder = orders.find((o) => o.id === selectedOrderId);
   const pendingBalance = selectedOrder ? selectedOrder.totalAmount - selectedOrder.paidAmount : 0;
 
   const totalCollected = transactions.filter(t => t.paymentCondition !== 'cuenta_corriente').reduce((sum, t) => sum + t.amount, 0);
   const totalAccountsReceivable = orders.reduce((sum, o) => sum + (o.totalAmount - o.paidAmount), 0);
 
+  // Highest Cash (Contado) Ticket
+  const contadoTxs = transactions.filter(t => t.type === 'payment' && (t.paymentCondition === 'contado' || !t.paymentCondition));
+  const maxContadoTicket = contadoTxs.length > 0 ? Math.max(...contadoTxs.map(t => t.amount)) : 0;
+
   const handleSubmitPayment = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedOrder || paymentAmount <= 0) return;
+    if (!selectedOrder) return;
+    const finalAmount = paymentAmount > 0 ? paymentAmount : pendingBalance;
+    if (finalAmount <= 0) return;
     
     // Register Payment
-    onAddPayment(selectedOrderId, paymentAmount, paymentMethod, refNumber, notes, paymentCondition);
+    onAddPayment(selectedOrderId, finalAmount, paymentMethod, refNumber, notes, paymentCondition);
     
     // Reset Form
     setPaymentAmount(0);
     setRefNumber('');
     setNotes('');
-
-    // Ideally we would show the receipt immediately here, but since onAddPayment is sync, 
-    // we can alert the user or they can just click "Ver Recibo" on the table.
   };
 
   const handleOpenRegister = (e: React.FormEvent) => {
@@ -103,12 +132,12 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
 
   // Group Accounts by Customer
   const customerAccounts = Array.from(uniqueCustomersMap.values()).map(customer => {
-    const customerOrders = orders.filter(o => o.customerId === customer.id || o.customerName === customer.fullName);
+    const customerOrders = orders.filter(o => (o.customerId === customer.id || o.customerName === customer.fullName) && ccOrderIds.has(o.id));
     const customerTxs = transactions.filter(t => t.customerName === customer.fullName && t.paymentCondition === 'abono_cuenta' as any);
     
     const totalBilled = customerOrders.reduce((sum, o) => sum + o.totalAmount, 0);
-    const totalPaid = customerOrders.reduce((sum, o) => sum + o.paidAmount, 0);
-    const totalDebt = totalBilled - totalPaid;
+    const totalPaid = customerTxs.reduce((sum, t) => sum + t.amount, 0);
+    const totalDebt = Math.max(0, totalBilled - totalPaid);
 
     return {
       customer,
@@ -118,12 +147,18 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
       totalPaid,
       totalDebt
     };
-  }).filter(acc => acc.totalDebt > 0 || acc.customerTxs.length > 0);
+  }).filter(acc => acc.totalDebt > 0 || acc.customerTxs.length > 0 || acc.customerOrders.length > 0);
 
-  const filteredCustomerAccounts = customerAccounts.filter(acc => 
-    acc.customer.fullName.toLowerCase().includes(accountSearchTerm.toLowerCase()) || 
-    acc.customer.documentId.toLowerCase().includes(accountSearchTerm.toLowerCase())
-  );
+  const filteredCustomerAccounts = customerAccounts.filter(acc => {
+    const matchesSearch = acc.customer.fullName.toLowerCase().includes(accountSearchTerm.toLowerCase()) || 
+                          acc.customer.documentId.toLowerCase().includes(accountSearchTerm.toLowerCase());
+    
+    const matchesDate = !accountDateFilter || 
+                        acc.customerTxs.some(t => t.date.includes(accountDateFilter)) ||
+                        acc.customerOrders.some(o => o.entryDate.includes(accountDateFilter));
+
+    return matchesSearch && matchesDate;
+  });
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8 max-w-7xl mx-auto w-full relative">
@@ -159,22 +194,28 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="nike-card p-5 border-emerald-500/30">
           <span className="text-[10px] font-mono text-slate-400 uppercase">RECAUDADO EN CAJA</span>
-          <div className="font-display text-4xl text-emerald-400 font-mono"><CurrencyDisplay amount={totalCollected} size="lg" /></div>
-          <span className="text-xs text-slate-400">Total recibido históricamente</span>
+          <div className="font-display text-3xl text-emerald-400 font-mono"><CurrencyDisplay amount={totalCollected} size="lg" /></div>
+          <span className="text-xs text-slate-400">Total recibido en efectivo/transferencias</span>
         </div>
 
         <div className="nike-card p-5 border-amber-500/30">
           <span className="text-[10px] font-mono text-slate-400 uppercase">CUENTAS POR COBRAR</span>
-          <div className="font-display text-4xl text-amber-400 font-mono"><CurrencyDisplay amount={totalAccountsReceivable} size="lg" /></div>
-          <span className="text-xs text-slate-400">Balance total pendiente en la calle</span>
+          <div className="font-display text-3xl text-amber-400 font-mono"><CurrencyDisplay amount={totalAccountsReceivable} size="lg" /></div>
+          <span className="text-xs text-slate-400">Balance total pendiente en crédito</span>
         </div>
 
         <div className="nike-card p-5 border-cyan-500/30">
+          <span className="text-[10px] font-mono text-slate-400 uppercase">MAYOR TICKET CONTADO</span>
+          <div className="font-display text-3xl text-[#00E5FF] font-mono"><CurrencyDisplay amount={maxContadoTicket} size="lg" /></div>
+          <span className="text-xs text-slate-400">Venta más alta procesada a contado</span>
+        </div>
+
+        <div className="nike-card p-5 border-purple-500/30">
           <span className="text-[10px] font-mono text-slate-400 uppercase">ÓRDENES ACTIVAS</span>
-          <div className="font-display text-4xl text-cyan-400 font-mono">{orders.length}</div>
+          <div className="font-display text-3xl text-purple-400 font-mono">{orders.length}</div>
           <span className="text-xs text-slate-400">ODS registradas en taller</span>
         </div>
       </div>
@@ -235,16 +276,20 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
                   value={selectedOrderId}
                   onChange={(e) => {
                     setSelectedOrderId(e.target.value);
-                    const ord = orders.find((o) => o.id === e.target.value);
+                    const ord = availableOrders.find((o) => o.id === e.target.value);
                     if (ord) setPaymentAmount(ord.totalAmount - ord.paidAmount);
                   }}
                   className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-[#00E5FF] outline-none"
                 >
-                  {orders.map((o) => (
-                    <option key={o.id} value={o.id}>
-                      {o.orderNumber} - {o.customerName} - Pendiente: ${o.totalAmount - o.paidAmount}
-                    </option>
-                  ))}
+                  {availableOrders.length === 0 ? (
+                    <option value="">No hay ODS pendientes por ingresar</option>
+                  ) : (
+                    availableOrders.map((o) => (
+                      <option key={o.id} value={o.id}>
+                        {o.orderNumber} - {o.customerName} - Pendiente: ${o.totalAmount - o.paidAmount}
+                      </option>
+                    ))
+                  )}
                 </select>
               </div>
 
@@ -384,15 +429,35 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
 
       {activeTab === 'accounts' && (
         <div className="animate-fade-in flex flex-col gap-4">
-          <div className="flex items-center gap-4 bg-slate-900 border border-white/10 rounded-xl px-4 py-2 w-full max-w-md">
-            <Search className="w-5 h-5 text-slate-400" />
-            <input 
-              type="text" 
-              placeholder="Buscar por Nombre o Documento..." 
-              value={accountSearchTerm}
-              onChange={(e) => setAccountSearchTerm(e.target.value)}
-              className="bg-transparent border-none outline-none text-white w-full text-sm placeholder:text-slate-500"
-            />
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-4 bg-slate-900 border border-white/10 rounded-xl px-4 py-2 flex-1 max-w-md">
+              <Search className="w-5 h-5 text-slate-400" />
+              <input 
+                type="text" 
+                placeholder="Buscar por Nombre o Documento..." 
+                value={accountSearchTerm}
+                onChange={(e) => setAccountSearchTerm(e.target.value)}
+                className="bg-transparent border-none outline-none text-white w-full text-sm placeholder:text-slate-500"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 bg-slate-900 border border-white/10 rounded-xl px-4 py-2">
+              <span className="text-xs text-slate-400 uppercase font-mono">Filtrar Fecha:</span>
+              <input 
+                type="date"
+                value={accountDateFilter}
+                onChange={(e) => setAccountDateFilter(e.target.value)}
+                className="bg-black border border-white/10 text-white rounded px-2 py-1 text-xs outline-none focus:border-[#00E5FF]"
+              />
+              {accountDateFilter && (
+                <button 
+                  onClick={() => setAccountDateFilter('')}
+                  className="text-xs text-red-400 hover:underline font-bold ml-1"
+                >
+                  Limpiar
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="bg-slate-900 border border-white/10 rounded-xl overflow-hidden">
@@ -494,13 +559,11 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
                                       const notes = formData.get('notes') as string;
                                       
                                       if (amount > 0 && amount <= acc.totalDebt) {
-                                        onAccountPayment(acc.customer.id, amount, method, ref, notes);
+                                        const createdTx = onAccountPayment(acc.customer.id, amount, method, ref, notes);
                                         e.currentTarget.reset();
-                                        // Wait a tiny bit then select the latest transaction to show receipt
-                                        setTimeout(() => {
-                                          const latestTxBtn = document.querySelector(`[data-customer="${acc.customer.id}"] .view-latest-receipt`) as HTMLButtonElement;
-                                          if (latestTxBtn) latestTxBtn.click();
-                                        }, 100);
+                                        if (createdTx) {
+                                          setSelectedReceiptTx(createdTx);
+                                        }
                                       }
                                     }}
                                   >

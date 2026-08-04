@@ -84,24 +84,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <button onClick={onNewODS} className="btn-nike-primary text-xs py-2.5 justify-center">
               <Plus className="w-4 h-4 stroke-[3]" /> NUEVA ORDEN DE SERVICIO
             </button>
-            <button
-              onClick={() => onNavigateTab('kanban')}
-              className="btn-nike-secondary text-xs py-2 justify-center"
-            >
-              <Kanban className="w-4 h-4 text-[#00E5FF]" /> TABLERO EN VIVO
-            </button>
-            <button 
-              onClick={() => {
-                if(window.confirm('¿Estás seguro de que deseas BORRAR todo el historial de caja y cuentas corrientes? Esto dejará todo en cero.')) {
-                  localStorage.setItem('sw_transactions', '[]');
-                  localStorage.setItem('sw_register_state', JSON.stringify({ isOpen: false, openedAt: null, initialAmount: 0 }));
-                  window.location.reload();
-                }
-              }}
-              className="bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/30 text-xs py-2 justify-center rounded-lg font-bold transition-colors mt-2"
-            >
-              REINICIAR CAJA A CERO
-            </button>
           </div>
         </div>
       </div>
