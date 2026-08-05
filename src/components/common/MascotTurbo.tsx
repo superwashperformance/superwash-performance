@@ -13,15 +13,17 @@ export const MascotTurbo: React.FC<MascotTurboProps> = ({
   className = ''
 }) => {
   const avatarSizes = {
-    sm: 'w-12 h-12',
-    md: 'w-20 h-20',
-    lg: 'w-28 h-28'
+    sm: 'w-10 h-10 sm:w-12 sm:h-12',
+    md: 'w-16 h-16 sm:w-20 sm:h-20',
+    lg: 'w-24 h-24 sm:w-28 sm:h-28'
   };
 
+  const containerPadding = size === 'sm' ? 'p-2.5 sm:p-3 rounded-xl sm:rounded-2xl gap-3' : 'p-4 rounded-2xl gap-4';
+
   return (
-    <div className={`flex items-start gap-4 p-4 rounded-2xl bg-gradient-to-r from-slate-900/90 via-slate-900/70 to-slate-950 border border-white/10 shadow-xl ${className}`}>
+    <div className={`flex items-center gap-3 ${containerPadding} bg-gradient-to-r from-slate-900/90 via-slate-900/70 to-slate-950 border border-white/10 shadow-xl ${className}`}>
       {/* Turbo Mascot Avatar */}
-      <div className={`relative shrink-0 ${avatarSizes[size]} rounded-2xl bg-gradient-to-br from-cyan-500/20 via-slate-800 to-black p-1 border border-cyan-400/40 shadow-lg flex items-center justify-center overflow-hidden group`}>
+      <div className={`relative shrink-0 ${avatarSizes[size]} rounded-xl sm:rounded-2xl bg-gradient-to-br from-cyan-500/20 via-slate-800 to-black p-1 border border-cyan-400/40 shadow-lg flex items-center justify-center overflow-hidden group`}>
         <div className="absolute inset-0 bg-cyan-500/10 animate-pulse-glow" />
         
         {/* Vector Mascot Graphic */}
@@ -58,20 +60,20 @@ export const MascotTurbo: React.FC<MascotTurboProps> = ({
           <circle cx="60" cy="100" r="4" fill="#00E5FF" />
         </svg>
 
-        <div className="absolute -bottom-1 -right-1 bg-[#00E5FF] text-black rounded-full p-1 shadow-md">
-          <Zap className="w-3.5 h-3.5 fill-black" />
+        <div className="absolute -bottom-1 -right-1 bg-[#00E5FF] text-black rounded-full p-0.5 sm:p-1 shadow-md">
+          <Zap className="w-2.5 h-2.5 sm:w-3 h-3 fill-black" />
         </div>
       </div>
 
       {/* Speech Bubble */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="font-display text-lg tracking-wider text-white">TURBO</span>
-          <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-cyan-500/20 text-[#00E5FF] border border-cyan-500/30 flex items-center gap-1">
-            <ShieldCheck className="w-3 h-3" /> ASISTENTE TALLER 360°
+      <div className="flex-1 min-w-0 text-left">
+        <div className="flex items-center gap-1.5 mb-0.5">
+          <span className={`font-display tracking-wider text-white ${size === 'sm' ? 'text-sm' : 'text-lg'}`}>TURBO</span>
+          <span className={`uppercase font-bold tracking-wider rounded-full bg-cyan-500/20 text-[#00E5FF] border border-cyan-500/30 flex items-center gap-1 ${size === 'sm' ? 'text-[9px] px-1.5 py-0.2' : 'text-[10px] px-2 py-0.5'}`}>
+            <ShieldCheck className="w-2.5 h-2.5 sm:w-3 h-3" /> ASISTENTE 360°
           </span>
         </div>
-        <p className="text-sm text-slate-300 leading-relaxed font-sans">
+        <p className={`text-slate-300 font-sans leading-snug ${size === 'sm' ? 'text-xs' : 'text-sm'}`}>
           {message}
         </p>
       </div>
