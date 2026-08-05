@@ -75,10 +75,19 @@ export const saveAuthorizedUsers = (users: AuthorizedUser[]): void => {
 };
 
 export const updateUserPassword = (email: string, newPass: string): boolean => {
+  return updateUserData(email, undefined, newPass);
+};
+
+export const updateUserData = (email: string, newName?: string, newPass?: string): boolean => {
   const users = getAuthorizedUsers();
   const index = users.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
   if (index !== -1) {
-    users[index].pass = newPass;
+    if (newName && newName.trim()) {
+      users[index].name = newName.trim();
+    }
+    if (newPass && newPass.trim()) {
+      users[index].pass = newPass.trim();
+    }
     saveAuthorizedUsers(users);
     return true;
   }
