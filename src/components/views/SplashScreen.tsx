@@ -166,7 +166,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
           © 2026 SUPER WASH PERFORMANCE C.A. - TODOS LOS DERECHOS RESERVADOS.
         </span>
 
-        {/* Centered Circular Developer Badge Image */}
+        {/* Centered Circular Developer Badge Image + Text */}
         <a
           href="#"
           onClick={(e) => {
@@ -174,14 +174,19 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
               e.preventDefault();
             }
           }}
-          className="inline-flex items-center justify-center group transition-all duration-300 cursor-pointer mt-2 w-12 h-12 md:w-14 md:h-14 rounded-full bg-slate-950/90 border border-cyan-500/30 hover:border-cyan-400/70 p-1 shadow-[0_0_15px_rgba(0,229,255,0.2)] hover:shadow-[0_0_25px_rgba(0,229,255,0.4)] backdrop-blur-md overflow-hidden"
+          className="inline-flex flex-col items-center justify-center group transition-all duration-300 cursor-pointer mt-2"
           title="BY ARFENIXTECH"
         >
-          <img
-            src="/arfenixtech-logo.png"
-            alt="ARfenixTech"
-            className="w-full h-full object-cover rounded-full mix-blend-lighten opacity-95 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 filter drop-shadow-[0_0_8px_rgba(0,229,255,0.5)]"
-          />
+          <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-slate-950/90 border border-cyan-500/30 group-hover:border-cyan-400/70 p-1 shadow-[0_0_15px_rgba(0,229,255,0.2)] group-hover:shadow-[0_0_25px_rgba(0,229,255,0.4)] backdrop-blur-md overflow-hidden flex items-center justify-center">
+            <img
+              src="/arfenixtech-logo.png"
+              alt="ARfenixTech"
+              className="w-full h-full object-cover rounded-full mix-blend-lighten opacity-95 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 filter drop-shadow-[0_0_8px_rgba(0,229,255,0.5)]"
+            />
+          </div>
+          <span className="text-[10px] md:text-xs font-mono font-bold tracking-widest text-slate-400 group-hover:text-[#00E5FF] uppercase mt-1.5 transition-colors">
+            BY ARFENIXTECH
+          </span>
         </a>
       </div>
     </div>
