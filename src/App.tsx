@@ -481,7 +481,11 @@ export function App() {
           userSession={userSession}
           onLogout={() => {
             setUserSession(null);
-            setShowAuthModal(true);
+            try {
+              localStorage.removeItem('sw_current_user');
+            } catch (e) {}
+            setShowAuthModal(false);
+            setAppMode('splash');
           }}
           onOpenAuth={() => setShowAuthModal(true)}
         />
@@ -573,6 +577,7 @@ export function App() {
 
           {activeTab === 'settings' && (
             <SettingsView 
+              userRole={userSession?.role || currentRole}
               technicians={technicians}
               setTechnicians={setTechnicians}
               receptionAgents={receptionAgents}

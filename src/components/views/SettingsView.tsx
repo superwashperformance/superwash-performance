@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Settings, Shield, Building, Database, UserPlus, Trash2, Users, Wrench, Edit3, Check, X as XIcon, Plus, Package, Lock, ShieldCheck, Key, EyeOff, AlertTriangle } from 'lucide-react';
+import { Settings, Shield, Building, Database, UserPlus, Trash2, Users, Wrench, Edit3, Check, X as XIcon, Plus, Package, Lock, ShieldCheck, Key, EyeOff, AlertTriangle, Save } from 'lucide-react';
 import { Agent, CompanyData, ServiceItem, InventoryItem } from '../../types';
+import { getAuthorizedUsers, updateUserPassword, AuthorizedUser } from '../../utils/security';
 
 interface SettingsViewProps {
+  userRole?: string;
   technicians: Agent[];
   setTechnicians: React.Dispatch<React.SetStateAction<Agent[]>>;
   receptionAgents: Agent[];
@@ -15,6 +17,7 @@ interface SettingsViewProps {
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({ 
+  userRole = 'admin',
   technicians, 
   setTechnicians, 
   receptionAgents, 
@@ -29,6 +32,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   const [newTechRole, setNewTechRole] = useState('');
   const [newAgentName, setNewAgentName] = useState('');
 
+  // Password Management State
+  const [authorizedUsersList, setAuthorizedUsersList] = useState<AuthorizedUser[]>(getAuthorizedUsers());
+  const [editingUserEmail, setEditingUserEmail] = useState<string | null>(null);
+  const [newPasswordValue, setNewPasswordValue] = useState('');
+  const [passwordSuccessMessage, setPasswordSuccessMessage] = useState('');
+
   // Editing Company Data State
   const [isEditingCompany, setIsEditingCompany] = useState(false);
   const [tempCompanyData, setTempCompanyData] = useState<CompanyData>(companyData);
@@ -38,6 +47,21 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   const [isImportingFromInventory, setIsImportingFromInventory] = useState(false);
   const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
   const [tempService, setTempService] = useState<Partial<ServiceItem>>({});
+
+  const handlePasswordSave = (email: string) => {
+    if (!newPasswordValue || newPasswordValue.trim().length < 4) {
+      alert('La nueva contraseña debe tener al menos 4 caracteres.');
+      return;
+    }
+    const success = updateUserPassword(email, newPasswordValue.trim());
+    if (success) {
+      setAuthorizedUsersList(getAuthorizedUsers());
+      setPasswordSuccessMessage(`✅ ¡Contraseña actualizada exitosamente para ${email}!`);
+      setEditingUserEmail(null);
+      setNewPasswordValue('');
+      setTimeout(() => setPasswordSuccessMessage(''), 4000);
+    }
+  };
 
   const handleAddTechnician = (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,6 +131,85 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         </h2>
         <p className="text-xs text-slate-400">Ajustes globales de sede, roles, técnicos, servicios y base de datos.</p>
       </div>
+
+      {/* Sección de Gestión de Contraseñas (Solo para Administrador y Dueño) */}
+      {(userRole === 'admin' || userRole === 'owner') && (
+        <div className="nike-card p-5 flex flex-col gap-4 border-cyan-500/30 bg-slate-900/90 shadow-2xl">
+          <div className="flex items-center justify-between border-b border-white/10 pb-3">
+            <div className="flex items-center gap-3 text-[#00E5FF]">
+              <Key className="w-5 h-5" />
+              <div>
+                <h3 className="font-display text-xl text-white">GESTIÓN DE CREDENCIALES Y CONTRASEÑAS</h3>
+                <p className="text-[11px] text-slate-400 font-mono">Panel exclusivo para Administrador (CEO) y Dueño (Director)</p>
+              </div>
+            </div>
+            <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 px-3 py-1 rounded-full flex items-center gap-1.5 font-bold">
+              <ShieldCheck className="w-3.5 h-3.5" /> CONTROL DE ACCESOS
+            </span>
+          </div>
+
+          {passwordSuccessMessage && (
+            <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold flex items-center gap-2">
+              <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>{passwordSuccessMessage}</span>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {authorizedUsersList.map((user) => (
+              <div key={user.email} className="bg-black/50 border border-slate-800 p-3.5 rounded-2xl flex flex-col gap-2 relative">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h4 className="text-xs font-bold text-white">{user.name}</h4>
+                    <p className="text-[11px] font-mono text-[#00E5FF]">{user.email}</p>
+                  </div>
+                  <span className="text-[9px] uppercase font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                    {user.role}
+                  </span>
+                </div>
+
+                <div className="pt-2 border-t border-white/5 flex items-center justify-between gap-2 mt-1">
+                  {editingUserEmail === user.email ? (
+                    <div className="flex items-center gap-2 w-full">
+                      <input
+                        type="text"
+                        placeholder="Nueva Contraseña"
+                        value={newPasswordValue}
+                        onChange={(e) => setNewPasswordValue(e.target.value)}
+                        className="bg-slate-950 border border-cyan-500/50 rounded-xl px-3 py-1.5 text-xs text-white outline-none w-full font-mono"
+                      />
+                      <button
+                        onClick={() => handlePasswordSave(user.email)}
+                        className="bg-[#00E5FF] text-black font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1 hover:bg-cyan-400 shrink-0"
+                      >
+                        <Save className="w-3.5 h-3.5" /> Guardar
+                      </button>
+                      <button
+                        onClick={() => { setEditingUserEmail(null); setNewPasswordValue(''); }}
+                        className="text-slate-400 hover:text-white p-1"
+                      >
+                        <XIcon className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <span className="text-xs font-mono text-slate-400 tracking-wider">
+                        Contraseña: <span className="text-slate-200">••••••••</span>
+                      </span>
+                      <button
+                        onClick={() => { setEditingUserEmail(user.email); setNewPasswordValue(user.pass); }}
+                        className="text-xs text-[#00E5FF] hover:underline font-medium flex items-center gap-1"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" /> Cambiar
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Técnicos Asignados */}
