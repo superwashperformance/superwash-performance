@@ -160,26 +160,29 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
         </div>
       </div>
 
-      {/* Footer Info & Developer Badge */}
-      <div className="relative z-10 w-full text-center text-xs text-slate-500 font-mono flex flex-col md:flex-row items-center justify-between gap-4 border-t border-white/10 pt-4">
-        <span>© 2026 SUPER WASH PERFORMANCE C.A. Todos los derechos reservados.</span>
+      {/* Footer Info & Centered Developer Badge */}
+      <div className="relative z-10 w-full text-center text-xs text-slate-400 font-mono flex flex-col items-center justify-center gap-2 border-t border-white/10 pt-4 pb-2">
+        <span className="uppercase tracking-wide font-bold">
+          © 2026 SUPER WASH PERFORMANCE C.A. - TODOS LOS DERECHOS RESERVADOS.
+        </span>
 
-        {/* Clickable Developer Badge with Image */}
+        {/* Centered Developer Badge Image with placeholder link */}
         <a
-          href="https://arfenixtech.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 group hover:opacity-100 opacity-90 transition-all bg-slate-900/90 px-3.5 py-1.5 rounded-full border border-white/10 hover:border-[#00E5FF]/50 shadow-lg"
-          title="Desarrollado por ARFENIXTECH - Haz clic para visitar nuestra página web"
+          href="#"
+          onClick={(e) => {
+            if (e.currentTarget.getAttribute('href') === '#') {
+              e.preventDefault();
+            }
+          }}
+          className="inline-flex items-center justify-center group hover:opacity-100 opacity-90 transition-all cursor-pointer mt-1"
+          title="BY ARFENIXTECH"
         >
           <img
             src="/arfenixtech-logo.png"
             alt="BY ARFENIXTECH"
-            className="h-6 w-auto object-contain group-hover:scale-105 transition-transform"
+            className="h-8 w-auto object-contain group-hover:scale-105 transition-transform"
           />
         </a>
-
-        <span className="text-slate-400">Diseño Oficial de Marca Integrado</span>
       </div>
     </div>
   );
