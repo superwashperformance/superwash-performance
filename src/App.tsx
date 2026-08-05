@@ -28,12 +28,37 @@ import { VehiclesView } from './components/views/VehiclesView';
 import { SettingsView } from './components/views/SettingsView';
 import { ODSDetailModal } from './components/views/ODSDetailModal';
 import { Search, X } from 'lucide-react';
+import { AuthModal, UserSession } from './components/views/AuthModal';
 
 export function App() {
   const [appMode, setAppMode] = useState<'splash' | 'admin' | 'tracking'>('splash');
   const [trackingPlate, setTrackingPlate] = useState('');
   const [activeTab, setActiveTab] = useState<NavTab>('dashboard');
-  const [currentRole, setCurrentRole] = useState<UserRole>('admin');
+  
+  // User Session Management
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [userSession, setUserSession] = useState<UserSession | null>(() => {
+    const saved = localStorage.getItem('sw_current_user');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null; // Require explicit login with credentials
+  });
+
+  const currentRole: UserRole = userSession?.role || 'admin';
+
+  // Persist User Session
+  React.useEffect(() => {
+    if (userSession) {
+      localStorage.setItem('sw_current_user', JSON.stringify(userSession));
+    } else {
+      localStorage.removeItem('sw_current_user');
+    }
+  }, [userSession]);
 
   // Application State
   const [orders, setOrders] = useState<ServiceOrder[]>([]);
@@ -400,10 +425,25 @@ export function App() {
   };
 
   if (appMode === 'splash') {
-    return <SplashScreen 
-      onEnter={() => setAppMode('admin')} 
-      onTrack={(plate) => { setTrackingPlate(plate); setAppMode('tracking'); }} 
-    />;
+    return (
+      <SplashScreen 
+        onEnter={(email, password) => {
+          if (email) {
+            const nameFromEmail = email.split('@')[0].toUpperCase();
+            setUserSession({
+              id: `usr-${Date.now()}`,
+              email: email,
+              fullName: nameFromEmail,
+              role: 'admin',
+              avatar: nameFromEmail.substring(0, 2),
+              token: `jwt-${Date.now()}`,
+            });
+          }
+          setAppMode('admin');
+        }} 
+        onTrack={(plate) => { setTrackingPlate(plate); setAppMode('tracking'); }} 
+      />
+    );
   }
   
   if (appMode === 'tracking') {
@@ -428,9 +468,19 @@ export function App() {
       <div className="print:hidden">
         <Header
           currentRole={currentRole}
-          onRoleChange={setCurrentRole}
+          onRoleChange={(r) => {
+            if (userSession) {
+              setUserSession({ ...userSession, role: r });
+            }
+          }}
           onNewODS={() => setActiveTab('ods_new' as any)}
           onSearchOpen={() => setIsSearchOpen(true)}
+          userSession={userSession}
+          onLogout={() => {
+            setUserSession(null);
+            setShowAuthModal(true);
+          }}
+          onOpenAuth={() => setShowAuthModal(true)}
         />
       </div>
 
@@ -592,6 +642,19 @@ export function App() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Auth Login / Register Modal */}
+      {(showAuthModal || !userSession) && (
+        <AuthModal
+          onLoginSuccess={(session) => {
+            setUserSession(session);
+            setShowAuthModal(false);
+          }}
+          onCancel={() => {
+            if (userSession) setShowAuthModal(false);
+          }}
+        />
       )}
     </div>
   );

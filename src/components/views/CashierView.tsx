@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ServiceOrder, CashTransaction, Customer } from '../../types';
 import { CurrencyDisplay } from '../common/CurrencyDisplay';
 import { ReceiptPDF } from '../common/ReceiptPDF';
-import { DollarSign, CreditCard, Plus, Receipt, FileText, ChevronDown, ChevronUp, User, Search } from 'lucide-react';
+import { DollarSign, CreditCard, Plus, Receipt, FileText, ChevronDown, ChevronUp, User, Search, Calendar } from 'lucide-react';
 
 interface CashierViewProps {
   orders: ServiceOrder[];
@@ -20,6 +20,25 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
   const [expandedCustomer, setExpandedCustomer] = useState<string | null>(null);
   const [accountSearchTerm, setAccountSearchTerm] = useState('');
   const [accountDateFilter, setAccountDateFilter] = useState('');
+
+  // Mayor por Fecha (Caja Global) - por defecto el día de hoy YYYY-MM-DD
+  const [cashierDateFilter, setCashierDateFilter] = useState<string>(
+    new Date().toISOString().split('T')[0]
+  );
+
+  // Helper date match
+  const isMatchingDate = (dateStr: string, filterDate: string) => {
+    if (!filterDate) return true;
+    if (!dateStr) return false;
+    if (dateStr.includes(filterDate)) return true;
+    const [y, m, d] = filterDate.split('-');
+    if (y && m && d) {
+      const formattedEs = `${d.padStart(2, '0')}/${m.padStart(2, '0')}/${y}`;
+      const formattedEsShort = `${parseInt(d)}/${parseInt(m)}/${y}`;
+      return dateStr.includes(formattedEs) || dateStr.includes(formattedEsShort);
+    }
+    return false;
+  };
 
   // Form State
   const [selectedOrderId, setSelectedOrderId] = useState<string>(orders[0]?.id || '');
@@ -60,12 +79,20 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
   const selectedOrder = orders.find((o) => o.id === selectedOrderId);
   const pendingBalance = selectedOrder ? selectedOrder.totalAmount - selectedOrder.paidAmount : 0;
 
-  const totalCollected = transactions.filter(t => t.paymentCondition !== 'cuenta_corriente').reduce((sum, t) => sum + t.amount, 0);
+  // Filtered transactions for Mayor por Fecha
+  const filteredTransactions = transactions.filter((t) => isMatchingDate(t.date, cashierDateFilter));
+
+  const totalCollected = filteredTransactions
+    .filter((t) => t.paymentCondition !== 'cuenta_corriente')
+    .reduce((sum, t) => sum + t.amount, 0);
+
   const totalAccountsReceivable = orders.reduce((sum, o) => sum + (o.totalAmount - o.paidAmount), 0);
 
-  // Highest Cash (Contado) Ticket
-  const contadoTxs = transactions.filter(t => t.type === 'payment' && (t.paymentCondition === 'contado' || !t.paymentCondition));
-  const maxContadoTicket = contadoTxs.length > 0 ? Math.max(...contadoTxs.map(t => t.amount)) : 0;
+  // Highest Cash (Contado) Ticket for selected date
+  const contadoTxs = filteredTransactions.filter(
+    (t) => t.type === 'payment' && (t.paymentCondition === 'contado' || !t.paymentCondition)
+  );
+  const maxContadoTicket = contadoTxs.length > 0 ? Math.max(...contadoTxs.map((t) => t.amount)) : 0;
 
   const handleSubmitPayment = (e: React.FormEvent) => {
     e.preventDefault();
@@ -193,12 +220,48 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
         )}
       </div>
 
+      {/* Date Filter Bar for Mayor */}
+      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-black/40 border border-cyan-500/30">
+        <div className="flex items-center gap-2">
+          <Calendar className="w-5 h-5 text-[#00E5FF]" />
+          <span className="font-display text-sm text-white tracking-wider">FILTRAR MAYOR DE CAJA POR FECHA:</span>
+          {cashierDateFilter && (
+            <span className="bg-[#00E5FF]/20 text-[#00E5FF] text-xs font-mono font-bold px-2 py-0.5 rounded">
+              {cashierDateFilter}
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2">
+          <input
+            type="date"
+            value={cashierDateFilter}
+            onChange={(e) => setCashierDateFilter(e.target.value)}
+            className="bg-slate-900 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white outline-none focus:border-[#00E5FF] font-mono"
+          />
+          <button
+            onClick={() => setCashierDateFilter(new Date().toISOString().split('T')[0])}
+            className="bg-[#00E5FF]/20 text-[#00E5FF] border border-[#00E5FF]/40 hover:bg-[#00E5FF] hover:text-black px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition-all uppercase"
+          >
+            HOY
+          </button>
+          {cashierDateFilter && (
+            <button
+              onClick={() => setCashierDateFilter('')}
+              className="bg-slate-800 text-slate-400 hover:text-white px-3 py-1.5 rounded-lg text-xs font-mono transition-all uppercase"
+            >
+              VER TODO
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="nike-card p-5 border-emerald-500/30">
           <span className="text-[10px] font-mono text-slate-400 uppercase">RECAUDADO EN CAJA</span>
           <div className="font-display text-3xl text-emerald-400 font-mono"><CurrencyDisplay amount={totalCollected} size="lg" /></div>
-          <span className="text-xs text-slate-400">Total recibido en efectivo/transferencias</span>
+          <span className="text-xs text-slate-400">Total en caja {cashierDateFilter ? `el ${cashierDateFilter}` : 'histórico'}</span>
         </div>
 
         <div className="nike-card p-5 border-amber-500/30">
@@ -210,13 +273,13 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
         <div className="nike-card p-5 border-cyan-500/30">
           <span className="text-[10px] font-mono text-slate-400 uppercase">MAYOR TICKET CONTADO</span>
           <div className="font-display text-3xl text-[#00E5FF] font-mono"><CurrencyDisplay amount={maxContadoTicket} size="lg" /></div>
-          <span className="text-xs text-slate-400">Venta más alta procesada a contado</span>
+          <span className="text-xs text-slate-400">Ticket más alto {cashierDateFilter ? `del ${cashierDateFilter}` : 'procesado'}</span>
         </div>
 
         <div className="nike-card p-5 border-purple-500/30">
-          <span className="text-[10px] font-mono text-slate-400 uppercase">ÓRDENES ACTIVAS</span>
-          <div className="font-display text-3xl text-purple-400 font-mono">{orders.length}</div>
-          <span className="text-xs text-slate-400">ODS registradas en taller</span>
+          <span className="text-[10px] font-mono text-slate-400 uppercase">MOVIMIENTOS EN FECHA</span>
+          <div className="font-display text-3xl text-purple-400 font-mono">{filteredTransactions.length}</div>
+          <span className="text-xs text-slate-400">Recibos / pagos en este día</span>
         </div>
       </div>
 
@@ -387,7 +450,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5 font-sans">
-                  {transactions.map((tx) => (
+                  {filteredTransactions.map((tx) => (
                     <tr key={tx.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                       <td className="p-3 font-mono text-slate-400">{new Date(tx.date).toLocaleDateString()}</td>
                       <td className="p-3 font-medium text-white">{tx.customerName}</td>

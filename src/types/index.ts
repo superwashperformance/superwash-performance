@@ -22,24 +22,6 @@ export type ItemCondition = 'ok' | 'damaged' | 'missing' | 'observation';
 
 export type InventoryCategory = 'detailing' | 'paint';
 
-export type ThemeMode = 'dark' | 'light' | 'system';
-export type InterfaceSize = 'compact' | 'normal' | 'spacious';
-export type FontScale = 'small' | 'normal' | 'large';
-export type PrimaryColorName = 'cyan' | 'blue' | 'green' | 'orange' | 'purple' | 'red';
-
-export interface ThemeSettings {
-  mode: ThemeMode;
-  primaryColor: PrimaryColorName;
-  interfaceSize: InterfaceSize;
-  fontScale: FontScale;
-  showAnimations: boolean;
-  showShadows: boolean;
-  allowTransparencies: boolean;
-  roundedCorners: boolean;
-  highContrast: boolean;
-  reduceMotion: boolean;
-}
-
 export interface Customer {
   id: string;
   fullName: string;
@@ -205,7 +187,6 @@ export interface Agent {
 export interface CompanyData {
   name: string;
   documentId: string;
-  rif?: string;
   address: string;
   phone: string;
   email: string;

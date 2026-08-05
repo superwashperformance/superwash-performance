@@ -8,178 +8,17 @@
 @import "@fontsource/jetbrains-mono/700.css";
 @import "@fontsource/jetbrains-mono/800.css";
 
-/* GLOBAL DESIGN TOKENS SYSTEM */
-:root {
-  --transition-speed: 250ms;
-  --font-display: 'Nunito Sans', sans-serif;
-  --font-heading: 'Nunito Sans', sans-serif;
-  --font-sans: 'Nunito Sans', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-
-  /* Primary Default Color: Cyan */
-  --primary: #00E5FF;
-  --primary-hover: #33EBFF;
-  --primary-active: #00B3CC;
-  --primary-rgb: 0, 229, 255;
-  --primary-text: #000000;
-}
-
-/* Primary Accent Variations */
-[data-primary="cyan"] {
-  --primary: #00E5FF;
-  --primary-hover: #33EBFF;
-  --primary-active: #00B3CC;
-  --primary-rgb: 0, 229, 255;
-  --primary-text: #000000;
-}
-
-[data-primary="blue"] {
-  --primary: #3B82F6;
-  --primary-hover: #60A5FA;
-  --primary-active: #2563EB;
-  --primary-rgb: 59, 130, 246;
-  --primary-text: #FFFFFF;
-}
-
-[data-primary="green"] {
-  --primary: #10B981;
-  --primary-hover: #34D399;
-  --primary-active: #059669;
-  --primary-rgb: 16, 185, 129;
-  --primary-text: #000000;
-}
-
-[data-primary="orange"] {
-  --primary: #F97316;
-  --primary-hover: #FB923C;
-  --primary-active: #EA580C;
-  --primary-rgb: 249, 115, 22;
-  --primary-text: #FFFFFF;
-}
-
-[data-primary="purple"] {
-  --primary: #A855F7;
-  --primary-hover: #C084FC;
-  --primary-active: #9333EA;
-  --primary-rgb: 168, 85, 247;
-  --primary-text: #FFFFFF;
-}
-
-[data-primary="red"] {
-  --primary: #EF4444;
-  --primary-hover: #F87171;
-  --primary-active: #DC2626;
-  --primary-rgb: 239, 68, 68;
-  --primary-text: #FFFFFF;
-}
-
-/* DARK THEME TOKENS */
-[data-theme="dark"] {
-  --bg-app: #06080C;
-  --bg-surface: #0B1220;
-  --bg-card: rgba(17, 22, 31, 0.85);
-  --bg-card-hover: rgba(26, 32, 44, 0.95);
-  --bg-input: #0F172A;
-  --bg-sidebar: #06080C;
-  --border-color: rgba(255, 255, 255, 0.1);
-  --border-color-hover: rgba(255, 255, 255, 0.25);
-  --border-cyan: rgba(var(--primary-rgb), 0.3);
-
-  --text-primary: #F8FAFC;
-  --text-secondary: #CBD5E1;
-  --text-muted: #64748B;
-  --text-inverse: #0F172A;
-
-  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  --glass-blur: 16px;
-  --glass-bg: rgba(17, 22, 31, 0.75);
-}
-
-/* LIGHT THEME TOKENS */
-[data-theme="light"] {
-  --bg-app: #F8FAFC;
-  --bg-surface: #FFFFFF;
-  --bg-card: #FFFFFF;
-  --bg-card-hover: #F1F5F9;
-  --bg-input: #F8FAFC;
-  --bg-sidebar: #FFFFFF;
-  --border-color: #CBD5E1;
-  --border-color-hover: #94A3B8;
-  --border-cyan: rgba(var(--primary-rgb), 0.4);
-
-  --text-primary: #0F172A;
-  --text-secondary: #475569;
-  --text-muted: #94A3B8;
-  --text-inverse: #F8FAFC;
-
-  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-  --glass-blur: 8px;
-  --glass-bg: rgba(255, 255, 255, 0.9);
-}
-
-/* HIGH CONTRAST MODIFIERS */
-[data-contrast="true"][data-theme="dark"] {
-  --bg-app: #000000;
-  --bg-surface: #050505;
-  --bg-card: #0D0D0D;
-  --border-color: #FFFFFF;
-  --text-primary: #FFFFFF;
-  --text-secondary: #E2E8F0;
-}
-
-[data-contrast="true"][data-theme="light"] {
-  --bg-app: #FFFFFF;
-  --bg-surface: #FFFFFF;
-  --bg-card: #FFFFFF;
-  --border-color: #000000;
-  --text-primary: #000000;
-  --text-secondary: #1E293B;
-}
-
-/* FONT SCALING */
-[data-font="small"] {
-  font-size: 14px;
-}
-[data-font="normal"] {
-  font-size: 16px;
-}
-[data-font="large"] {
-  font-size: 18px;
-}
-
-/* DISABLE TRANSPARENCY OPTION */
-[data-transparencies="false"] .nike-card {
-  backdrop-filter: none !important;
-  background: var(--bg-card) !important;
-}
-
-/* DISABLE SHADOWS OPTION */
-[data-shadows="false"] * {
-  box-shadow: none !important;
-}
-
-/* ROUNDED CORNERS OPTION */
-[data-rounded="false"] * {
-  border-radius: 0px !important;
-}
-
-/* REDUCE MOTION OPTION */
-[data-reduce-motion="true"] * {
-  animation: none !important;
-  transition: none !important;
-}
-
 @layer base {
-  * {
-    transition: background-color var(--transition-speed) ease,
-                border-color var(--transition-speed) ease,
-                color var(--transition-speed) ease,
-                box-shadow var(--transition-speed) ease;
+  :root {
+    --font-display: 'Nunito Sans', sans-serif;
+    --font-heading: 'Nunito Sans', sans-serif;
+    --font-sans: 'Nunito Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
   }
 
   body {
-    background-color: var(--bg-app);
-    color: var(--text-primary);
+    background-color: #06080C;
+    color: #F0F6FC;
     font-family: var(--font-sans);
     font-weight: 600;
     overflow-x: hidden;
@@ -204,26 +43,28 @@
   font-weight: 700;
 }
 
-/* Universal Enterprise Card Class */
+/* Nike Athletic Glass Panel */
 .nike-card {
-  background: var(--bg-card);
-  backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--border-color);
-  box-shadow: var(--card-shadow);
+  background: rgba(17, 22, 31, 0.75);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   border-radius: 1rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .nike-card:hover {
-  border-color: var(--border-cyan);
+  border-color: rgba(0, 229, 255, 0.3);
+  box-shadow: 0 12px 35px rgba(0, 229, 255, 0.08);
 }
 
-/* Dynamic Primary Glow Effect */
+/* Volt Cyan Glow Effect */
 .glow-cyan {
-  box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.35);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.35);
 }
 
 .glow-cyan-lg {
-  box-shadow: 0 0 35px rgba(var(--primary-rgb), 0.5);
+  box-shadow: 0 0 35px rgba(0, 229, 255, 0.5);
 }
 
 .glow-amber {
@@ -234,10 +75,10 @@
   box-shadow: 0 0 20px rgba(0, 230, 118, 0.35);
 }
 
-/* Universal Primary Button */
+/* Nike Athletic Pill Button */
 .btn-nike-primary {
-  background: var(--primary);
-  color: var(--primary-text);
+  background: #00E5FF;
+  color: #000000;
   font-family: var(--font-display);
   font-size: 1.15rem;
   padding: 0.65rem 1.6rem;
@@ -248,15 +89,14 @@
   font-weight: 700;
   letter-spacing: 0.05em;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 20px rgba(var(--primary-rgb), 0.3);
+  box-shadow: 0 4px 20px rgba(0, 229, 255, 0.3);
   cursor: pointer;
-  border: none;
 }
 
 .btn-nike-primary:hover {
-  background: var(--primary-hover);
+  background: #33EBFF;
   transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 6px 25px rgba(var(--primary-rgb), 0.5);
+  box-shadow: 0 6px 25px rgba(0, 229, 255, 0.5);
 }
 
 .btn-nike-primary:active {
@@ -264,9 +104,9 @@
 }
 
 .btn-nike-secondary {
-  background: var(--bg-surface);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.06);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   font-family: var(--font-display);
   font-size: 1.1rem;
   padding: 0.6rem 1.4rem;
@@ -280,28 +120,28 @@
 }
 
 .btn-nike-secondary:hover {
-  background: var(--bg-card-hover);
-  border-color: var(--border-color-hover);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
   transform: translateY(-1px);
 }
 
-/* Enterprise Custom Scrollbar */
+/* Athletic Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-app);
+  background: #06080C;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-color);
+  background: #232D3F;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--primary);
+  background: #00E5FF;
 }
 
 /* 3D Rim Animation Keyframes */
@@ -336,3 +176,4 @@
 @media print {
   @page { margin: 0; }
 }
+

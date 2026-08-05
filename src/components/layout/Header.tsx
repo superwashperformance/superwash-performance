@@ -1,14 +1,18 @@
 import React from 'react';
 import { FaviconLogo } from '../common/FaviconLogo';
-import { UserRole, UserProfile } from '../../types';
+import { UserRole } from '../../types';
 import { mockUsers } from '../../data/mockData';
-import { Search, Plus, Shield, User, Bell, ChevronDown } from 'lucide-react';
+import { UserSession } from '../views/AuthModal';
+import { Search, Plus, Shield, User, Bell, ChevronDown, LogOut } from 'lucide-react';
 
 interface HeaderProps {
   currentRole: UserRole;
   onRoleChange: (role: UserRole) => void;
   onNewODS: () => void;
   onSearchOpen: () => void;
+  userSession?: UserSession | null;
+  onLogout?: () => void;
+  onOpenAuth?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -16,8 +20,13 @@ export const Header: React.FC<HeaderProps> = ({
   onRoleChange,
   onNewODS,
   onSearchOpen,
+  userSession,
+  onLogout,
+  onOpenAuth,
 }) => {
-  const currentUser = mockUsers.find((u) => u.role === currentRole) || mockUsers[0];
+  const currentUser = userSession
+    ? { name: userSession.fullName, role: userSession.role, avatar: userSession.avatar || 'U' }
+    : mockUsers.find((u) => u.role === currentRole) || mockUsers[0];
 
   const roleLabels: Record<UserRole, string> = {
     admin: 'Administrador General',
@@ -59,38 +68,36 @@ export const Header: React.FC<HeaderProps> = ({
           <span>NUEVA ODS</span>
         </button>
 
-        {/* Role Switcher for Demonstration */}
-        <div className="relative group">
-          <button className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-white/10 text-xs hover:border-cyan-500/40">
-            <Shield className="w-4 h-4 text-[#00E5FF]" />
-            <div className="text-left hidden sm:block">
-              <div className="text-[10px] text-slate-400 font-mono uppercase leading-none">Rol Activo</div>
-              <div className="text-xs font-bold text-white font-heading">{roleLabels[currentRole]}</div>
+        {/* User Session & Role Card */}
+        {userSession ? (
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-cyan-500/30 text-xs">
+              <div className="w-6 h-6 rounded-full bg-[#00E5FF] text-black font-bold flex items-center justify-center font-display text-xs">
+                {userSession.avatar || 'U'}
+              </div>
+              <div className="text-left hidden sm:block">
+                <div className="text-xs font-bold text-white leading-tight">{userSession.fullName}</div>
+                <div className="text-[10px] text-[#00E5FF] font-mono leading-none">{roleLabels[userSession.role]}</div>
+              </div>
             </div>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-          </button>
-
-          {/* Role Selector Dropdown */}
-          <div className="absolute right-0 top-full mt-2 w-56 bg-slate-900 border border-white/15 rounded-xl shadow-2xl p-2 hidden group-hover:block z-50">
-            <div className="text-[10px] uppercase tracking-widest font-mono text-slate-400 px-3 py-1 border-b border-white/10 mb-1">
-              Cambiar Rol de Demostración
-            </div>
-            {Object.entries(roleLabels).map(([roleKey, label]) => (
+            {onLogout && (
               <button
-                key={roleKey}
-                onClick={() => onRoleChange(roleKey as UserRole)}
-                className={`w-full text-left px-3 py-1.5 rounded-lg text-xs transition-colors flex items-center justify-between ${
-                  currentRole === roleKey
-                    ? 'bg-[#00E5FF] text-black font-bold'
-                    : 'text-slate-300 hover:bg-white/5 hover:text-white'
-                }`}
+                onClick={onLogout}
+                className="p-2 rounded-full bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white transition-colors"
+                title="Cerrar Sesión"
               >
-                <span>{label}</span>
-                {currentRole === roleKey && <span className="w-1.5 h-1.5 rounded-full bg-black" />}
+                <LogOut className="w-4 h-4" />
               </button>
-            ))}
+            )}
           </div>
-        </div>
+        ) : (
+          <button
+            onClick={onOpenAuth}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#00E5FF]/20 text-[#00E5FF] border border-[#00E5FF]/40 hover:bg-[#00E5FF] hover:text-black font-bold text-xs transition-all uppercase tracking-wider"
+          >
+            <User className="w-4 h-4" /> INICIAR SESIÓN
+          </button>
+        )}
       </div>
     </header>
   );
