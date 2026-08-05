@@ -166,7 +166,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
           © 2026 SUPER WASH PERFORMANCE C.A. - TODOS LOS DERECHOS RESERVADOS.
         </span>
 
-        {/* Centered Developer Badge Image blended with page theme */}
+        {/* Centered Circular Developer Badge Image */}
         <a
           href="#"
           onClick={(e) => {
@@ -174,13 +174,13 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
               e.preventDefault();
             }
           }}
-          className="inline-flex flex-col items-center justify-center group transition-all duration-300 cursor-pointer mt-2 p-2 rounded-2xl bg-slate-950/80 border border-cyan-500/20 hover:border-cyan-400/60 shadow-[0_0_20px_rgba(0,229,255,0.15)] hover:shadow-[0_0_30px_rgba(0,229,255,0.3)] backdrop-blur-md"
+          className="inline-flex items-center justify-center group transition-all duration-300 cursor-pointer mt-2 w-12 h-12 md:w-14 md:h-14 rounded-full bg-slate-950/90 border border-cyan-500/30 hover:border-cyan-400/70 p-1 shadow-[0_0_15px_rgba(0,229,255,0.2)] hover:shadow-[0_0_25px_rgba(0,229,255,0.4)] backdrop-blur-md overflow-hidden"
           title="BY ARFENIXTECH"
         >
           <img
             src="/arfenixtech-logo.png"
             alt="ARfenixTech"
-            className="h-16 md:h-20 w-auto object-contain rounded-xl mix-blend-lighten opacity-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300 filter drop-shadow-[0_0_12px_rgba(0,229,255,0.4)]"
+            className="w-full h-full object-cover rounded-full mix-blend-lighten opacity-95 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 filter drop-shadow-[0_0_8px_rgba(0,229,255,0.5)]"
           />
         </a>
       </div>
