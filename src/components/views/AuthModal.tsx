@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { UserRole } from '../../types';
 import { FaviconLogo } from '../common/FaviconLogo';
-import { sanitizeInput, checkRateLimit } from '../../utils/security';
+import { sanitizeInput, checkRateLimit, validateUserCredentials } from '../../utils/security';
 import { Lock, Mail, User, Shield, CheckCircle, AlertTriangle, ArrowRight, X } from 'lucide-react';
 
 export interface UserSession {
@@ -61,27 +61,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onLoginSuccess, onCancel }
       return;
     }
 
-    const match = demoUsers.find(u => u.email.toLowerCase() === cleanEmail.toLowerCase());
+    const validUser = validateUserCredentials(cleanEmail, password);
 
-    if (match) {
-      if (password !== match.pass && password !== 'admin123' && password.length < 3) {
-        setErrorMsg('Contraseña incorrecta.');
-        return;
-      }
-      handleDemoLogin(match);
-    } else {
-      // Direct custom login
-      const nameFromEmail = cleanEmail.split('@')[0].toUpperCase();
-      const session: UserSession = {
-        id: `usr-${Date.now()}`,
-        email: cleanEmail,
-        fullName: nameFromEmail,
-        role: 'admin',
-        avatar: nameFromEmail.substring(0, 2),
-        token: `jwt-${Date.now()}-${Math.random().toString(36).substring(2)}`,
-      };
-      onLoginSuccess(session);
+    if (!validUser) {
+      setErrorMsg('❌ Usuario o contraseña no autorizados. Acceso denegado.');
+      return;
     }
+
+    const session: UserSession = {
+      id: `usr-${Date.now()}`,
+      email: validUser.email,
+      fullName: validUser.name,
+      role: validUser.role as any,
+      avatar: validUser.name.substring(0, 2).toUpperCase(),
+      token: `jwt-${Date.now()}-${Math.random().toString(36).substring(2)}`,
+    };
+    onLoginSuccess(session);
   };
 
   return (

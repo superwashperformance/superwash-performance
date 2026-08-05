@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaviconLogo } from '../common/FaviconLogo';
 import { MascotTurbo } from '../common/MascotTurbo';
 import { ArrowRight, User, Lock, AlertTriangle } from 'lucide-react';
-import { sanitizeInput, checkRateLimit } from '../../utils/security';
+import { sanitizeInput, checkRateLimit, validateUserCredentials } from '../../utils/security';
 
 interface SplashScreenProps {
   onEnter: (username?: string, password?: string) => void;
@@ -32,7 +32,14 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
     }
 
     const cleanUsername = sanitizeInput(email);
-    onEnter(cleanUsername, password);
+    const validUser = validateUserCredentials(cleanUsername, password);
+
+    if (!validUser) {
+      setLoginError('❌ Usuario o contraseña no autorizados. Acceso denegado.');
+      return;
+    }
+
+    onEnter(validUser.email, validUser.pass);
   };
 
   return (

@@ -38,3 +38,26 @@ export const checkRateLimit = (actionKey: string, maxAttempts = 5, windowMs = 60
   record.count += 1;
   return true;
 };
+
+export interface AuthorizedUser {
+  email: string;
+  pass: string;
+  name: string;
+  role: string;
+}
+
+export const AUTHORIZED_USERS: AuthorizedUser[] = [
+  { email: 'admin@superwash.com', pass: 'admin123', name: 'Gustavo Cisneros (CEO)', role: 'admin' },
+  { email: 'gerente@superwash.com', pass: 'gerente123', name: 'Carlos Mendoza (Director)', role: 'owner' },
+  { email: 'ventas@superwash.com', pass: 'ventas123', name: 'Valeria Rivas (Ventas & Cobros)', role: 'sales' },
+  { email: 'recepcion@superwash.com', pass: 'recep123', name: 'Agente Recepción', role: 'free_reception' },
+];
+
+export const validateUserCredentials = (email: string, pass: string): AuthorizedUser | null => {
+  if (!email || !pass) return null;
+  const cleanEmail = email.trim().toLowerCase();
+  const match = AUTHORIZED_USERS.find(
+    (u) => u.email.toLowerCase() === cleanEmail && u.pass === pass
+  );
+  return match || null;
+};

@@ -29,6 +29,7 @@ import { SettingsView } from './components/views/SettingsView';
 import { ODSDetailModal } from './components/views/ODSDetailModal';
 import { Search, X } from 'lucide-react';
 import { AuthModal, UserSession } from './components/views/AuthModal';
+import { validateUserCredentials } from './utils/security';
 
 export function App() {
   const [appMode, setAppMode] = useState<'splash' | 'admin' | 'tracking'>('splash');
@@ -428,18 +429,20 @@ export function App() {
     return (
       <SplashScreen 
         onEnter={(email, password) => {
-          if (email) {
-            const nameFromEmail = email.split('@')[0].toUpperCase();
-            setUserSession({
-              id: `usr-${Date.now()}`,
-              email: email,
-              fullName: nameFromEmail,
-              role: 'admin',
-              avatar: nameFromEmail.substring(0, 2),
-              token: `jwt-${Date.now()}`,
-            });
+          if (email && password) {
+            const validUser = validateUserCredentials(email, password);
+            if (validUser) {
+              setUserSession({
+                id: `usr-${Date.now()}`,
+                email: validUser.email,
+                fullName: validUser.name,
+                role: validUser.role as any,
+                avatar: validUser.name.substring(0, 2).toUpperCase(),
+                token: `jwt-${Date.now()}`,
+              });
+              setAppMode('admin');
+            }
           }
-          setAppMode('admin');
         }} 
         onTrack={(plate) => { setTrackingPlate(plate); setAppMode('tracking'); }} 
       />
