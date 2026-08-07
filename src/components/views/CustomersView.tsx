@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Customer, Vehicle } from '../../types';
-import { Users, Phone, Mail, MapPin, Plus, Search, Edit3, X, CheckCircle, UserCheck, Car } from 'lucide-react';
+import { Customer, Vehicle, ServiceOrder } from '../../types';
+import { Users, Phone, Mail, MapPin, Plus, Search, Edit3, X, CheckCircle, UserCheck, Car, CreditCard, DollarSign, FileText, Clock, AlertCircle } from 'lucide-react';
+import { CurrencyDisplay } from '../common/CurrencyDisplay';
 
 interface CustomersViewProps {
   customers: Customer[];
   vehicles: Vehicle[];
+  orders?: ServiceOrder[];
   onAddCustomer: (customer: Customer) => void;
   onUpdateCustomer: (customer: Customer) => void;
   onAddVehicle: (vehicle: Vehicle) => void;
@@ -13,6 +15,7 @@ interface CustomersViewProps {
 export const CustomersView: React.FC<CustomersViewProps> = ({
   customers,
   vehicles,
+  orders = [],
   onAddCustomer,
   onUpdateCustomer,
   onAddVehicle,
@@ -20,6 +23,10 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+
+  // Cuentas Corrientes / Ledger Modal State
+  const [ledgerCustomer, setLedgerCustomer] = useState<Customer | null>(null);
+  const [ledgerTab, setLedgerTab] = useState<'pending' | 'history'>('pending');
 
   // Vehicle Modal State
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
@@ -68,6 +75,8 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
+  const [defaultPaymentCondition, setDefaultPaymentCondition] = useState<'CONTADO' | 'CTA_CTE'>('CONTADO');
+  const [creditLimit, setCreditLimit] = useState<number>(1000);
 
   // Form State (Initial Vehicle)
   const [initialVehPlate, setInitialVehPlate] = useState('');
@@ -83,6 +92,8 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
     setPhone('');
     setEmail('');
     setAddress('');
+    setDefaultPaymentCondition('CONTADO');
+    setCreditLimit(1000);
     setInitialVehPlate('');
     setInitialVehBrand('');
     setInitialVehModel('');
@@ -98,6 +109,8 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
     setPhone(customer.phone);
     setEmail(customer.email || '');
     setAddress(customer.address || '');
+    setDefaultPaymentCondition(customer.defaultPaymentCondition || 'CONTADO');
+    setCreditLimit(customer.creditLimit || 1000);
     setInitialVehPlate('');
     setInitialVehBrand('');
     setInitialVehModel('');
@@ -126,6 +139,8 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
         phone: phone.trim(),
         email: email.trim() || undefined,
         address: address.trim() || undefined,
+        defaultPaymentCondition,
+        creditLimit,
       };
       onUpdateCustomer(updated);
     } else {
@@ -137,6 +152,8 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
         phone: phone.trim(),
         email: email.trim() || undefined,
         address: address.trim() || undefined,
+        defaultPaymentCondition,
+        creditLimit,
         createdAt: new Date().toLocaleDateString('es-ES'),
       };
       onAddCustomer(newCust);
@@ -348,6 +365,32 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 block">Condición Comercial *</label>
+                  <select
+                    value={defaultPaymentCondition}
+                    onChange={(e) => setDefaultPaymentCondition(e.target.value as any)}
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none"
+                  >
+                    <option value="CONTADO">CONTADO (Pago Inmediato en Caja)</option>
+                    <option value="CTA_CTE">CUENTA CORRIENTE (Crédito a Plazo)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs text-slate-400 mb-1 block">Límite de Crédito ($ USD)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="Ej. 1000"
+                    value={creditLimit}
+                    onChange={(e) => setCreditLimit(Number(e.target.value))}
+                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono focus:border-[#00E5FF] outline-none"
                   />
                 </div>
               </div>

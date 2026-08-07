@@ -23,7 +23,7 @@ CREATE TYPE inventory_type AS ENUM (
 );
 
 CREATE TYPE payment_method_enum AS ENUM (
-  'efectivo', 'zelle', 'pago_movil', 'tarjeta', 'transferencia'
+  'efectivo', 'zelle', 'pago_movil', 'tarjeta', 'transferencia', 'binance'
 );
 
 -- 2. TABLA DE PERFILES DE USUARIO

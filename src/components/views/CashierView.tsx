@@ -43,7 +43,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
   // Form State
   const [selectedOrderId, setSelectedOrderId] = useState<string>(orders[0]?.id || '');
   const [paymentAmount, setPaymentAmount] = useState<number>(0);
-  const [paymentMethod, setPaymentMethod] = useState<'efectivo' | 'zelle' | 'pago_movil' | 'tarjeta' | 'transferencia'>('zelle');
+  const [paymentMethod, setPaymentMethod] = useState<'efectivo' | 'zelle' | 'pago_movil' | 'tarjeta' | 'transferencia' | 'binance'>('zelle');
   const [paymentCondition, setPaymentCondition] = useState<'contado' | 'cuenta_corriente'>('contado');
   const [refNumber, setRefNumber] = useState('');
   const [notes, setNotes] = useState('');
@@ -400,6 +400,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
                   <option value="pago_movil">Pago Móvil</option>
                   <option value="efectivo">Efectivo ($ USD / BS)</option>
                   <option value="transferencia">Transferencia Bancaria</option>
+                  <option value="binance">Binance (Pay / USDT)</option>
                   <option value="tarjeta">Punto de Venta / Tarjeta</option>
                 </select>
               </div>
@@ -642,6 +643,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, transactions, 
                                           <option value="pago_movil">Pago Móvil</option>
                                           <option value="efectivo">Efectivo</option>
                                           <option value="transferencia">Transferencia</option>
+                                          <option value="binance">Binance</option>
                                           <option value="tarjeta">Punto de Venta</option>
                                         </select>
                                       </div>

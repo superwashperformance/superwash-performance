@@ -38,7 +38,7 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
     { key: 'alfombras', label: 'Alfombras de Habitáculo' },
     { key: 'limpiaparabrisas', label: 'Limpiaparabrisas / Plumas' },
     { key: 'caucho_repuesto', label: 'Caucho de Repuesto' },
-    { key: 'gato_hidraulico', label: 'Gato Hidráulico y Palanca' },
+    { key: 'gato_hidraulico', label: 'Gato Hidráulico' },
     { key: 'triangulo', label: 'Triángulo de Seguridad' },
     { key: 'estereo', label: 'Estéreo / Multimedia' },
     { key: 'rociadores', label: 'Rociadores de Agua' },
@@ -259,9 +259,13 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
           <p className="mt-2 text-justify">Una vez el vehículo haya dejado las instalaciones la empresa asume que aceptó conforme todo el trabajo realizado.</p>
         </div>
 
-        <div className="mt-8 flex flex-col items-center mb-8">
-          <div className="border-t border-black w-80 text-center pt-2 font-bold text-lg">
-            FIRMA CONFORME
+        <div className="mt-8 flex flex-col items-center mb-8 gap-4">
+          <div className="border-2 border-black rounded-lg p-2.5 w-80 text-center font-bold text-xs uppercase flex items-center justify-center gap-2">
+            <span>[ X ] REVISADO Y ENTREGADO SIN NOVEDAD</span>
+          </div>
+
+          <div className="border-t border-black w-80 text-center pt-2 font-bold text-base">
+            FIRMA CONFORME CLIENTE
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ServiceOrder, UserRole } from '../../types';
 import { CurrencyDisplay } from '../common/CurrencyDisplay';
 import { MascotTurbo } from '../common/MascotTurbo';
@@ -18,6 +18,8 @@ import {
   Plus,
   Kanban,
   FileText,
+  Calendar,
+  Filter,
 } from 'lucide-react';
 
 interface DashboardViewProps {
@@ -37,19 +39,87 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onNavigateTab,
   currentRole,
 }) => {
-  // Compute KPIs
-  const totalEntered = orders.length;
-  const inProgressCount = orders.filter((o) => o.status === 'in_progress' || o.status === 'diagnosis').length;
-  const completedCount = orders.filter((o) => o.status === 'quality_control' || o.status === 'completed').length;
-  const deliveredCount = orders.filter((o) => o.status === 'delivered').length;
+  // Period filter state: 'all' | 'today' | 'week' | 'month' | 'custom'
+  const [periodFilter, setPeriodFilter] = useState<'all' | 'today' | 'week' | 'month' | 'custom'>('all');
+  const [customDate, setCustomDate] = useState<string>(() => {
+    const d = new Date();
+    return d.toISOString().split('T')[0];
+  });
 
-  const totalRevenue = transactions
+  const parseDate = (dateStr: string): Date | null => {
+    if (!dateStr) return null;
+    try {
+      if (dateStr.includes('/')) {
+        const parts = dateStr.split(',')[0].trim().split(' ')[0].split('/');
+        if (parts.length === 3) {
+          const day = parseInt(parts[0], 10);
+          const month = parseInt(parts[1], 10) - 1;
+          const year = parseInt(parts[2], 10);
+          return new Date(year, month, day);
+        }
+      }
+      const d = new Date(dateStr);
+      if (!isNaN(d.getTime())) return d;
+    } catch (e) {}
+    return null;
+  };
+
+  const isDateInFilter = (dateStr: string): boolean => {
+    if (periodFilter === 'all') return true;
+    const targetDate = parseDate(dateStr);
+    if (!targetDate) return true;
+
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    if (periodFilter === 'today') {
+      return (
+        targetDate.getFullYear() === now.getFullYear() &&
+        targetDate.getMonth() === now.getMonth() &&
+        targetDate.getDate() === now.getDate()
+      );
+    }
+
+    if (periodFilter === 'week') {
+      const sevenDaysAgo = new Date(startOfToday.getTime() - 6 * 86400000);
+      return targetDate >= sevenDaysAgo;
+    }
+
+    if (periodFilter === 'month') {
+      return (
+        targetDate.getFullYear() === now.getFullYear() &&
+        targetDate.getMonth() === now.getMonth()
+      );
+    }
+
+    if (periodFilter === 'custom' && customDate) {
+      const [y, m, d] = customDate.split('-').map(Number);
+      return (
+        targetDate.getFullYear() === y &&
+        targetDate.getMonth() === m - 1 &&
+        targetDate.getDate() === d
+      );
+    }
+
+    return true;
+  };
+
+  const filteredOrders = orders.filter((o) => isDateInFilter(o.entryDate));
+  const filteredTransactions = transactions.filter((t) => isDateInFilter(t.date));
+
+  // Compute KPIs based on filtered data
+  const totalEntered = filteredOrders.length;
+  const inProgressCount = filteredOrders.filter((o) => o.status === 'in_progress' || o.status === 'diagnosis').length;
+  const completedCount = filteredOrders.filter((o) => o.status === 'quality_control' || o.status === 'completed').length;
+  const deliveredCount = filteredOrders.filter((o) => o.status === 'delivered').length;
+
+  const totalRevenue = filteredTransactions
     .filter(t => t.type === 'payment' && (t.paymentCondition === 'contado' || t.paymentCondition === 'abono_cuenta'))
     .reduce((sum, t) => sum + t.amount, 0);
   
-  const totalBilledCC = transactions.filter(t => t.paymentCondition === 'cuenta_corriente').reduce((sum, t) => sum + t.amount, 0);
-  const totalPaidCC = transactions.filter(t => t.paymentCondition === 'abono_cuenta').reduce((sum, t) => sum + t.amount, 0);
-  const totalAccountsReceivable = totalBilledCC - totalPaidCC;
+  const totalBilledCC = filteredTransactions.filter(t => t.paymentCondition === 'cuenta_corriente').reduce((sum, t) => sum + t.amount, 0);
+  const totalPaidCC = filteredTransactions.filter(t => t.paymentCondition === 'abono_cuenta').reduce((sum, t) => sum + t.amount, 0);
+  const totalAccountsReceivable = Math.max(0, totalBilledCC - totalPaidCC);
 
   const statusLabels: Record<string, { label: string; color: string }> = {
     received: { label: 'Recibido', color: 'bg-[#00E5FF]/20 text-[#00E5FF] border-cyan-500/30' },
@@ -88,6 +158,50 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
+      {/* Date Filter Bar */}
+      <div className="nike-card p-4 flex flex-wrap items-center justify-between gap-4 border-cyan-500/20 bg-slate-950/80">
+        <div className="flex items-center gap-2 font-mono text-xs text-slate-300">
+          <Calendar className="w-4 h-4 text-[#00E5FF]" />
+          <span className="font-bold uppercase tracking-wider text-white">Filtrar Dashboard por Período:</span>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          {[
+            { id: 'all', label: 'TODO' },
+            { id: 'today', label: 'HOY (DÍA)' },
+            { id: 'week', label: 'ESTA SEMANA' },
+            { id: 'month', label: 'ESTE MES' },
+            { id: 'custom', label: 'CALENDARIO' },
+          ].map((btn) => (
+            <button
+              key={btn.id}
+              onClick={() => setPeriodFilter(btn.id as any)}
+              className={`px-3.5 py-1.5 rounded-xl font-mono text-xs font-bold uppercase transition-all flex items-center gap-1.5 ${
+                periodFilter === btn.id
+                  ? 'bg-[#00E5FF] text-black shadow-lg shadow-[#00E5FF]/20'
+                  : 'bg-slate-900 text-slate-400 hover:text-white border border-white/10'
+              }`}
+            >
+              {btn.id === 'custom' && <Calendar className="w-3.5 h-3.5" />}
+              <span>{btn.label}</span>
+            </button>
+          ))}
+
+          {/* Custom Date Input when 'custom' is selected */}
+          {periodFilter === 'custom' && (
+            <div className="flex items-center gap-2 ml-2 bg-slate-900 border border-[#00E5FF]/50 rounded-xl px-3 py-1 animate-in fade-in">
+              <span className="text-[10px] text-slate-400 font-mono">FECHA:</span>
+              <input
+                type="date"
+                value={customDate}
+                onChange={(e) => setCustomDate(e.target.value)}
+                className="bg-transparent text-xs text-[#00E5FF] font-mono outline-none cursor-pointer"
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* 6 Main Metric KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {/* KPI 1 */}
@@ -97,7 +211,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <Car className="w-4 h-4 text-[#00E5FF]" />
           </div>
           <div className="font-display text-3xl md:text-4xl text-white">{totalEntered}</div>
-          <span className="text-[10px] text-slate-400 mt-1 font-mono">Total ODS en sistema</span>
+          <span className="text-[10px] text-slate-400 mt-1 font-mono">Total ODS en período</span>
         </div>
 
         {/* KPI 2 */}
@@ -151,7 +265,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="font-display text-green-400">
             <CurrencyDisplay amount={totalRevenue} size="2xl" />
           </div>
-          <span className="text-[10px] text-green-400/70 mt-1 font-mono">Cobrado en caja</span>
+          <span className="text-[10px] text-green-400/70 mt-1 font-mono">Cobrado en período</span>
         </div>
       </div>
 
@@ -160,7 +274,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-display text-2xl tracking-wide text-white">ÓRDENES DE SERVICIO RECIENTES</h3>
-            <p className="text-xs text-slate-400">Listado de vehículos procesados en el taller.</p>
+            <p className="text-xs text-slate-400">
+              Listado de vehículos procesados en el taller {periodFilter !== 'all' ? `(Filtrado por período seleccionado)` : ''}.
+            </p>
           </div>
           <button
             onClick={() => onNavigateTab('ods')}
@@ -185,7 +301,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5 font-sans">
-              {orders.slice(0, 5).map((order) => {
+              {filteredOrders.slice(0, 5).map((order) => {
                 const statusInfo = statusLabels[order.status] || { label: order.status, color: 'bg-slate-800 text-white' };
                 return (
                   <tr key={order.id} className="hover:bg-white/5 transition-colors">
@@ -220,6 +336,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               })}
             </tbody>
           </table>
+          {filteredOrders.length === 0 && (
+            <div className="text-center text-xs text-slate-500 py-8 font-mono">
+              No hay órdenes de servicio registradas para el período seleccionado.
+            </div>
+          )}
         </div>
       </div>
     </div>

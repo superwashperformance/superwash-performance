@@ -29,6 +29,8 @@ export interface Customer {
   phone: string;
   email?: string;
   address?: string;
+  defaultPaymentCondition?: 'CONTADO' | 'CTA_CTE';
+  creditLimit?: number;
   createdAt: string;
 }
 
@@ -118,6 +120,8 @@ export interface ServiceOrder {
   taxAmount: number;
   totalAmount: number;
   paidAmount: number;
+  paymentCondition?: 'CONTADO' | 'CTA_CTE';
+  pendingBalance?: number;
   assignedStaff?: {
     id: string;
     name: string;
@@ -161,7 +165,7 @@ export interface CashTransaction {
   customerName: string;
   amount: number;
   type: 'payment' | 'deposit' | 'refund' | 'expense';
-  paymentMethod: 'efectivo' | 'zelle' | 'pago_movil' | 'tarjeta' | 'transferencia';
+  paymentMethod: 'efectivo' | 'zelle' | 'pago_movil' | 'tarjeta' | 'transferencia' | 'binance';
   paymentCondition?: 'contado' | 'cuenta_corriente';
   referenceNumber?: string;
   date: string;

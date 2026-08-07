@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UserRole, ServiceOrder, InventoryItem, InventoryMovement, CashTransaction, ODSStatus, Agent, CompanyData, ServiceItem, Customer, Vehicle } from './types';
+import { UserRole, ServiceOrder, InventoryItem, InventoryMovement, CashTransaction, ODSStatus, Agent, CompanyData, ServiceItem, Customer, Vehicle, PresupuestoServiceItem } from './types';
 import {
   mockInventory,
   mockInventoryMovements,
@@ -225,6 +225,38 @@ export function App() {
       // Optimistic update for better UX (optional) or wait for server
       const createdODS = await odsService.createODS(newODS);
       setOrders([createdODS, ...orders]);
+
+      // Ensure vehicle is automatically registered by plate
+      const plateUpper = newODS.vehiclePlate.toUpperCase();
+      const lastServiceStr = newODS.services.map((s) => s.serviceName).join(', ');
+      setVehicles((prev) => {
+        const idx = prev.findIndex((v) => v.plate.toUpperCase() === plateUpper);
+        if (idx !== -1) {
+          const updated = [...prev];
+          updated[idx] = {
+            ...updated[idx],
+            lastVisit: newODS.entryDate,
+            lastService: lastServiceStr,
+          };
+          return updated;
+        } else {
+          return [
+            {
+              id: newODS.vehicleId || `veh-${Date.now()}`,
+              customerId: newODS.customerId,
+              plate: plateUpper,
+              brand: newODS.vehicleBrandModel.split(' ')[0] || 'Vehículo',
+              model: newODS.vehicleBrandModel.split(' ').slice(1).join(' ') || '',
+              year: newODS.vehicleYear || 2024,
+              color: newODS.vehicleColor || 'Desconocido',
+              lastVisit: newODS.entryDate,
+              lastService: lastServiceStr,
+            },
+            ...prev,
+          ];
+        }
+      });
+
       setActiveTab('ods');
     } catch (error) {
       console.error('Error al guardar la ODS:', error);
@@ -233,24 +265,60 @@ export function App() {
   };
 
   const handleUpdateStatus = async (orderId: string, newStatus: ODSStatus) => {
+    const updatedDate = new Date().toLocaleString('es-ES');
+
     // 1. Update local state (Optimistic Update)
     setOrders(
-      orders.map((o) =>
-        o.id === orderId
-          ? {
-              ...o,
-              status: newStatus,
-              statusHistory: [
-                ...o.statusHistory,
-                {
-                  status: newStatus,
-                  changedAt: new Date().toLocaleString('es-ES'),
-                  changedBy: currentRole,
-                },
-              ],
-            }
-          : o
-      )
+      orders.map((o) => {
+        if (o.id === orderId) {
+          // If delivering ODS, update vehicle registration by plate
+          if (newStatus === 'delivered') {
+            const plateToUpdate = o.vehiclePlate.toUpperCase();
+            const lastServices = o.services.map((s) => s.serviceName).join(', ');
+            setVehicles((prev) => {
+              const idx = prev.findIndex((v) => v.plate.toUpperCase() === plateToUpdate);
+              if (idx !== -1) {
+                const copy = [...prev];
+                copy[idx] = {
+                  ...copy[idx],
+                  lastVisit: updatedDate,
+                  lastService: lastServices,
+                };
+                return copy;
+              } else {
+                return [
+                  {
+                    id: o.vehicleId || `veh-${Date.now()}`,
+                    customerId: o.customerId,
+                    plate: plateToUpdate,
+                    brand: o.vehicleBrandModel.split(' ')[0] || 'Vehículo',
+                    model: o.vehicleBrandModel.split(' ').slice(1).join(' ') || '',
+                    year: o.vehicleYear || 2024,
+                    color: o.vehicleColor || 'Desconocido',
+                    lastVisit: updatedDate,
+                    lastService: lastServices,
+                  },
+                  ...prev,
+                ];
+              }
+            });
+          }
+
+          return {
+            ...o,
+            status: newStatus,
+            statusHistory: [
+              ...o.statusHistory,
+              {
+                status: newStatus,
+                changedAt: updatedDate,
+                changedBy: currentRole,
+              },
+            ],
+          };
+        }
+        return o;
+      })
     );
 
     try {
@@ -413,6 +481,52 @@ export function App() {
     }
   };
 
+  const handleDeletePhotoFromOrder = (orderId: string, photoId: string) => {
+    setOrders((prev) =>
+      prev.map((o) =>
+        o.id === orderId
+          ? { ...o, photos: o.photos.filter((p) => p.id !== photoId) }
+          : o
+      )
+    );
+    if (selectedOrder?.id === orderId) {
+      setSelectedOrder((prev) =>
+        prev ? { ...prev, photos: prev.photos.filter((p) => p.id !== photoId) } : null
+      );
+    }
+  };
+
+  const handleUpdateOrderServices = (orderId: string, newServices: PresupuestoServiceItem[]) => {
+    const subtotal = newServices.reduce((sum, s) => sum + (s.totalPrice || s.quantity * s.unitPrice), 0);
+
+    setOrders((prevOrders) =>
+      prevOrders.map((o) => {
+        if (o.id === orderId) {
+          const updated = {
+            ...o,
+            services: newServices,
+            subtotalAmount: subtotal,
+            totalAmount: subtotal,
+          };
+          odsService.updateODSStatus(orderId, o.status).catch(console.error);
+          return updated;
+        }
+        return o;
+      })
+    );
+
+    setSelectedOrder((prev) =>
+      prev && prev.id === orderId
+        ? {
+            ...prev,
+            services: newServices,
+            subtotalAmount: subtotal,
+            totalAmount: subtotal,
+          }
+        : prev
+    );
+  };
+
   const handleAddCustomer = (newCust: Customer) => {
     setCustomers([newCust, ...customers]);
   };
@@ -530,6 +644,7 @@ export function App() {
               orders={orders}
               onAddCustomer={handleAddCustomer}
               onAddVehicle={handleAddVehicle}
+              onAddCustomService={(newSvc) => setServicesCatalog((prev) => [...prev, newSvc])}
             />
           )}
 
@@ -573,7 +688,13 @@ export function App() {
             />
           )}
 
-          {activeTab === 'vehicles' && <VehiclesView vehicles={vehicles} />}
+          {activeTab === 'vehicles' && (
+            <VehiclesView
+              vehicles={vehicles}
+              orders={orders}
+              onSelectOrder={setSelectedOrder}
+            />
+          )}
 
           {activeTab === 'settings' && (
             <SettingsView 
@@ -598,6 +719,10 @@ export function App() {
           onClose={() => setSelectedOrder(null)}
           companyData={companyData}
           onAddPhoto={handleAddPhotoToOrder}
+          onDeletePhoto={handleDeletePhotoFromOrder}
+          onUpdateStatus={handleUpdateStatus}
+          servicesCatalog={servicesCatalog}
+          onUpdateOrderServices={handleUpdateOrderServices}
         />
 
       {/* Command Palette Search Modal */}
