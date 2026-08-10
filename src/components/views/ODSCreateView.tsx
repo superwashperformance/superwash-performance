@@ -776,6 +776,17 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                     </button>
                   ))}
                 </div>
+                <input
+                  type="text"
+                  placeholder="Detalles / Observaciones..."
+                  value={item.notes || ''}
+                  onChange={(e) =>
+                    setChecklist(
+                      checklist.map((c) => (c.id === item.id ? { ...c, notes: e.target.value } : c))
+                    )
+                  }
+                  className="mt-1 w-full bg-slate-950/50 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white placeholder:text-slate-600 focus:border-cyan-500/50 outline-none transition-colors"
+                />
               </div>
             ))}
           </div>
