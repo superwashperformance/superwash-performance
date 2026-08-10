@@ -146,17 +146,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onLoginSuccess, onCancel }
           >
             Iniciar sesión
           </button>
-
-          <a
-            href="#forgot"
-            onClick={(e) => {
-              e.preventDefault();
-              alert('🔑 Para recuperar tu contraseña, contacta al administrador del sistema.');
-            }}
-            className="text-xs text-[#00E5FF] hover:underline font-medium text-center mt-2 block"
-          >
-            ¿Olvidaste tu contraseña?
-          </a>
         </form>
 
         {/* Quick Demo Accounts Footer */}
