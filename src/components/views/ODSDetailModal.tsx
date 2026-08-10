@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { CurrencyDisplay } from '../common/CurrencyDisplay';
 import { ServiceOrder, CompanyData, OrderPhoto, ODSStatus, ServiceItem, PresupuestoServiceItem } from '../../types';
+import { defaultChecklistItems } from '../../data/mockData';
 import { FaviconLogo } from '../common/FaviconLogo';
 import { WorkshopOrderPrintTemplate } from './WorkshopOrderPrintTemplate';
 import { X, Printer, Camera, ShieldAlert, CheckCircle, CheckCircle2, FileText, Trash2, Image as ImageIcon, Plus, Sparkles } from 'lucide-react';
@@ -175,6 +176,12 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({
 
   if (!order) return null;
 
+  const photosList = order.photos || [];
+  const damagePhotos = photosList.filter((p) => p && p.category && String(p.category).startsWith('damage'));
+  const generalPhotos = photosList.filter((p) => p && (p.category === 'general' || !p.category));
+  const belongingPhotos = photosList.filter((p) => p && p.category === 'belonging');
+  const checklistList = (order.checklist && order.checklist.length > 0) ? order.checklist : defaultChecklistItems;
+
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 overflow-y-auto print:absolute print:inset-0 print:w-full print:bg-transparent print:p-0 print:block print:overflow-visible">
       {/* Hidden File Inputs for Gallery and Direct Camera */}
@@ -236,9 +243,9 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({
         <div className="flex items-center gap-2 px-6 py-3 bg-slate-950 border-b border-white/10 overflow-x-auto print:hidden">
           {[
             { id: 'quote', label: 'PRESUPUESTO Y ODS DEL TALLER', icon: FileText },
-            { id: 'damages', label: `FOTOS DAÑOS (${order.photos.filter(p => p.category.startsWith('damage')).length})`, icon: ShieldAlert },
-            { id: 'checklist', label: 'CHECKLIST 20 PUNTOS', icon: CheckCircle },
-            { id: 'photos', label: `FOTOS REGISTRO FINAL (${order.photos.filter(p => p.category === 'general').length})`, icon: Camera },
+            { id: 'damages', label: `FOTOS DAÑOS (${damagePhotos.length})`, icon: ShieldAlert },
+            { id: 'checklist', label: `CHECKLIST 20 PUNTOS (${checklistList.length})`, icon: CheckCircle },
+            { id: 'photos', label: `FOTOS REGISTRO FINAL (${generalPhotos.length})`, icon: Camera },
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -408,30 +415,36 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({
                 <ImageIcon className="w-4 h-4 text-[#00E5FF]" /> <span>Imágenes Guardadas</span>
               </button>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {order.photos.filter(p => p.category === 'general').map((p) => (
-                <div key={p.id} className="relative rounded-xl overflow-hidden border border-white/10 aspect-video group">
-                  <img src={p.photoUrl} alt={p.caption} className="w-full h-full object-cover" />
-                  <button onClick={() => onDeletePhoto?.(order.id, p.id)} className="absolute top-2 right-2 bg-red-600/80 p-1.5 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-3 flex flex-col justify-end">
-                    <span className="font-mono text-[10px] text-[#00E5FF] uppercase">{p.category}</span>
-                    <span className="text-xs font-bold text-white">{p.caption}</span>
+            {generalPhotos.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {generalPhotos.map((p) => (
+                  <div key={p.id} className="relative rounded-xl overflow-hidden border border-white/10 aspect-video group">
+                    <img src={p.photoUrl} alt={p.caption} className="w-full h-full object-cover" />
+                    <button onClick={() => onDeletePhoto?.(order.id, p.id)} className="absolute top-2 right-2 bg-red-600/80 p-1.5 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-3 flex flex-col justify-end">
+                      <span className="font-mono text-[10px] text-[#00E5FF] uppercase">{p.category || 'general'}</span>
+                      <span className="text-xs font-bold text-white">{p.caption}</span>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-8 text-center bg-black/40 rounded-xl border border-white/5 text-xs text-slate-500 font-mono italic">
+                Sin fotografías registradas aún. Usa los botones superiores para capturar con la cámara o desde tus archivos.
+              </div>
+            )}
           </div>
 
           <div className={activeTab === 'checklist' ? 'block print:hidden' : 'hidden'}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {(order.checklist || []).map((item) => (
+              {checklistList.map((item) => (
                 <div key={item.id} className="p-3 rounded-xl bg-slate-900 border border-white/5 flex flex-col gap-1.5 text-xs">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-white">{item.label}</span>
                     <span className={`px-2.5 py-1 rounded-full text-[10px] font-display uppercase tracking-wider ${item.condition === 'ok' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
-                      {item.condition}
+                      {item.condition === 'ok' ? 'Sin Novedad (OK)' : item.condition === 'damaged' ? 'Dañado' : item.condition === 'missing' ? 'No Posee' : 'Observación'}
                     </span>
                   </div>
                   {item.notes && (
@@ -457,9 +470,9 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({
                 </div>
               </div>
 
-              {(order.photos || []).filter(p => p && p.category === 'belonging').length > 0 ? (
+              {belongingPhotos.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                  {(order.photos || []).filter(p => p && p.category === 'belonging').map((p) => (
+                  {belongingPhotos.map((p) => (
                     <div key={p.id} className="relative rounded-xl overflow-hidden border border-white/10 aspect-video group bg-black">
                       <img src={p.photoUrl} alt={p.caption} className="w-full h-full object-cover" />
                       <button onClick={() => onDeletePhoto?.(order.id, p.id)} className="absolute top-1.5 right-1.5 bg-red-600/80 p-1 rounded-full text-white opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity">
@@ -490,14 +503,20 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {(order.photos || []).filter((p) => p && p.category && String(p.category).startsWith('damage')).map((p) => (
-                  <div key={p.id} className="relative aspect-video rounded-xl overflow-hidden border border-white/10 group bg-black">
-                    <img src={p.photoUrl} alt={p.caption} className="w-full h-full object-cover" />
-                    <button onClick={() => onDeletePhoto?.(order.id, p.id)} className="absolute top-2 right-2 bg-red-600/80 p-1.5 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                {damagePhotos.length > 0 ? (
+                  damagePhotos.map((p) => (
+                    <div key={p.id} className="relative aspect-video rounded-xl overflow-hidden border border-white/10 group bg-black">
+                      <img src={p.photoUrl} alt={p.caption} className="w-full h-full object-cover" />
+                      <button onClick={() => onDeletePhoto?.(order.id, p.id)} className="absolute top-2 right-2 bg-red-600/80 p-1.5 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-full p-6 text-center bg-black/40 rounded-xl border border-white/5 text-xs text-slate-500 font-mono italic">
+                    Sin fotografías de daños registradas para esta ODS.
                   </div>
-                ))}
+                )}
               </div>
               <textarea
                 rows={3}
