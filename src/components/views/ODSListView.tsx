@@ -23,10 +23,10 @@ export const ODSListView: React.FC<ODSListViewProps> = ({ orders, onSelectOrder,
     
     // Text search
     const matchesSearch =
-      order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.vehiclePlate.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.vehicleBrandModel.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (order.orderNumber || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (order.vehiclePlate || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (order.customerName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (order.vehicleBrandModel || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       entryDateStr.toLowerCase().includes(searchTerm.toLowerCase());
 
     // Status filter
