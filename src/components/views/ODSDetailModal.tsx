@@ -176,11 +176,11 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({
 
   if (!order) return null;
 
-  const photosList = order.photos || [];
+  const photosList = (order.photos && Array.isArray(order.photos)) ? order.photos : [];
   const damagePhotos = photosList.filter((p) => p && p.category && String(p.category).startsWith('damage'));
   const generalPhotos = photosList.filter((p) => p && (p.category === 'general' || !p.category));
   const belongingPhotos = photosList.filter((p) => p && p.category === 'belonging');
-  const checklistList = (order.checklist && order.checklist.length > 0) ? order.checklist : defaultChecklistItems;
+  const checklistList = (order.checklist && Array.isArray(order.checklist) && order.checklist.length > 0) ? order.checklist : defaultChecklistItems;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 overflow-y-auto print:absolute print:inset-0 print:w-full print:bg-transparent print:p-0 print:block print:overflow-visible">
@@ -341,48 +341,55 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5 print:divide-black/10 font-sans">
-                  {order.services.map((s, i) => (
-                    <tr key={i} className="hover:bg-white/5">
-                      <td className="p-2.5 font-bold text-white print:text-black">{s.serviceName}</td>
-                      <td className="p-2.5 text-center font-mono print:text-black">
-                        <span className="print:inline hidden">{s.quantity}</span>
-                        <input
-                          type="number"
-                          min="1"
-                          value={s.quantity}
-                          onChange={(e) => handleUpdateServiceItemInModal(i, { quantity: Math.max(1, Number(e.target.value)) })}
-                          className="w-12 bg-black/40 border border-white/10 rounded px-1.5 py-0.5 text-center text-white font-mono outline-none focus:border-[#00E5FF] print:hidden"
-                        />
-                      </td>
-                      <td className="p-2.5 text-right print:text-black">
-                        <span className="print:inline hidden">${s.unitPrice}</span>
-                        <div className="inline-flex items-center gap-1 print:hidden">
-                          <span className="text-slate-500">$</span>
+                  {(order.services || []).map((s: any, i) => {
+                    const sName = s.serviceName || s.name || s.service_name || s.description || 'Servicio General';
+                    const sQty = s.quantity || s.qty || 1;
+                    const sUnitPrice = s.unitPrice !== undefined ? s.unitPrice : (s.price !== undefined ? s.price : 0);
+                    const sTotal = s.totalPrice !== undefined ? s.totalPrice : (sQty * sUnitPrice);
+
+                    return (
+                      <tr key={i} className="hover:bg-white/5">
+                        <td className="p-2.5 font-bold text-white print:text-black">{sName}</td>
+                        <td className="p-2.5 text-center font-mono print:text-black">
+                          <span className="print:inline hidden">{sQty}</span>
                           <input
                             type="number"
-                            min="0"
-                            step="0.01"
-                            value={s.unitPrice}
-                            onChange={(e) => handleUpdateServiceItemInModal(i, { unitPrice: Math.max(0, Number(e.target.value)) })}
-                            className="w-20 bg-black/40 border border-white/10 rounded px-2 py-0.5 text-right text-white font-mono outline-none focus:border-[#00E5FF]"
+                            min="1"
+                            value={sQty}
+                            onChange={(e) => handleUpdateServiceItemInModal(i, { quantity: Math.max(1, Number(e.target.value)) })}
+                            className="w-12 bg-black/40 border border-white/10 rounded px-1.5 py-0.5 text-center text-white font-mono outline-none focus:border-[#00E5FF] print:hidden"
                           />
-                        </div>
-                      </td>
-                      <td className="p-2.5 text-right text-white print:text-black font-bold">
-                        <CurrencyDisplay amount={s.totalPrice || s.quantity * s.unitPrice} size="sm" />
-                      </td>
-                      <td className="p-2.5 text-center print:hidden">
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveServiceItemFromModal(i)}
-                          className="p-1 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded transition-colors"
-                          title="Eliminar este servicio del presupuesto"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="p-2.5 text-right print:text-black">
+                          <span className="print:inline hidden">${sUnitPrice}</span>
+                          <div className="inline-flex items-center gap-1 print:hidden">
+                            <span className="text-slate-500">$</span>
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={sUnitPrice}
+                              onChange={(e) => handleUpdateServiceItemInModal(i, { unitPrice: Math.max(0, Number(e.target.value)) })}
+                              className="w-20 bg-black/40 border border-white/10 rounded px-2 py-0.5 text-right text-white font-mono outline-none focus:border-[#00E5FF]"
+                            />
+                          </div>
+                        </td>
+                        <td className="p-2.5 text-right text-white print:text-black font-bold">
+                          <CurrencyDisplay amount={sTotal} size="sm" />
+                        </td>
+                        <td className="p-2.5 text-center print:hidden">
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveServiceItemFromModal(i)}
+                            className="p-1 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded transition-colors"
+                            title="Eliminar este servicio del presupuesto"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -417,18 +424,21 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({
             </div>
             {generalPhotos.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {generalPhotos.map((p) => (
-                  <div key={p.id} className="relative rounded-xl overflow-hidden border border-white/10 aspect-video group">
-                    <img src={p.photoUrl} alt={p.caption} className="w-full h-full object-cover" />
-                    <button onClick={() => onDeletePhoto?.(order.id, p.id)} className="absolute top-2 right-2 bg-red-600/80 p-1.5 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-3 flex flex-col justify-end">
-                      <span className="font-mono text-[10px] text-[#00E5FF] uppercase">{p.category || 'general'}</span>
-                      <span className="text-xs font-bold text-white">{p.caption}</span>
+                {generalPhotos.map((p: any) => {
+                  const url = p.photoUrl || p.url || p.photo_url;
+                  return (
+                    <div key={p.id || url} className="relative rounded-xl overflow-hidden border border-white/10 aspect-video group">
+                      <img src={url} alt={p.caption || 'Foto'} className="w-full h-full object-cover" />
+                      <button onClick={() => onDeletePhoto?.(order.id, p.id || url)} className="absolute top-2 right-2 bg-red-600/80 p-1.5 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-3 flex flex-col justify-end">
+                        <span className="font-mono text-[10px] text-[#00E5FF] uppercase">{p.category || 'general'}</span>
+                        <span className="text-xs font-bold text-white">{p.caption || 'Sin título'}</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div className="p-8 text-center bg-black/40 rounded-xl border border-white/5 text-xs text-slate-500 font-mono italic">
@@ -472,14 +482,17 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({
 
               {belongingPhotos.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                  {belongingPhotos.map((p) => (
-                    <div key={p.id} className="relative rounded-xl overflow-hidden border border-white/10 aspect-video group bg-black">
-                      <img src={p.photoUrl} alt={p.caption} className="w-full h-full object-cover" />
-                      <button onClick={() => onDeletePhoto?.(order.id, p.id)} className="absolute top-1.5 right-1.5 bg-red-600/80 p-1 rounded-full text-white opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ))}
+                  {belongingPhotos.map((p: any) => {
+                    const url = p.photoUrl || p.url || p.photo_url;
+                    return (
+                      <div key={p.id || url} className="relative rounded-xl overflow-hidden border border-white/10 aspect-video group bg-black">
+                        <img src={url} alt={p.caption || 'Pertenencia'} className="w-full h-full object-cover" />
+                        <button onClick={() => onDeletePhoto?.(order.id, p.id || url)} className="absolute top-1.5 right-1.5 bg-red-600/80 p-1 rounded-full text-white opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="text-xs text-slate-500 font-mono italic text-center py-2">
@@ -504,14 +517,17 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {damagePhotos.length > 0 ? (
-                  damagePhotos.map((p) => (
-                    <div key={p.id} className="relative aspect-video rounded-xl overflow-hidden border border-white/10 group bg-black">
-                      <img src={p.photoUrl} alt={p.caption} className="w-full h-full object-cover" />
-                      <button onClick={() => onDeletePhoto?.(order.id, p.id)} className="absolute top-2 right-2 bg-red-600/80 p-1.5 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))
+                  damagePhotos.map((p: any) => {
+                    const url = p.photoUrl || p.url || p.photo_url;
+                    return (
+                      <div key={p.id || url} className="relative aspect-video rounded-xl overflow-hidden border border-white/10 group bg-black">
+                        <img src={url} alt={p.caption || 'Daño'} className="w-full h-full object-cover" />
+                        <button onClick={() => onDeletePhoto?.(order.id, p.id || url)} className="absolute top-2 right-2 bg-red-600/80 p-1.5 rounded-full text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    );
+                  })
                 ) : (
                   <div className="col-span-full p-6 text-center bg-black/40 rounded-xl border border-white/5 text-xs text-slate-500 font-mono italic">
                     Sin fotografías de daños registradas para esta ODS.

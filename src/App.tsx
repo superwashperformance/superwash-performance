@@ -503,27 +503,41 @@ export function App() {
   };
 
   const handleAddPhotoToOrder = (orderId: string, photo: any) => {
-    setOrders(
-      orders.map((o) => (o.id === orderId ? { ...o, photos: [...o.photos, photo] } : o))
+    setOrders((prevOrders) =>
+      prevOrders.map((o) => {
+        if (o.id === orderId || o.orderNumber === orderId) {
+          const currentPhotos = Array.isArray(o.photos) ? o.photos : [];
+          return { ...o, photos: [...currentPhotos, photo] };
+        }
+        return o;
+      })
     );
-    if (selectedOrder?.id === orderId) {
-      setSelectedOrder({ ...selectedOrder, photos: [...selectedOrder.photos, photo] });
-    }
+    setSelectedOrder((prev) => {
+      if (prev && (prev.id === orderId || prev.orderNumber === orderId)) {
+        const currentPhotos = Array.isArray(prev.photos) ? prev.photos : [];
+        return { ...prev, photos: [...currentPhotos, photo] };
+      }
+      return prev;
+    });
   };
 
   const handleDeletePhotoFromOrder = (orderId: string, photoId: string) => {
-    setOrders((prev) =>
-      prev.map((o) =>
-        o.id === orderId
-          ? { ...o, photos: o.photos.filter((p) => p.id !== photoId) }
-          : o
-      )
+    setOrders((prevOrders) =>
+      prevOrders.map((o) => {
+        if (o.id === orderId || o.orderNumber === orderId) {
+          const currentPhotos = Array.isArray(o.photos) ? o.photos : [];
+          return { ...o, photos: currentPhotos.filter((p: any) => p.id !== photoId && p.photoUrl !== photoId && p.url !== photoId) };
+        }
+        return o;
+      })
     );
-    if (selectedOrder?.id === orderId) {
-      setSelectedOrder((prev) =>
-        prev ? { ...prev, photos: prev.photos.filter((p) => p.id !== photoId) } : null
-      );
-    }
+    setSelectedOrder((prev) => {
+      if (prev && (prev.id === orderId || prev.orderNumber === orderId)) {
+        const currentPhotos = Array.isArray(prev.photos) ? prev.photos : [];
+        return { ...prev, photos: currentPhotos.filter((p: any) => p.id !== photoId && p.photoUrl !== photoId && p.url !== photoId) };
+      }
+      return prev;
+    });
   };
 
   const handleUpdateOrderServices = (orderId: string, newServices: PresupuestoServiceItem[]) => {
