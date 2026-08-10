@@ -1,0 +1,1 @@
+import { supabase } from './src/lib/supabase'; async function test() { const {data, error} = await supabase.from('order_services').select('*').limit(1); console.log('DATA:', data, 'ERROR:', error); } test();

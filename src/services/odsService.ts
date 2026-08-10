@@ -98,10 +98,8 @@ export const odsService = {
       const { data: orderData, error: orderError } = await supabase
         .from('service_orders')
         .insert({
-          order_number: odsData.orderNumber,
           customer_id: customerData.id,
           vehicle_id: vehicleData.id,
-          priority: odsData.priority || 'normal',
           status: odsData.status,
           observations: odsData.observations,
           belongings_list: odsData.belongingsList,

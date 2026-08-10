@@ -1,27 +1,4 @@
-import { Customer, Vehicle, ServiceOrder, InventoryItem, CashTransaction, UserProfile, ServiceItem, ChecklistItem } from '../types';
-
-export const defaultChecklistItems: ChecklistItem[] = [
-  { id: 'chk-1', key: 'bateria', label: 'Batería y Carga de Voltaje', condition: 'ok' },
-  { id: 'chk-2', key: 'luces_internas', label: 'Luces Internas y de Ambiente', condition: 'ok' },
-  { id: 'chk-3', key: 'luces_externas', label: 'Luces Externas / Faros', condition: 'ok' },
-  { id: 'chk-4', key: 'luces_tablero', label: 'Indicadores de Tablero / Alertas', condition: 'ok' },
-  { id: 'chk-5', key: 'aire_acondicionado', label: 'Aire Acondicionado', condition: 'ok' },
-  { id: 'chk-6', key: 'bocina', label: 'Bocina / Claxon', condition: 'ok' },
-  { id: 'chk-7', key: 'alfombras', label: 'Alfombras de Habitáculo', condition: 'ok' },
-  { id: 'chk-8', key: 'limpiaparabrisas', label: 'Limpiaparabrisas / Plumas', condition: 'ok' },
-  { id: 'chk-9', key: 'caucho_repuesto', label: 'Caucho de Repuesto', condition: 'ok' },
-  { id: 'chk-10', key: 'gato_hidraulico', label: 'Gato Hidráulico', condition: 'ok' },
-  { id: 'chk-11', key: 'triangulo', label: 'Triángulo de Seguridad', condition: 'ok' },
-  { id: 'chk-12', key: 'estereo', label: 'Estéreo / Multimedia', condition: 'ok' },
-  { id: 'chk-13', key: 'rociadores', label: 'Rociadores de Agua', condition: 'ok' },
-  { id: 'chk-14', key: 'ventanas', label: 'Ventanas y Elevalunas', condition: 'ok' },
-  { id: 'chk-15', key: 'parabrisas', label: 'Parabrisas Frontal y Trasero', condition: 'ok' },
-  { id: 'chk-16', key: 'tuercas', label: 'Tuercas de Rines / Seguridad', condition: 'ok' },
-  { id: 'chk-17', key: 'manillas', label: 'Manillas de Puertas', condition: 'ok' },
-  { id: 'chk-18', key: 'puertas', label: 'Puertas y Capó', condition: 'ok' },
-  { id: 'chk-19', key: 'accesorios', label: 'Accesorios Especiales / Cámaras', condition: 'ok' },
-  { id: 'chk-20', key: 'otros', label: 'Otros Detalles Mecánicos / Escape', condition: 'ok' },
-];
+import { Customer, Vehicle, ServiceOrder, InventoryItem, CashTransaction, UserProfile, ServiceItem } from '../types';
 
 export const mockUsers: UserProfile[] = [
   { id: 'usr-1', name: 'Carlos Mendoza', email: 'admin@superwash.com', role: 'admin' },

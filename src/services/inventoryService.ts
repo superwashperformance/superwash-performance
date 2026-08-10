@@ -13,9 +13,9 @@ const mapToInventoryItem = (data: any): InventoryItem => {
     stock: Number(data.stock),
     minStock: Number(data.min_stock),
     unitCost: Number(data.unit_cost),
-    unitOfMeasure: data.unit_measure,
+    unitOfMeasure: data.unit_of_measure,
     responsiblePerson: data.responsible_person || 'Detailer Principal',
-    lastUpdated: new Date(data.last_updated).toLocaleString('es-ES'),
+    lastUpdated: new Date(data.updated_at).toLocaleString('es-ES'),
   };
 };
 
@@ -25,7 +25,7 @@ export const inventoryService = {
    */
   async getInventory(): Promise<InventoryItem[]> {
     const { data, error } = await supabase
-      .from('inventory')
+      .from('inventory_items')
       .select('*')
       .order('name', { ascending: true });
 
@@ -42,10 +42,10 @@ export const inventoryService = {
    */
   async updateStock(itemId: string, newStock: number): Promise<void> {
     const { error } = await supabase
-      .from('inventory')
+      .from('inventory_items')
       .update({ 
         stock: newStock,
-        last_updated: new Date().toISOString()
+        updated_at: new Date().toISOString()
       })
       .eq('id', itemId);
 
@@ -60,7 +60,7 @@ export const inventoryService = {
    */
   async deleteItem(itemId: string): Promise<void> {
     const { error } = await supabase
-      .from('inventory')
+      .from('inventory_items')
       .delete()
       .eq('id', itemId);
 
@@ -75,7 +75,7 @@ export const inventoryService = {
    */
   async seedMockDataIfNeeded(mockData: InventoryItem[]): Promise<void> {
     const { count, error } = await supabase
-      .from('inventory')
+      .from('inventory_items')
       .select('*', { count: 'exact', head: true });
       
     if (error) {
@@ -99,7 +99,7 @@ export const inventoryService = {
         responsible_person: item.responsiblePerson
       }));
 
-      const { error: insertError } = await supabase.from('inventory').insert(rows);
+      const { error: insertError } = await supabase.from('inventory_items').insert(rows);
       if (insertError) {
         console.error('Error seeding inventory:', insertError);
       } else {
