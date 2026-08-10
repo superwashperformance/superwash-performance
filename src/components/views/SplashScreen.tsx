@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FaviconLogo } from '../common/FaviconLogo';
 import { MascotTurbo } from '../common/MascotTurbo';
-import { ArrowRight, User, Lock, AlertTriangle } from 'lucide-react';
+import { ArrowRight, User, Lock, AlertTriangle, Eye, EyeOff } from 'lucide-react';
 import { sanitizeInput, checkRateLimit, validateUserCredentials } from '../../utils/security';
 
 interface SplashScreenProps {
@@ -13,6 +13,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
   const [plate, setPlate] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
 
   const handleTrack = () => {
@@ -109,15 +110,22 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
             />
           </div>
 
-          <div>
+          <div className="relative">
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               required
               placeholder="Contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-[#050811] border border-slate-700/60 rounded-full px-4 py-2 sm:py-2.5 text-xs text-white placeholder:text-slate-500 focus:border-[#00E5FF] focus:ring-1 focus:ring-[#00E5FF] outline-none transition-all font-mono"
+              className="w-full bg-[#050811] border border-slate-700/60 rounded-full px-4 py-2 sm:py-2.5 pr-10 text-xs text-white placeholder:text-slate-500 focus:border-[#00E5FF] focus:ring-1 focus:ring-[#00E5FF] outline-none transition-all font-mono"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-[#00E5FF] transition-colors"
+            >
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
           </div>
 
           <button
@@ -126,17 +134,6 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
           >
             INICIAR SESIÓN
           </button>
-
-          <a
-            href="#forgot"
-            onClick={(e) => {
-              e.preventDefault();
-              alert('🔑 Para recuperar tu contraseña, contacta al administrador del sistema.');
-            }}
-            className="text-[10px] sm:text-[11px] text-[#00E5FF] hover:underline font-medium text-center mt-0.5 block"
-          >
-            ¿Olvidaste tu contraseña?
-          </a>
         </form>
 
         {/* Tracker Input Bar */}
