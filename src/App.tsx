@@ -6,6 +6,7 @@ import {
   mockTransactions,
   mockCustomers,
   mockVehicles,
+  mockServiceOrders,
   initialTechnicians,
   initialReceptionAgents,
   mockServicesCatalog,
@@ -62,7 +63,17 @@ export function App() {
   }, [userSession]);
 
   // Application State
-  const [orders, setOrders] = useState<ServiceOrder[]>([]);
+  const [orders, setOrders] = useState<ServiceOrder[]>(() => {
+    const saved = localStorage.getItem('sw_orders');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return mockServiceOrders;
+      }
+    }
+    return mockServiceOrders;
+  });
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [inventoryMovements, setInventoryMovements] = useState<InventoryMovement[]>(mockInventoryMovements);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
@@ -134,6 +145,11 @@ export function App() {
     localStorage.setItem('sw_register_state', JSON.stringify(registerState));
   }, [registerState]);
 
+  // Persist orders to localStorage
+  React.useEffect(() => {
+    localStorage.setItem('sw_orders', JSON.stringify(orders));
+  }, [orders]);
+
   // Fetch initial data from Supabase
   React.useEffect(() => {
     const fetchData = async () => {
@@ -143,14 +159,21 @@ export function App() {
         const odsData = await odsService.getActiveODS();
         setOrders(prevOrders => {
           return odsData.map(fetched => {
-            const existing = prevOrders.find(o => o.id === fetched.id);
+            const existing = prevOrders.find(o => o.id === fetched.id || (o.orderNumber && o.orderNumber === fetched.orderNumber));
             if (existing) {
               return {
                 ...fetched,
-                checklist: existing.checklist?.length ? existing.checklist : fetched.checklist,
-                photos: existing.photos?.length ? existing.photos : fetched.photos,
-                services: existing.services?.length ? existing.services : fetched.services,
-                damageMarkers: existing.damageMarkers?.length ? existing.damageMarkers : fetched.damageMarkers,
+                id: existing.id || fetched.id,
+                orderNumber: existing.orderNumber || fetched.orderNumber,
+                checklist: (existing.checklist && existing.checklist.length > 0) ? existing.checklist : fetched.checklist,
+                photos: (existing.photos && existing.photos.length > 0) ? existing.photos : fetched.photos,
+                services: (existing.services && existing.services.length > 0) ? existing.services : fetched.services,
+                damageMarkers: (existing.damageMarkers && existing.damageMarkers.length > 0) ? existing.damageMarkers : fetched.damageMarkers,
+                belongingsList: (existing.belongingsList && existing.belongingsList.length > 0) ? existing.belongingsList : fetched.belongingsList,
+                observations: existing.observations || fetched.observations,
+                subtotalAmount: existing.subtotalAmount || fetched.subtotalAmount,
+                totalAmount: existing.totalAmount || fetched.totalAmount,
+                paidAmount: existing.paidAmount || fetched.paidAmount,
               };
             }
             return fetched;
@@ -181,14 +204,21 @@ export function App() {
           odsService.getActiveODS().then(odsData => {
             setOrders(prevOrders => {
               return odsData.map(fetched => {
-                const existing = prevOrders.find(o => o.id === fetched.id);
+                const existing = prevOrders.find(o => o.id === fetched.id || (o.orderNumber && o.orderNumber === fetched.orderNumber));
                 if (existing) {
                   return {
                     ...fetched,
-                    checklist: existing.checklist?.length ? existing.checklist : fetched.checklist,
-                    photos: existing.photos?.length ? existing.photos : fetched.photos,
-                    services: existing.services?.length ? existing.services : fetched.services,
-                    damageMarkers: existing.damageMarkers?.length ? existing.damageMarkers : fetched.damageMarkers,
+                    id: existing.id || fetched.id,
+                    orderNumber: existing.orderNumber || fetched.orderNumber,
+                    checklist: (existing.checklist && existing.checklist.length > 0) ? existing.checklist : fetched.checklist,
+                    photos: (existing.photos && existing.photos.length > 0) ? existing.photos : fetched.photos,
+                    services: (existing.services && existing.services.length > 0) ? existing.services : fetched.services,
+                    damageMarkers: (existing.damageMarkers && existing.damageMarkers.length > 0) ? existing.damageMarkers : fetched.damageMarkers,
+                    belongingsList: (existing.belongingsList && existing.belongingsList.length > 0) ? existing.belongingsList : fetched.belongingsList,
+                    observations: existing.observations || fetched.observations,
+                    subtotalAmount: existing.subtotalAmount || fetched.subtotalAmount,
+                    totalAmount: existing.totalAmount || fetched.totalAmount,
+                    paidAmount: existing.paidAmount || fetched.paidAmount,
                   };
                 }
                 return fetched;
