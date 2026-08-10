@@ -213,6 +213,21 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
     }
   };
 
+  const handleAddCustomService = () => {
+    const customId = `custom-${Date.now()}`;
+    setSelectedServices([
+      ...selectedServices,
+      {
+        serviceId: customId,
+        serviceName: 'Servicio Adicional (Editar)',
+        category: 'OTROS',
+        unitPrice: 0,
+        quantity: 1,
+        totalPrice: 0,
+      },
+    ]);
+  };
+
   const handleRemoveService = (serviceId: string) => {
     setSelectedServices(selectedServices.filter((s) => s.serviceId !== serviceId));
   };
@@ -830,6 +845,15 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                 </div>
               </div>
             ))}
+          </div>
+
+          <div className="flex justify-end mt-1">
+            <button
+              onClick={handleAddCustomService}
+              className="btn-nike-secondary text-xs py-1.5 px-3 flex items-center gap-2 border-dashed border-[#00E5FF]/50 text-[#00E5FF] hover:bg-[#00E5FF]/10 transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" /> Añadir Servicio Adicional
+            </button>
           </div>
 
           {/* Selected Presupuesto Summary */}
