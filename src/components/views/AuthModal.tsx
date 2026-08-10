@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { UserRole } from '../../types';
 import { FaviconLogo } from '../common/FaviconLogo';
 import { sanitizeInput, checkRateLimit, validateUserCredentials } from '../../utils/security';
-import { Lock, Mail, User, Shield, CheckCircle, AlertTriangle, ArrowRight, X } from 'lucide-react';
+import { Lock, Mail, User, Shield, CheckCircle, AlertTriangle, ArrowRight, X, Eye, EyeOff } from 'lucide-react';
 
 export interface UserSession {
   id: string;
@@ -21,6 +21,7 @@ interface AuthModalProps {
 export const AuthModal: React.FC<AuthModalProps> = ({ onLoginSuccess, onCancel }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
   // Pre-configured Demo Credentials
@@ -121,15 +122,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onLoginSuccess, onCancel }
             />
           </div>
 
-          <div>
+          <div className="relative">
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               required
               placeholder="Contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-slate-950/80 border border-white/20 rounded-2xl px-4 py-3.5 text-sm text-white placeholder:text-slate-400 focus:border-[#00E5FF] focus:ring-1 focus:ring-[#00E5FF] outline-none transition-all font-mono"
+              className="w-full bg-slate-950/80 border border-white/20 rounded-2xl px-4 py-3.5 pr-12 text-sm text-white placeholder:text-slate-400 focus:border-[#00E5FF] focus:ring-1 focus:ring-[#00E5FF] outline-none transition-all font-mono"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#00E5FF] transition-colors"
+            >
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
           </div>
 
           <button
