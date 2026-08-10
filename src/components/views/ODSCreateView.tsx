@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { ServiceOrder, ChecklistItem, DamageMarker, PresupuestoServiceItem, Agent, ServiceItem, Customer, Vehicle } from '../../types';
+import { storageService } from '../../services/storageService';
 import { SignatureCanvas } from '../common/SignatureCanvas';
 import {
   ClipboardCheck,
@@ -135,6 +136,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
   ]);
 
   const [uploadCategory, setUploadCategory] = useState<'general' | 'damage_front' | 'damage_rear' | 'damage_left' | 'damage_right'>('general');
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -142,24 +144,32 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setIsUploadingPhoto(true);
     const reader = new FileReader();
-    reader.onloadend = () => {
-      const newPhoto = {
-        url: reader.result as string,
-        caption: file.name,
-        category: uploadCategory,
-      };
-      
-      const placeholderUrl = 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?q=80&w=800&auto=format&fit=crop';
-      
-      setPhotos(prevPhotos => {
-        if (uploadCategory === 'general' && prevPhotos.some(p => p.url === placeholderUrl)) {
-          return [newPhoto, ...prevPhotos.filter(p => p.url !== placeholderUrl)];
-        }
-        return [...prevPhotos, newPhoto];
-      });
-
-      if (fileInputRef.current) fileInputRef.current.value = '';
+    reader.onloadend = async () => {
+      try {
+        const base64Data = reader.result as string;
+        const publicUrl = await storageService.uploadPhotoBase64(base64Data, file.name);
+        
+        const newPhoto = {
+          url: publicUrl,
+          caption: file.name,
+          category: uploadCategory,
+        };
+        
+        const placeholderUrl = 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?q=80&w=800&auto=format&fit=crop';
+        
+        setPhotos(prevPhotos => {
+          if (uploadCategory === 'general' && prevPhotos.some(p => p.url === placeholderUrl)) {
+            return [newPhoto, ...prevPhotos.filter(p => p.url !== placeholderUrl)];
+          }
+          return [...prevPhotos, newPhoto];
+        });
+      } catch (err) {
+        alert('Hubo un error al subir la fotografía a Supabase. Verifica tu conexión.');
+      } finally {
+        setIsUploadingPhoto(false);
+      }
     };
     reader.readAsDataURL(file);
   };

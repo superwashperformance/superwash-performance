@@ -24,10 +24,37 @@ const mapToServiceOrder = (data: any): ServiceOrder => {
     entryDate: new Date(data.entry_date).toLocaleString('es-ES'),
     observations: data.observations || '',
     belongingsList: data.belongings_list || [],
-    checklist: [], // Would fetch from ods_checklist in a full implementation
-    damageMarkers: [], // Would fetch from ods_damage_markers
-    photos: [], // Would fetch from ods_photos
-    services: [], // Would fetch from ods_services
+    checklist: (data.checklist_items || []).map((item: any) => ({
+      id: item.id,
+      key: item.item_key,
+      label: item.label,
+      condition: item.condition,
+      notes: item.notes,
+    })),
+    damageMarkers: (data.damage_markers || []).map((marker: any) => ({
+      id: marker.id,
+      x: Number(marker.x_pos),
+      y: Number(marker.y_pos),
+      view: marker.view_name,
+      type: marker.damage_type,
+      severity: marker.severity,
+      description: marker.description,
+    })),
+    photos: (data.order_photos || []).map((photo: any) => ({
+      id: photo.id,
+      photoUrl: photo.photo_url,
+      category: photo.category,
+      caption: photo.caption,
+      createdAt: new Date(photo.created_at).toLocaleTimeString(),
+    })),
+    services: (data.order_services || []).map((srv: any) => ({
+      serviceId: srv.id, // we map table ID to serviceId for UI list
+      serviceName: srv.service_name,
+      category: srv.category,
+      unitPrice: Number(srv.unit_price),
+      quantity: Number(srv.quantity),
+      totalPrice: Number(srv.total_price),
+    })),
     subtotalAmount: Number(data.subtotal_amount) || 0,
     taxAmount: Number(data.tax_amount) || 0,
     totalAmount: Number(data.total_amount) || 0,
@@ -46,7 +73,11 @@ export const odsService = {
       .select(`
         *,
         customers ( full_name, phone ),
-        vehicles ( plate, brand, model, year, color )
+        vehicles ( plate, brand, model, year, color ),
+        order_photos ( id, photo_url, category, caption, created_at ),
+        order_services ( id, service_name, category, unit_price, quantity, total_price ),
+        checklist_items ( id, item_key, label, condition, notes ),
+        damage_markers ( id, x_pos, y_pos, view_name, damage_type, severity, description )
       `)
       .order('entry_date', { ascending: false });
 
@@ -115,6 +146,57 @@ export const odsService = {
 
       if (orderError) throw orderError;
 
+      const orderId = orderData.id;
+
+      // 4. Insert nested records
+      if (odsData.photos && odsData.photos.length > 0) {
+        const photosPayload = odsData.photos.map((p) => ({
+          order_id: orderId,
+          photo_url: p.photoUrl,
+          category: p.category,
+          caption: p.caption,
+        }));
+        await supabase.from('order_photos').insert(photosPayload);
+      }
+
+      if (odsData.services && odsData.services.length > 0) {
+        const servicesPayload = odsData.services.map((s) => ({
+          order_id: orderId,
+          service_name: s.serviceName,
+          category: s.category,
+          unit_price: s.unitPrice,
+          quantity: s.quantity,
+          total_price: s.totalPrice,
+        }));
+        await supabase.from('order_services').insert(servicesPayload);
+      }
+
+      if (odsData.checklist && odsData.checklist.length > 0) {
+        const checklistPayload = odsData.checklist.map((c) => ({
+          order_id: orderId,
+          item_key: c.key,
+          label: c.label,
+          condition: c.condition,
+          notes: c.notes || '',
+        }));
+        await supabase.from('checklist_items').insert(checklistPayload);
+      }
+
+      if (odsData.damageMarkers && odsData.damageMarkers.length > 0) {
+        const damagePayload = odsData.damageMarkers.map((d) => ({
+          order_id: orderId,
+          x_pos: d.x,
+          y_pos: d.y,
+          view_name: d.view,
+          damage_type: d.type,
+          severity: d.severity,
+          description: d.description,
+        }));
+        await supabase.from('damage_markers').insert(damagePayload);
+      }
+
+      if (orderError) throw orderError;
+
       const mappedOrder = mapToServiceOrder(orderData);
       
       // For the MVP, since we are not yet persisting nested arrays to Supabase,
@@ -144,7 +226,11 @@ export const odsService = {
       .select(`
         *,
         customers ( full_name, phone ),
-        vehicles!inner ( plate, brand, model, year, color )
+        vehicles!inner ( plate, brand, model, year, color ),
+        order_photos ( id, photo_url, category, caption, created_at ),
+        order_services ( id, service_name, category, unit_price, quantity, total_price ),
+        checklist_items ( id, item_key, label, condition, notes ),
+        damage_markers ( id, x_pos, y_pos, view_name, damage_type, severity, description )
       `)
       .ilike('vehicles.plate', plate.trim())
       .order('entry_date', { ascending: false })
