@@ -702,7 +702,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                             <img src={p.url} alt={view.title} className="w-full h-full object-cover" />
                             <button
                               onClick={() => setPhotos(photos.filter(img => img.url !== p.url))}
-                              className="absolute top-1 right-1 bg-red-500/80 text-white p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                              className="absolute top-1 right-1 bg-red-500/80 text-white p-1.5 rounded-full shadow-lg transition-opacity"
                             >
                               <Trash2 className="w-3 h-3" />
                             </button>
@@ -943,7 +943,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                       <img src={p.url} alt={p.caption} className="w-full h-full object-cover" />
                       <button 
                         onClick={() => handleRemovePhoto(idx)}
-                        className="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-red-500/80 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all"
+                        className="absolute top-2 right-2 p-1.5 bg-red-500/80 hover:bg-red-600 text-white rounded-full shadow-lg transition-all"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
