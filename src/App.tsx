@@ -545,7 +545,7 @@ export function App() {
 
     setOrders((prevOrders) =>
       prevOrders.map((o) => {
-        if (o.id === orderId) {
+        if (o.id === orderId || o.orderNumber === orderId) {
           const updated = {
             ...o,
             services: newServices,
@@ -560,13 +560,31 @@ export function App() {
     );
 
     setSelectedOrder((prev) =>
-      prev && prev.id === orderId
+      prev && (prev.id === orderId || prev.orderNumber === orderId)
         ? {
             ...prev,
             services: newServices,
             subtotalAmount: subtotal,
             totalAmount: subtotal,
           }
+        : prev
+    );
+  };
+
+  const handleUpdateOrderChecklist = (orderId: string, newChecklist: ChecklistItem[]) => {
+    setOrders((prevOrders) =>
+      prevOrders.map((o) => {
+        if (o.id === orderId || o.orderNumber === orderId) {
+          const updated = { ...o, checklist: newChecklist };
+          return updated;
+        }
+        return o;
+      })
+    );
+
+    setSelectedOrder((prev) =>
+      prev && (prev.id === orderId || prev.orderNumber === orderId)
+        ? { ...prev, checklist: newChecklist }
         : prev
     );
   };
@@ -767,6 +785,7 @@ export function App() {
           onUpdateStatus={handleUpdateStatus}
           servicesCatalog={servicesCatalog}
           onUpdateOrderServices={handleUpdateOrderServices}
+          onUpdateChecklist={handleUpdateOrderChecklist}
         />
 
       {/* Command Palette Search Modal */}

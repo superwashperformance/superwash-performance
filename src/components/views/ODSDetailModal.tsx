@@ -12,9 +12,9 @@ interface ODSDetailModalProps {
   companyData: CompanyData;
   onAddPhoto?: (orderId: string, photo: OrderPhoto) => void;
   onDeletePhoto?: (orderId: string, photoId: string) => void;
-  onUpdateStatus?: (orderId: string, newStatus: ODSStatus) => void;
   servicesCatalog?: ServiceItem[];
   onUpdateOrderServices?: (orderId: string, newServices: PresupuestoServiceItem[]) => void;
+  onUpdateChecklist?: (orderId: string, checklist: ChecklistItem[]) => void;
 }
 
 export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({
@@ -26,6 +26,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({
   onUpdateStatus,
   servicesCatalog = [],
   onUpdateOrderServices,
+  onUpdateChecklist,
 }) => {
   const [activeTab, setActiveTab] = useState<'quote' | 'photos' | 'checklist' | 'damages'>('quote');
   const [printMode, setPrintMode] = useState<'quote' | 'taller'>('quote');
@@ -93,11 +94,12 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({
     const catItem = servicesCatalog.find((s) => s.id === svcId);
     if (!catItem) return;
 
-    const existingIdx = order.services.findIndex((s) => s.serviceId === svcId || s.serviceName === catItem.name);
+    const currentServices = Array.isArray(order.services) ? order.services : [];
+    const existingIdx = currentServices.findIndex((s) => s.serviceId === svcId || s.serviceName === catItem.name);
     let updated: PresupuestoServiceItem[];
 
     if (existingIdx !== -1) {
-      updated = order.services.map((s, idx) =>
+      updated = currentServices.map((s, idx) =>
         idx === existingIdx
           ? {
               ...s,
@@ -115,7 +117,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({
         quantity: 1,
         totalPrice: catItem.price,
       };
-      updated = [...order.services, newItem];
+      updated = [...currentServices, newItem];
     }
 
     onUpdateOrderServices(order.id, updated);
@@ -123,7 +125,8 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({
 
   const handleUpdateServiceItemInModal = (index: number, changes: Partial<PresupuestoServiceItem>) => {
     if (!order || !onUpdateOrderServices) return;
-    const updated = order.services.map((s, idx) => {
+    const currentServices = Array.isArray(order.services) ? order.services : [];
+    const updated = currentServices.map((s, idx) => {
       if (idx === index) {
         const qty = changes.quantity !== undefined ? changes.quantity : s.quantity;
         const price = changes.unitPrice !== undefined ? changes.unitPrice : s.unitPrice;
@@ -143,7 +146,8 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({
 
   const handleRemoveServiceItemFromModal = (index: number) => {
     if (!order || !onUpdateOrderServices) return;
-    const updated = order.services.filter((_, idx) => idx !== index);
+    const currentServices = Array.isArray(order.services) ? order.services : [];
+    const updated = currentServices.filter((_, idx) => idx !== index);
     onUpdateOrderServices(order.id, updated);
   };
 
@@ -159,7 +163,8 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({
       totalPrice: modalCustomPrice || 0,
     };
 
-    const updated = [...order.services, newItem];
+    const currentServices = Array.isArray(order.services) ? order.services : [];
+    const updated = [...currentServices, newItem];
     onUpdateOrderServices(order.id, updated);
 
     setModalCustomName('');
@@ -449,7 +454,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({
 
           <div className={activeTab === 'checklist' ? 'block print:hidden' : 'hidden'}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {checklistList.map((item) => (
+              {checklistList.map((item, idx) => (
                 <div key={item.id} className="p-3 rounded-xl bg-slate-900 border border-white/5 flex flex-col gap-1.5 text-xs">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-white">{item.label}</span>
@@ -457,11 +462,23 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({
                       {item.condition === 'ok' ? 'Sin Novedad (OK)' : item.condition === 'damaged' ? 'Dañado' : item.condition === 'missing' ? 'No Posee' : 'Observación'}
                     </span>
                   </div>
-                  {item.notes && (
-                    <div className="text-[11px] text-slate-300 font-sans italic bg-black/40 px-2.5 py-1 rounded border border-white/5">
+                  {onUpdateChecklist && order ? (
+                    <input
+                      type="text"
+                      value={item.notes || ''}
+                      onChange={(e) => {
+                        const newChecklist = [...checklistList];
+                        newChecklist[idx] = { ...item, notes: e.target.value };
+                        onUpdateChecklist(order.id, newChecklist);
+                      }}
+                      placeholder="Dejar una observación (opcional)..."
+                      className="w-full bg-black/60 border border-white/10 rounded-md px-2 py-1 text-[11px] text-white placeholder:text-slate-500 outline-none focus:border-[#00E5FF] font-sans mt-1"
+                    />
+                  ) : item.notes ? (
+                    <div className="text-[11px] text-slate-300 font-sans italic bg-black/40 px-2.5 py-1 rounded border border-white/5 mt-1">
                       Obs: {item.notes}
                     </div>
-                  )}
+                  ) : null}
                 </div>
               ))}
             </div>
