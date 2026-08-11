@@ -38,7 +38,7 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
     { key: 'alfombras', label: 'Alfombras de Habitáculo' },
     { key: 'limpiaparabrisas', label: 'Limpiaparabrisas / Plumas' },
     { key: 'caucho_repuesto', label: 'Caucho de Repuesto' },
-    { key: 'gato_hidraulico', label: 'Gato Hidráulico y Palanca' },
+    { key: 'gato_hidraulico', label: 'Gato Hidráulico' },
     { key: 'triangulo', label: 'Triángulo de Seguridad' },
     { key: 'estereo', label: 'Estéreo / Multimedia' },
     { key: 'rociadores', label: 'Rociadores de Agua' },

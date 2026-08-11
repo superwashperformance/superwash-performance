@@ -107,7 +107,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
     { id: 'chk-7', key: 'alfombras', label: 'Alfombras de Habitáculo', condition: 'ok' },
     { id: 'chk-8', key: 'limpiaparabrisas', label: 'Limpiaparabrisas / Plumas', condition: 'ok' },
     { id: 'chk-9', key: 'caucho_repuesto', label: 'Caucho de Repuesto', condition: 'ok' },
-    { id: 'chk-10', key: 'gato_hidraulico', label: 'Gato Hidráulico y Palanca', condition: 'ok' },
+    { id: 'chk-10', key: 'gato_hidraulico', label: 'Gato Hidráulico', condition: 'ok' },
     { id: 'chk-11', key: 'triangulo', label: 'Triángulo de Seguridad', condition: 'ok' },
     { id: 'chk-12', key: 'estereo', label: 'Estéreo / Multimedia', condition: 'ok' },
     { id: 'chk-13', key: 'rociadores', label: 'Rociadores de Agua', condition: 'ok' },
