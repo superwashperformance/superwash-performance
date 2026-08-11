@@ -122,7 +122,6 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
 
   const [checklist, setChecklist] = useState<ChecklistItem[]>(defaultChecklist);
   const [belongingsInput, setBelongingsInput] = useState('');
-  const [belongingsList, setBelongingsList] = useState<string[]>(['Llave inteligente', 'Documentos de propiedad']);
 
   // Step 4: Services & Presupuesto
   const [selectedServices, setSelectedServices] = useState<PresupuestoServiceItem[]>([]);
@@ -193,16 +192,6 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
     setTimeout(() => {
       cameraInputRef.current?.click();
     }, 50);
-  };
-
-  const handleAddBelonging = () => {
-    if (!belongingsInput.trim()) return;
-    setBelongingsList([...belongingsList, belongingsInput.trim()]);
-    setBelongingsInput('');
-  };
-
-  const handleRemoveBelonging = (index: number) => {
-    setBelongingsList(belongingsList.filter((_, i) => i !== index));
   };
 
   const handleAddService = (serviceId: string) => {
@@ -290,7 +279,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
       status: 'received',
       entryDate: new Date().toLocaleString('es-ES'),
       observations: observations,
-      belongingsList: belongingsList,
+      belongingsList: belongingsInput.trim() ? [belongingsInput.trim()] : [],
       checklist: checklist,
       damageMarkers: damageMarkers,
       photos: photos.map((p, i) => ({
@@ -747,33 +736,63 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
           </div>
 
           {/* Belongings */}
-          <div className="p-4 rounded-xl bg-black/40 border border-white/10 flex flex-col gap-3">
+          <div className="p-4 rounded-xl bg-black/40 border border-white/10 flex flex-col gap-4">
             <span className="font-display text-lg text-[#00E5FF]">PERTENENCIAS EN EL VEHÍCULO</span>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Ej. Control de garage, anteojos de sol..."
-                value={belongingsInput}
-                onChange={(e) => setBelongingsInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddBelonging()}
-                className="flex-1 bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none"
-              />
-              <button onClick={handleAddBelonging} className="btn-nike-secondary text-xs">
-                <Plus className="w-4 h-4" /> Agregar
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {belongingsList.map((item, idx) => (
-                <span
-                  key={idx}
-                  className="px-3 py-1 rounded-full bg-slate-800 border border-white/10 text-xs text-white flex items-center gap-2"
-                >
-                  {item}
-                  <button onClick={() => handleRemoveBelonging(idx)} className="text-red-400 hover:text-red-300">
-                    ×
-                  </button>
-                </span>
-              ))}
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Textbox for belongings */}
+              <div className="flex flex-col gap-2">
+                <span className="text-xs text-slate-400">Descripción de pertenencias:</span>
+                <textarea
+                  placeholder="Ej. Control de garage, anteojos de sol, llaves..."
+                  value={belongingsInput}
+                  onChange={(e) => setBelongingsInput(e.target.value)}
+                  className="flex-1 bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none min-h-[120px] resize-none"
+                />
+              </div>
+
+              {/* Photo for belongings */}
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-slate-400">Evidencia Fotográfica (Opcional):</span>
+                  {photos.filter(p => p.category === 'belonging').length === 0 && (
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => triggerCamera('belonging' as any)}
+                        className="btn-nike-secondary text-[10px] py-1 px-2 flex items-center gap-1"
+                      >
+                        <Camera className="w-3 h-3" /> Cámara
+                      </button>
+                      <button 
+                        onClick={() => triggerUpload('belonging' as any)}
+                        className="btn-nike-secondary text-[10px] py-1 px-2 flex items-center gap-1"
+                      >
+                        <Upload className="w-3 h-3" /> Galería
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 rounded-xl bg-slate-900/50 border border-white/5 overflow-hidden flex items-center justify-center min-h-[120px]">
+                  {photos.filter(p => p.category === 'belonging').length > 0 ? (
+                    photos.filter(p => p.category === 'belonging').map((p, idx) => (
+                      <div key={idx} className="relative w-full h-full group">
+                        <img src={p.url} alt="Pertenencias" className="w-full h-full object-cover" />
+                        <button
+                          onClick={() => setPhotos(photos.filter(img => img.url !== p.url))}
+                          className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-600 text-white p-1.5 rounded-full shadow-lg transition-opacity"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-slate-500 flex flex-col items-center gap-2">
+                      <Camera className="w-6 h-6 opacity-30" />
+                      <span className="text-[10px] uppercase tracking-wider font-mono">Sin Foto</span>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
