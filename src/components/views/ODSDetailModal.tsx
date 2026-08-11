@@ -3,7 +3,7 @@ import { CurrencyDisplay } from '../common/CurrencyDisplay';
 import { ServiceOrder, CompanyData, OrderPhoto } from '../../types';
 import { FaviconLogo } from '../common/FaviconLogo';
 import { WorkshopOrderPrintTemplate } from './WorkshopOrderPrintTemplate';
-import { X, Printer, Share2, Phone, CheckCircle, FileText, Camera, ShieldAlert, Sparkles, User, Car, Plus } from 'lucide-react';
+import { X, Printer, Share2, Phone, CheckCircle, FileText, Camera, ShieldAlert, Sparkles, User, Car, Plus, Pencil, Check } from 'lucide-react';
 
 interface ODSDetailModalProps {
   order: ServiceOrder | null;
@@ -11,9 +11,10 @@ interface ODSDetailModalProps {
   companyData: CompanyData;
   onAddPhoto?: (orderId: string, photo: OrderPhoto) => void;
   onAddExtraService?: (orderId: string, serviceName: string, price: number) => void;
+  onEditService?: (orderId: string, serviceId: string, serviceName: string, unitPrice: number, quantity: number) => void;
 }
 
-export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, companyData, onAddPhoto, onAddExtraService }) => {
+export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, companyData, onAddPhoto, onAddExtraService, onEditService }) => {
   const [activeTab, setActiveTab] = useState<'quote' | 'photos' | 'checklist' | 'damages'>('quote');
   const [printMode, setPrintMode] = useState<'quote' | 'taller'>('quote');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -21,6 +22,28 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
   const [showExtraServiceForm, setShowExtraServiceForm] = useState(false);
   const [extraServiceName, setExtraServiceName] = useState('');
   const [extraServicePrice, setExtraServicePrice] = useState('');
+  
+  const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
+  const [editServiceName, setEditServiceName] = useState('');
+  const [editServiceQuantity, setEditServiceQuantity] = useState('');
+  const [editServiceUnitPrice, setEditServiceUnitPrice] = useState('');
+
+  const startEditing = (service: any) => {
+    setEditingServiceId(service.serviceId);
+    setEditServiceName(service.serviceName);
+    setEditServiceQuantity(service.quantity.toString());
+    setEditServiceUnitPrice(service.unitPrice.toString());
+  };
+
+  const handleSaveEdit = () => {
+    if (!order || !onEditService || !editingServiceId) return;
+    const price = parseFloat(editServiceUnitPrice);
+    const qty = parseInt(editServiceQuantity, 10);
+    if (isNaN(price) || price < 0 || isNaN(qty) || qty < 1 || !editServiceName.trim()) return;
+
+    onEditService(order.id, editingServiceId, editServiceName.trim(), price, qty);
+    setEditingServiceId(null);
+  };
 
   const handleAddExtraService = () => {
     if (!order || !onAddExtraService || !extraServiceName.trim() || !extraServicePrice) return;
@@ -198,15 +221,67 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                   </thead>
                   <tbody className="divide-y divide-white/5 print:divide-black/10 font-sans">
                     {order.services.map((s, i) => (
-                      <tr key={i}>
-                        <td className="p-2.5 font-bold text-white print:text-black">{s.serviceName}</td>
-                        <td className="p-2.5 text-center font-mono print:text-black">{s.quantity}</td>
-                        <td className="p-2.5 text-right print:text-black">
-                          <CurrencyDisplay amount={s.unitPrice} size="sm" />
-                        </td>
-                        <td className="p-2.5 text-right text-white print:text-black font-bold">
-                          <CurrencyDisplay amount={s.totalPrice} size="sm" />
-                        </td>
+                      <tr key={i} className="group">
+                        {editingServiceId === s.serviceId ? (
+                          <>
+                            <td className="p-2.5">
+                              <input
+                                type="text"
+                                value={editServiceName}
+                                onChange={e => setEditServiceName(e.target.value)}
+                                className="w-full bg-black/40 border-b border-slate-700 px-2 py-1 text-xs text-white focus:border-[#00E5FF] outline-none"
+                              />
+                            </td>
+                            <td className="p-2.5 text-center">
+                              <input
+                                type="number"
+                                value={editServiceQuantity}
+                                onChange={e => setEditServiceQuantity(e.target.value)}
+                                className="w-16 bg-black/40 border-b border-slate-700 px-2 py-1 text-xs text-center text-white focus:border-[#00E5FF] outline-none font-mono"
+                              />
+                            </td>
+                            <td className="p-2.5 text-right">
+                              <div className="flex items-center justify-end gap-1">
+                                <span className="text-slate-400 text-xs">$</span>
+                                <input
+                                  type="number"
+                                  value={editServiceUnitPrice}
+                                  onChange={e => setEditServiceUnitPrice(e.target.value)}
+                                  className="w-20 bg-black/40 border-b border-slate-700 px-2 py-1 text-xs text-right text-white focus:border-[#00E5FF] outline-none font-mono"
+                                />
+                              </div>
+                            </td>
+                            <td className="p-2.5 text-right whitespace-nowrap">
+                              <button onClick={handleSaveEdit} className="text-[#00E5FF] hover:text-white p-1 rounded hover:bg-white/5 mr-1 transition-colors">
+                                <Check className="w-4 h-4" />
+                              </button>
+                              <button onClick={() => setEditingServiceId(null)} className="text-slate-400 hover:text-red-400 p-1 rounded hover:bg-white/5 transition-colors">
+                                <X className="w-4 h-4" />
+                              </button>
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td className="p-2.5 font-bold text-white print:text-black flex items-center gap-2">
+                              {s.serviceName}
+                              {onEditService && (
+                                <button
+                                  onClick={() => startEditing(s)}
+                                  className="opacity-0 group-hover:opacity-100 print:hidden text-slate-400 hover:text-[#00E5FF] transition-opacity"
+                                >
+                                  <Pencil className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </td>
+                            <td className="p-2.5 text-center font-mono print:text-black">{s.quantity}</td>
+                            <td className="p-2.5 text-right print:text-black">
+                              <CurrencyDisplay amount={s.unitPrice} size="sm" />
+                            </td>
+                            <td className="p-2.5 text-right text-white print:text-black font-bold">
+                              <CurrencyDisplay amount={s.totalPrice} size="sm" />
+                            </td>
+                          </>
+                        )}
                       </tr>
                     ))}
                   </tbody>

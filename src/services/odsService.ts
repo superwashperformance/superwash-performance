@@ -294,9 +294,9 @@ export const odsService = {
   /**
    * Adds an extra service to an existing ODS
    */
-  async addExtraService(orderId: string, serviceName: string, price: number, currentSubtotal: number, currentTotal: number): Promise<void> {
+  async addExtraService(orderId: string, serviceName: string, price: number, currentSubtotal: number, currentTotal: number): Promise<{ id: string }> {
     // 1. Insert into order_services
-    const { error: serviceError } = await supabase
+    const { data: serviceData, error: serviceError } = await supabase
       .from('order_services')
       .insert({
         order_id: orderId,
@@ -305,7 +305,9 @@ export const odsService = {
         unit_price: price,
         quantity: 1,
         total_price: price
-      });
+      })
+      .select('id')
+      .single();
 
     if (serviceError) {
       console.error('Error adding extra service:', serviceError);
@@ -318,6 +320,43 @@ export const odsService = {
       .update({
         subtotal_amount: currentSubtotal + price,
         total_amount: currentTotal + price
+      })
+      .eq('id', orderId);
+
+    if (updateError) {
+      console.error('Error updating ODS amounts:', updateError);
+      throw updateError;
+    }
+    
+    return serviceData;
+  },
+
+  /**
+   * Updates an existing service in an ODS
+   */
+  async updateService(orderId: string, serviceId: string, serviceName: string, unitPrice: number, quantity: number, totalPrice: number, newSubtotal: number, newTotal: number): Promise<void> {
+    // 1. Update order_services
+    const { error: serviceError } = await supabase
+      .from('order_services')
+      .update({
+        service_name: serviceName,
+        unit_price: unitPrice,
+        quantity: quantity,
+        total_price: totalPrice
+      })
+      .eq('id', serviceId);
+
+    if (serviceError) {
+      console.error('Error updating service:', serviceError);
+      throw serviceError;
+    }
+
+    // 2. Update service_orders amounts
+    const { error: updateError } = await supabase
+      .from('service_orders')
+      .update({
+        subtotal_amount: newSubtotal,
+        total_amount: newTotal
       })
       .eq('id', orderId);
 

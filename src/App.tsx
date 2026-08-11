@@ -418,10 +418,10 @@ export function App() {
     if (!order) return;
     
     try {
-      await odsService.addExtraService(orderId, serviceName, price, order.subtotalAmount, order.totalAmount);
+      const inserted = await odsService.addExtraService(orderId, serviceName, price, order.subtotalAmount, order.totalAmount);
       
       const newService = {
-        id: `srv-${Date.now()}`,
+        serviceId: inserted.id,
         serviceName,
         category: 'extra',
         unitPrice: price,
@@ -442,6 +442,50 @@ export function App() {
       }
     } catch (err) {
       console.error('Failed to add extra service', err);
+    }
+  };
+
+  const handleEditServiceInOrder = async (orderId: string, serviceId: string, serviceName: string, unitPrice: number, quantity: number) => {
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+    
+    const serviceIndex = order.services.findIndex(s => s.serviceId === serviceId);
+    if (serviceIndex === -1) return;
+
+    const oldService = order.services[serviceIndex];
+    const newTotalPrice = unitPrice * quantity;
+    const diff = newTotalPrice - oldService.totalPrice;
+
+    const newSubtotal = order.subtotalAmount + diff;
+    const newTotal = order.totalAmount + diff;
+
+    try {
+      await odsService.updateService(orderId, serviceId, serviceName, unitPrice, quantity, newTotalPrice, newSubtotal, newTotal);
+      
+      const updatedService = {
+        ...oldService,
+        serviceName,
+        unitPrice,
+        quantity,
+        totalPrice: newTotalPrice
+      };
+      
+      const updatedServices = [...order.services];
+      updatedServices[serviceIndex] = updatedService;
+
+      const updatedOrder = { 
+        ...order, 
+        services: updatedServices,
+        subtotalAmount: newSubtotal,
+        totalAmount: newTotal
+      };
+
+      setOrders(orders.map((o) => (o.id === orderId ? updatedOrder : o)));
+      if (selectedOrder?.id === orderId) {
+        setSelectedOrder(updatedOrder);
+      }
+    } catch (err) {
+      console.error('Failed to edit service', err);
     }
   };
 
@@ -631,6 +675,7 @@ export function App() {
           companyData={companyData}
           onAddPhoto={handleAddPhotoToOrder}
           onAddExtraService={handleAddExtraServiceToOrder}
+          onEditService={handleEditServiceInOrder}
         />
 
       {/* Command Palette Search Modal */}
