@@ -1,3 +1,33 @@
+
+-- =================================================================================
+-- SCRIPT DE LIMPIEZA Y RECREACION
+-- IMPORTANTE: ESTO BORRARA LAS ORDENES DE PRUEBA EXISTENTES Y RECREARA EL ESQUEMA
+-- =================================================================================
+
+-- 1. Eliminar tablas antiguas y actuales
+DROP TABLE IF EXISTS cash_transactions CASCADE;
+DROP TABLE IF EXISTS inventory_items CASCADE;
+DROP TABLE IF EXISTS ods_services CASCADE;
+DROP TABLE IF EXISTS ods_photos CASCADE;
+DROP TABLE IF EXISTS ods_checklist CASCADE;
+DROP TABLE IF EXISTS ods_damage_markers CASCADE;
+DROP TABLE IF EXISTS order_services CASCADE;
+DROP TABLE IF EXISTS order_photos CASCADE;
+DROP TABLE IF EXISTS checklist_items CASCADE;
+DROP TABLE IF EXISTS damage_markers CASCADE;
+DROP TABLE IF EXISTS service_orders CASCADE;
+DROP TABLE IF EXISTS vehicles CASCADE;
+DROP TABLE IF EXISTS customers CASCADE;
+DROP TABLE IF EXISTS branches CASCADE;
+DROP TABLE IF EXISTS profiles CASCADE;
+
+-- 2. Eliminar tipos enumerados antiguos
+DROP TYPE IF EXISTS payment_method_enum CASCADE;
+DROP TYPE IF EXISTS inventory_type CASCADE;
+DROP TYPE IF EXISTS item_condition CASCADE;
+DROP TYPE IF EXISTS ods_status CASCADE;
+DROP TYPE IF EXISTS user_role CASCADE;
+
 -- =============================================================================
 -- ESQUEMA COMPLETO DE BASE DE DATOS POSTGRESQL / SUPABASE
 -- PROYECTO: SUPER WASH PERFORMANCE
