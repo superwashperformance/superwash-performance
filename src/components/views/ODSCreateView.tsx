@@ -128,15 +128,9 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
 
   // Step 5: Photos & Signature
   const [clientSignature, setClientSignature] = useState('');
-  const [photos, setPhotos] = useState<{ url: string; caption: string; category: any }[]>([
-    {
-      url: 'https://images.unsplash.com/photo-1617814076367-b759c7d7e738?q=80&w=800&auto=format&fit=crop',
-      caption: 'Fotografía de Ingreso Frontal',
-      category: 'general',
-    },
-  ]);
+  const [photos, setPhotos] = useState<{ url: string; caption: string; category: any }[]>([]);
 
-  const [uploadCategory, setUploadCategory] = useState<'general' | 'damage' | 'damage_front' | 'damage_rear' | 'damage_left' | 'damage_right'>('general');
+  const [uploadCategory, setUploadCategory] = useState<'general' | 'damage' | 'damage_front' | 'damage_rear' | 'damage_left' | 'damage_right' | 'belonging'>('general');
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
 
   const galleryInputRef = useRef<HTMLInputElement>(null);
@@ -953,14 +947,28 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
                 <span className="font-display text-lg text-[#00E5FF]">EVIDENCIAS FOTOGRÁFICAS</span>
-                <button 
-                  onClick={() => triggerUpload('general')}
-                  className="btn-nike-primary text-xs py-1.5 px-3 flex items-center gap-2"
-                >
-                  <Camera className="w-3.5 h-3.5" /> Agregar Foto
-                </button>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => triggerCamera('general')}
+                    className="btn-nike-secondary text-xs py-1.5 px-3 flex items-center gap-2"
+                  >
+                    <Camera className="w-3.5 h-3.5" /> Cámara
+                  </button>
+                  <button 
+                    onClick={() => triggerUpload('general')}
+                    className="btn-nike-secondary text-xs py-1.5 px-3 flex items-center gap-2"
+                  >
+                    <Upload className="w-3.5 h-3.5" /> Galería
+                  </button>
+                </div>
               </div>
-              <div className="grid grid-cols-1 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 min-h-[150px] border border-dashed border-white/10 rounded-xl p-4 bg-black/20">
+                {photos.filter(p => p.category === 'general').length === 0 && (
+                  <div className="col-span-full flex flex-col items-center justify-center text-slate-500 gap-2 opacity-50">
+                    <ImagePlus className="w-8 h-8" />
+                    <span className="text-xs">No se han añadido fotos de evidencia</span>
+                  </div>
+                )}
                 {photos.map((p, idx) => {
                   if (p.category !== 'general') return null;
                   return (
