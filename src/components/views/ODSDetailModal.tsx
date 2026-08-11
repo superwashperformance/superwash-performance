@@ -3,20 +3,35 @@ import { CurrencyDisplay } from '../common/CurrencyDisplay';
 import { ServiceOrder, CompanyData, OrderPhoto } from '../../types';
 import { FaviconLogo } from '../common/FaviconLogo';
 import { WorkshopOrderPrintTemplate } from './WorkshopOrderPrintTemplate';
-import { X, Printer, Share2, Phone, CheckCircle, FileText, Camera, ShieldAlert, Sparkles, User, Car } from 'lucide-react';
+import { X, Printer, Share2, Phone, CheckCircle, FileText, Camera, ShieldAlert, Sparkles, User, Car, Plus } from 'lucide-react';
 
 interface ODSDetailModalProps {
   order: ServiceOrder | null;
   onClose: () => void;
   companyData: CompanyData;
   onAddPhoto?: (orderId: string, photo: OrderPhoto) => void;
+  onAddExtraService?: (orderId: string, serviceName: string, price: number) => void;
 }
 
-export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, companyData, onAddPhoto }) => {
+export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, companyData, onAddPhoto, onAddExtraService }) => {
   const [activeTab, setActiveTab] = useState<'quote' | 'photos' | 'checklist' | 'damages'>('quote');
   const [printMode, setPrintMode] = useState<'quote' | 'taller'>('quote');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadCategory, setUploadCategory] = useState<OrderPhoto['category']>('general');
+  const [showExtraServiceForm, setShowExtraServiceForm] = useState(false);
+  const [extraServiceName, setExtraServiceName] = useState('');
+  const [extraServicePrice, setExtraServicePrice] = useState('');
+
+  const handleAddExtraService = () => {
+    if (!order || !onAddExtraService || !extraServiceName.trim() || !extraServicePrice) return;
+    const price = parseFloat(extraServicePrice);
+    if (isNaN(price) || price <= 0) return;
+
+    onAddExtraService(order.id, extraServiceName.trim(), price);
+    setExtraServiceName('');
+    setExtraServicePrice('');
+    setShowExtraServiceForm(false);
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -196,6 +211,57 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                     ))}
                   </tbody>
                 </table>
+
+                {/* Add Extra Service Section (Hidden in print) */}
+                {onAddExtraService && (
+                  <div className="mt-4 print:hidden border-t border-white/10 pt-4">
+                    {!showExtraServiceForm ? (
+                      <button 
+                        onClick={() => setShowExtraServiceForm(true)}
+                        className="btn-nike-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-slate-300 hover:text-white"
+                      >
+                        <Plus className="w-3.5 h-3.5" /> Agregar Servicio Adicional
+                      </button>
+                    ) : (
+                      <div className="flex flex-col sm:flex-row items-center gap-2 bg-black/40 p-3 rounded-lg border border-white/10">
+                        <input
+                          type="text"
+                          placeholder="Nombre del servicio (Ej. Encerado)"
+                          value={extraServiceName}
+                          onChange={e => setExtraServiceName(e.target.value)}
+                          className="w-full sm:flex-1 bg-transparent border-b border-slate-700 px-2 py-1.5 text-xs text-white focus:border-[#00E5FF] outline-none"
+                        />
+                        <div className="flex items-center gap-2 w-full sm:w-auto">
+                          <span className="text-slate-400 text-xs">$</span>
+                          <input
+                            type="number"
+                            placeholder="0.00"
+                            value={extraServicePrice}
+                            onChange={e => setExtraServicePrice(e.target.value)}
+                            className="w-24 bg-transparent border-b border-slate-700 px-2 py-1.5 text-xs text-white focus:border-[#00E5FF] outline-none font-mono"
+                          />
+                          <button 
+                            onClick={handleAddExtraService}
+                            disabled={!extraServiceName.trim() || !extraServicePrice}
+                            className="btn-nike-primary text-xs py-1.5 px-3 whitespace-nowrap ml-2 disabled:opacity-50"
+                          >
+                            Añadir
+                          </button>
+                          <button 
+                            onClick={() => {
+                              setShowExtraServiceForm(false);
+                              setExtraServiceName('');
+                              setExtraServicePrice('');
+                            }}
+                            className="p-1.5 text-slate-400 hover:text-red-400 rounded-full hover:bg-white/5 transition-colors"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Financial Totals */}

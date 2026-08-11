@@ -413,6 +413,38 @@ export function App() {
     }
   };
 
+  const handleAddExtraServiceToOrder = async (orderId: string, serviceName: string, price: number) => {
+    const order = orders.find(o => o.id === orderId);
+    if (!order) return;
+    
+    try {
+      await odsService.addExtraService(orderId, serviceName, price, order.subtotalAmount, order.totalAmount);
+      
+      const newService = {
+        id: `srv-${Date.now()}`,
+        serviceName,
+        category: 'extra',
+        unitPrice: price,
+        quantity: 1,
+        totalPrice: price
+      };
+      
+      const updatedOrder = { 
+        ...order, 
+        services: [...order.services, newService as any],
+        subtotalAmount: order.subtotalAmount + price,
+        totalAmount: order.totalAmount + price
+      };
+
+      setOrders(orders.map((o) => (o.id === orderId ? updatedOrder : o)));
+      if (selectedOrder?.id === orderId) {
+        setSelectedOrder(updatedOrder);
+      }
+    } catch (err) {
+      console.error('Failed to add extra service', err);
+    }
+  };
+
   const handleAddCustomer = (newCust: Customer) => {
     setCustomers([newCust, ...customers]);
   };
@@ -598,6 +630,7 @@ export function App() {
           onClose={() => setSelectedOrder(null)}
           companyData={companyData}
           onAddPhoto={handleAddPhotoToOrder}
+          onAddExtraService={handleAddExtraServiceToOrder}
         />
 
       {/* Command Palette Search Modal */}

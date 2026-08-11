@@ -289,5 +289,41 @@ export const odsService = {
       console.error('Error deleting ODS:', error);
       throw error;
     }
+  },
+
+  /**
+   * Adds an extra service to an existing ODS
+   */
+  async addExtraService(orderId: string, serviceName: string, price: number, currentSubtotal: number, currentTotal: number): Promise<void> {
+    // 1. Insert into order_services
+    const { error: serviceError } = await supabase
+      .from('order_services')
+      .insert({
+        order_id: orderId,
+        service_name: serviceName,
+        category: 'extra',
+        unit_price: price,
+        quantity: 1,
+        total_price: price
+      });
+
+    if (serviceError) {
+      console.error('Error adding extra service:', serviceError);
+      throw serviceError;
+    }
+
+    // 2. Update service_orders amounts
+    const { error: updateError } = await supabase
+      .from('service_orders')
+      .update({
+        subtotal_amount: currentSubtotal + price,
+        total_amount: currentTotal + price
+      })
+      .eq('id', orderId);
+
+    if (updateError) {
+      console.error('Error updating ODS amounts:', updateError);
+      throw updateError;
+    }
   }
 };
