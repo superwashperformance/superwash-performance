@@ -311,20 +311,16 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
 
           {/* TAB 4: DAMAGES PHOTOS */}
           <div className={activeTab === 'damages' ? 'block print:hidden' : 'hidden'}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               {[
-                { title: 'General / Otros', cat: 'damage', fullWidth: true },
-                { title: 'Frontal', cat: 'damage_front' },
-                { title: 'Trasera', cat: 'damage_rear' },
-                { title: 'Lateral Izquierdo', cat: 'damage_left' },
-                { title: 'Lateral Derecho', cat: 'damage_right' },
+                { title: 'Evidencia de Daños', cat: 'damage' },
               ].map(view => {
-                const viewPhotos = order.photos.filter(p => p.category === view.cat);
+                const viewPhotos = order.photos.filter(p => p.category === view.cat || p.category.startsWith('damage_'));
                 return (
-                  <div key={view.cat} className={`p-4 rounded-xl bg-slate-900 border border-white/10 flex flex-col h-full ${view.fullWidth ? 'md:col-span-2' : ''}`}>
+                  <div key={view.cat} className="p-4 rounded-xl bg-slate-900 border border-white/10 flex flex-col h-full">
                     <div className="flex items-center justify-between mb-3">
                       <h4 className="font-display text-sm text-[#00E5FF] uppercase tracking-wider">{view.title}</h4>
-                      {viewPhotos.length < 2 && (
+                      {viewPhotos.length < 10 && (
                         <button 
                           onClick={() => triggerUpload(view.cat as any)}
                           className="btn-nike-primary text-[10px] py-1.5 px-3 flex items-center gap-2 shadow-lg shadow-cyan-500/20 text-black"
@@ -335,15 +331,15 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                     </div>
                     <div className="flex-1 flex flex-col justify-center">
                       {viewPhotos.length > 0 ? (
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           {viewPhotos.map(p => (
-                            <div key={p.id} className="relative rounded-lg overflow-hidden border border-white/10 aspect-video md:aspect-auto h-40">
+                            <div key={p.id} className="relative rounded-lg overflow-hidden border border-white/10 aspect-square">
                               <img src={p.photoUrl} alt={view.title} className="w-full h-full object-cover" />
                             </div>
                           ))}
                         </div>
                       ) : (
-                        <div className="aspect-[3/1] md:aspect-auto md:h-32 w-full border border-dashed border-white/10 rounded-lg flex items-center justify-center text-slate-500 text-xs">
+                        <div className="aspect-[3/1] md:aspect-[4/1] w-full border border-dashed border-white/10 rounded-lg flex items-center justify-center text-slate-500 text-xs">
                           Sin fotos registradas
                         </div>
                       )}
