@@ -22,6 +22,7 @@ DROP TABLE IF EXISTS branches CASCADE;
 DROP TABLE IF EXISTS profiles CASCADE;
 
 -- 2. Eliminar tipos enumerados antiguos
+DROP SEQUENCE IF EXISTS ods_number_seq CASCADE;
 DROP TYPE IF EXISTS payment_method_enum CASCADE;
 DROP TYPE IF EXISTS inventory_type CASCADE;
 DROP TYPE IF EXISTS item_condition CASCADE;
