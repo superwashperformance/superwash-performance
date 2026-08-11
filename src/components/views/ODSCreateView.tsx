@@ -20,6 +20,8 @@ import {
   Search,
   UserCheck,
   X,
+  Upload,
+  ImagePlus,
 } from 'lucide-react';
 
 interface ODSCreateViewProps {
@@ -135,10 +137,11 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
     },
   ]);
 
-  const [uploadCategory, setUploadCategory] = useState<'general' | 'damage_front' | 'damage_rear' | 'damage_left' | 'damage_right'>('general');
+  const [uploadCategory, setUploadCategory] = useState<'general' | 'damage' | 'damage_front' | 'damage_rear' | 'damage_left' | 'damage_right'>('general');
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -181,7 +184,14 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
   const triggerUpload = (category: typeof uploadCategory) => {
     setUploadCategory(category);
     setTimeout(() => {
-      fileInputRef.current?.click();
+      galleryInputRef.current?.click();
+    }, 50);
+  };
+
+  const triggerCamera = (category: typeof uploadCategory) => {
+    setUploadCategory(category);
+    setTimeout(() => {
+      cameraInputRef.current?.click();
     }, 50);
   };
 
@@ -308,8 +318,12 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-6 p-4 md:p-8 max-w-5xl mx-auto w-full">
-      {/* Wizard Step Progress Indicator */}
+    <div className="fixed inset-0 z-40 bg-[#02050A] flex flex-col h-[100dvh] overflow-hidden">
+      {/* Hidden Global Inputs for Camera and Gallery */}
+      <input type="file" accept="image/*" capture="environment" className="hidden" ref={cameraInputRef} onChange={handleFileUpload} />
+      <input type="file" accept="image/*" className="hidden" ref={galleryInputRef} onChange={handleFileUpload} />
+
+      {/* Header - Fixed */}
       <div className="nike-card p-4 flex items-center justify-between overflow-x-auto gap-2">
         {[
           { num: 1, label: '1. Cliente y Vehículo', icon: User },
@@ -668,56 +682,49 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
         <div className="nike-card p-6 flex flex-col gap-6 animate-in fade-in">
           <div>
             <h2 className="font-display text-3xl text-white">PASO 2: FOTOS DE DAÑOS Y ESTADO</h2>
-            <p className="text-xs text-slate-400">Adjunta hasta 2 fotografías por cada lado para registrar daños previos.</p>
+            <p className="text-xs text-slate-400">Adjunta fotografías para registrar daños previos del vehículo.</p>
           </div>
           
-          <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleFileUpload} />
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[
-              { title: 'Frontal', cat: 'damage_front' },
-              { title: 'Trasera', cat: 'damage_rear' },
-              { title: 'Lateral Izquierdo', cat: 'damage_left' },
-              { title: 'Lateral Derecho', cat: 'damage_right' },
-            ].map(view => {
-              const viewPhotos = photos.filter(p => p.category === view.cat);
-              return (
-                <div key={view.cat} className="p-4 rounded-xl bg-black/40 border border-white/10 flex flex-col h-full">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-display text-sm text-[#00E5FF] uppercase tracking-wider">{view.title}</h4>
-                    {viewPhotos.length < 2 && (
-                      <button 
-                        onClick={() => triggerUpload(view.cat as any)}
-                        className="btn-nike-secondary text-[10px] py-1 px-2 flex items-center gap-1"
-                      >
-                        <Camera className="w-3 h-3" /> Añadir Foto
-                      </button>
-                    )}
+          <div className="flex gap-4">
+            <button 
+              onClick={() => triggerCamera('damage')}
+              className="btn-nike-secondary flex-1 py-3 flex items-center justify-center gap-2 border-[#00E5FF]/20 hover:border-[#00E5FF]/50 hover:bg-[#00E5FF]/10"
+            >
+              <Camera className="w-5 h-5 text-[#00E5FF]" /> 
+              <span className="font-display tracking-wider">Tomar Foto</span>
+            </button>
+            <button 
+              onClick={() => triggerUpload('damage')}
+              className="btn-nike-secondary flex-1 py-3 flex items-center justify-center gap-2 border-white/10 hover:border-white/30 hover:bg-white/5"
+            >
+              <Upload className="w-5 h-5 text-slate-300" /> 
+              <span className="font-display tracking-wider">De Galería</span>
+            </button>
+          </div>
+
+          <div className="p-4 rounded-xl bg-black/40 border border-white/10">
+            <h4 className="font-display text-sm text-[#00E5FF] uppercase tracking-wider mb-4">Fotos Capturadas</h4>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {photos.filter(p => p.category === 'damage').length > 0 ? (
+                photos.filter(p => p.category === 'damage').map((p, idx) => (
+                  <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-white/10 group">
+                    <img src={p.url} alt="Daño" className="w-full h-full object-cover" />
+                    <button
+                      onClick={() => setPhotos(photos.filter(img => img.url !== p.url))}
+                      className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-600 text-white p-1.5 rounded-full shadow-lg transition-opacity"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
-                  <div className="flex-1 flex flex-col justify-center">
-                    {viewPhotos.length > 0 ? (
-                      <div className="grid grid-cols-2 gap-2">
-                        {viewPhotos.map((p, idx) => (
-                          <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-white/10 group">
-                            <img src={p.url} alt={view.title} className="w-full h-full object-cover" />
-                            <button
-                              onClick={() => setPhotos(photos.filter(img => img.url !== p.url))}
-                              className="absolute top-1 right-1 bg-red-500/80 text-white p-1.5 rounded-full shadow-lg transition-opacity"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="aspect-[2/1] w-full border border-dashed border-white/10 rounded-lg flex items-center justify-center text-slate-500 text-xs">
-                        Sin fotos registradas
-                      </div>
-                    )}
-                  </div>
+                ))
+              ) : (
+                <div className="col-span-full py-8 border border-dashed border-white/10 rounded-lg flex flex-col items-center justify-center text-slate-500 text-xs gap-2">
+                  <ImagePlus className="w-8 h-8 opacity-20" />
+                  <span>Sin fotos registradas</span>
                 </div>
-              );
-            })}
+              )}
+            </div>
           </div>
 
           <div className="flex justify-between items-center pt-4 border-t border-white/10">
@@ -927,7 +934,6 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
                 <span className="font-display text-lg text-[#00E5FF]">EVIDENCIAS FOTOGRÁFICAS</span>
-                <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleFileUpload} />
                 <button 
                   onClick={() => triggerUpload('general')}
                   className="btn-nike-primary text-xs py-1.5 px-3 flex items-center gap-2"

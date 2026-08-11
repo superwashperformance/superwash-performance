@@ -67,7 +67,7 @@ export interface DamageMarker {
 export interface OrderPhoto {
   id: string;
   photoUrl: string;
-  category: 'general' | 'damage_front' | 'damage_rear' | 'damage_left' | 'damage_right' | 'belonging' | 'progress' | 'final';
+  category: 'general' | 'damage' | 'damage_front' | 'damage_rear' | 'damage_left' | 'damage_right' | 'belonging' | 'progress' | 'final';
   caption: string;
   createdAt: string;
 }
