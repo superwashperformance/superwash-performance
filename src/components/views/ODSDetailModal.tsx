@@ -313,6 +313,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
           <div className={activeTab === 'damages' ? 'block print:hidden' : 'hidden'}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
+                { title: 'General / Otros', cat: 'damage', fullWidth: true },
                 { title: 'Frontal', cat: 'damage_front' },
                 { title: 'Trasera', cat: 'damage_rear' },
                 { title: 'Lateral Izquierdo', cat: 'damage_left' },
@@ -320,29 +321,29 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
               ].map(view => {
                 const viewPhotos = order.photos.filter(p => p.category === view.cat);
                 return (
-                  <div key={view.cat} className="p-4 rounded-xl bg-slate-900 border border-white/10 flex flex-col h-full">
+                  <div key={view.cat} className={`p-4 rounded-xl bg-slate-900 border border-white/10 flex flex-col h-full ${view.fullWidth ? 'md:col-span-2' : ''}`}>
                     <div className="flex items-center justify-between mb-3">
                       <h4 className="font-display text-sm text-[#00E5FF] uppercase tracking-wider">{view.title}</h4>
                       {viewPhotos.length < 2 && (
                         <button 
                           onClick={() => triggerUpload(view.cat as any)}
-                          className="btn-nike-secondary text-[10px] py-1 px-2 flex items-center gap-1"
+                          className="btn-nike-primary text-[10px] py-1.5 px-3 flex items-center gap-2 shadow-lg shadow-cyan-500/20 text-black"
                         >
-                          <Camera className="w-3 h-3" /> Añadir Foto
+                          <Camera className="w-3.5 h-3.5" /> Añadir Foto
                         </button>
                       )}
                     </div>
                     <div className="flex-1 flex flex-col justify-center">
                       {viewPhotos.length > 0 ? (
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-2 gap-4">
                           {viewPhotos.map(p => (
-                            <div key={p.id} className="relative aspect-square rounded-lg overflow-hidden border border-white/10">
+                            <div key={p.id} className="relative rounded-lg overflow-hidden border border-white/10 aspect-video md:aspect-auto h-40">
                               <img src={p.photoUrl} alt={view.title} className="w-full h-full object-cover" />
                             </div>
                           ))}
                         </div>
                       ) : (
-                        <div className="aspect-[2/1] w-full border border-dashed border-white/10 rounded-lg flex items-center justify-center text-slate-500 text-xs">
+                        <div className="aspect-[3/1] md:aspect-auto md:h-32 w-full border border-dashed border-white/10 rounded-lg flex items-center justify-center text-slate-500 text-xs">
                           Sin fotos registradas
                         </div>
                       )}
