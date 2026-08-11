@@ -753,15 +753,15 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                     <div className="flex gap-2">
                       <button 
                         onClick={() => triggerCamera('belonging' as any)}
-                        className="btn-nike-secondary text-[10px] py-1 px-2 flex items-center gap-1"
+                        className="btn-nike-primary text-[10px] py-1.5 px-3 flex items-center gap-1 shadow-lg shadow-cyan-500/20"
                       >
-                        <Camera className="w-3 h-3" /> Cámara
+                        <Camera className="w-3.5 h-3.5" /> Cámara
                       </button>
                       <button 
                         onClick={() => triggerUpload('belonging' as any)}
-                        className="btn-nike-secondary text-[10px] py-1 px-2 flex items-center gap-1"
+                        className="btn-nike-primary text-[10px] py-1.5 px-3 flex items-center gap-1 shadow-lg shadow-cyan-500/20"
                       >
-                        <Upload className="w-3 h-3" /> Galería
+                        <Upload className="w-3.5 h-3.5" /> Galería
                       </button>
                     </div>
                   )}
@@ -950,13 +950,13 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                 <div className="flex gap-2">
                   <button 
                     onClick={() => triggerCamera('general')}
-                    className="btn-nike-secondary text-xs py-1.5 px-3 flex items-center gap-2"
+                    className="btn-nike-primary text-xs py-1.5 px-3 flex items-center gap-2 shadow-lg shadow-cyan-500/20"
                   >
                     <Camera className="w-3.5 h-3.5" /> Cámara
                   </button>
                   <button 
                     onClick={() => triggerUpload('general')}
-                    className="btn-nike-secondary text-xs py-1.5 px-3 flex items-center gap-2"
+                    className="btn-nike-primary text-xs py-1.5 px-3 flex items-center gap-2 shadow-lg shadow-cyan-500/20"
                   >
                     <Upload className="w-3.5 h-3.5" /> Galería
                   </button>
