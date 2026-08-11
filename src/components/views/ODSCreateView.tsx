@@ -307,12 +307,12 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-40 bg-[#02050A] flex flex-col h-[100dvh] overflow-hidden">
+    <div className="flex flex-col gap-6 p-4 md:p-8 max-w-5xl mx-auto w-full">
       {/* Hidden Global Inputs for Camera and Gallery */}
       <input type="file" accept="image/*" capture="environment" className="hidden" ref={cameraInputRef} onChange={handleFileUpload} />
       <input type="file" accept="image/*" className="hidden" ref={galleryInputRef} onChange={handleFileUpload} />
 
-      {/* Header - Fixed */}
+      {/* Wizard Step Progress Indicator */}
       <div className="nike-card p-4 flex items-center justify-between overflow-x-auto gap-2">
         {[
           { num: 1, label: '1. Cliente y Vehículo', icon: User },
