@@ -4,6 +4,8 @@ export type UserRole =
   | 'admin'
   | 'owner'
   | 'sales'
+  | 'cashier'
+  | 'manager'
   | 'free_reception';
 
 export type ODSStatus =
@@ -190,4 +192,84 @@ export interface CompanyData {
   address: string;
   phone: string;
   email: string;
+}
+
+// ---------------------------------------------------------------------------------
+// Módulo Financiero (Fase 1 / Fase 2)
+// ---------------------------------------------------------------------------------
+
+export type PaymentMethodEnum = 'cash' | 'transfer' | 'card' | 'zelle' | 'pago_movil';
+export type MovementStatus = 'valid' | 'annulled';
+export type CashSessionStatus = 'open' | 'counting' | 'closed' | 'reconciled';
+
+export interface TreasuryAccount {
+  id: string;
+  name: string;
+  currency: string;
+  balance: number;
+  is_cash_drawer: boolean;
+  active: boolean;
+}
+
+export interface CashSession {
+  id: string;
+  opened_by: string;
+  status: CashSessionStatus;
+  opened_at: string;
+  closed_at?: string;
+  expected_amounts?: Record<string, number>;
+  declared_amounts?: Record<string, number>;
+  differences?: Record<string, number>;
+}
+
+export interface TreasuryMovement {
+  id: string;
+  treasury_account_id: string;
+  cash_session_id?: string;
+  type: 'income' | 'expense' | 'internal_transfer_in' | 'internal_transfer_out';
+  amount: number;
+  payment_method: PaymentMethodEnum;
+  source_type: 'collection' | 'payment' | 'internal_transfer' | 'manual' | 'annulment';
+  source_id?: string;
+  status: MovementStatus;
+  reversal_for_id?: string;
+  created_by: string;
+  created_at: string;
+}
+
+export interface Collection {
+  id: string;
+  customer_id: string;
+  total_amount: number;
+  status: MovementStatus;
+  created_by: string;
+  created_at: string;
+}
+
+export interface CollectionPayment {
+  id: string;
+  collection_id: string;
+  treasury_movement_id: string;
+  amount: number;
+}
+
+export interface CurrentAccountMovement {
+  id: string;
+  customer_id: string;
+  type: 'debit' | 'credit';
+  amount: number;
+  source_type: 'commercial_document' | 'collection' | 'manual';
+  source_id?: string;
+  status: MovementStatus;
+  reversal_for_id?: string;
+  created_at: string;
+}
+
+export interface Allocation {
+  id: string;
+  debit_movement_id: string;
+  credit_movement_id: string;
+  amount: number;
+  status: MovementStatus;
+  created_at: string;
 }

@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { FaviconLogo } from '../common/FaviconLogo';
 
-export type NavTab = 'dashboard' | 'ods' | 'kanban' | 'inventory' | 'cashier' | 'customers' | 'vehicles' | 'settings';
+export type NavTab = 'dashboard' | 'ods' | 'kanban' | 'inventory' | 'cashier' | 'treasury' | 'legacy_cash' | 'customers' | 'vehicles' | 'settings';
 
 interface SidebarProps {
   activeTab: NavTab;
@@ -24,13 +24,15 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, currentRole }) => {
   const navItems = [
-    { id: 'dashboard', label: 'DASHBOARD', icon: LayoutDashboard, roles: ['admin', 'owner', 'sales'] },
-    { id: 'ods', label: 'ÓRDENES DE SERVICIO (ODS)', icon: ClipboardList, roles: ['admin', 'owner', 'sales', 'free_reception',   ] },
-    { id: 'kanban', label: 'TALLER EN VIVO', icon: Kanban, roles: ['admin', 'owner', 'sales',     ] },
-    { id: 'inventory', label: 'INVENTARIO DUAL', icon: Package, roles: ['admin', 'owner', 'sales',  ] },
-    { id: 'cashier', label: 'CAJA & COBROS', icon: DollarSign, roles: ['admin', 'owner', 'sales'] },
-    { id: 'customers', label: 'DIRECTORIO CLIENTES', icon: Users, roles: ['admin', 'owner', 'sales'] },
-    { id: 'vehicles', label: 'GARAJE DE VEHÍCULOS', icon: Car, roles: ['admin', 'owner', 'sales', 'free_reception'] },
+    { id: 'dashboard', label: 'DASHBOARD', icon: LayoutDashboard, roles: ['admin', 'owner', 'sales', 'manager'] },
+    { id: 'ods', label: 'ÓRDENES DE SERVICIO (ODS)', icon: ClipboardList, roles: ['admin', 'owner', 'sales', 'free_reception', 'manager', 'cashier'] },
+    { id: 'kanban', label: 'TALLER EN VIVO', icon: Kanban, roles: ['admin', 'owner', 'sales', 'manager'] },
+    { id: 'inventory', label: 'INVENTARIO DUAL', icon: Package, roles: ['admin', 'owner', 'sales', 'manager'] },
+    { id: 'cashier', label: 'CAJA Y COBRANZA', icon: DollarSign, roles: ['admin', 'owner', 'sales', 'cashier', 'manager'] },
+    { id: 'treasury', label: 'TESORERÍA Y MAYOR', icon: ShieldCheck, roles: ['admin', 'owner', 'manager'] },
+    { id: 'legacy_cash', label: 'HISTÓRICO LEGACY', icon: ClipboardList, roles: ['admin', 'owner', 'sales', 'cashier', 'manager'] },
+    { id: 'customers', label: 'DIRECTORIO CLIENTES', icon: Users, roles: ['admin', 'owner', 'sales', 'manager', 'cashier'] },
+    { id: 'vehicles', label: 'GARAJE DE VEHÍCULOS', icon: Car, roles: ['admin', 'owner', 'sales', 'free_reception', 'manager', 'cashier'] },
     { id: 'settings', label: 'CONFIGURACIÓN', icon: Settings, roles: ['admin', 'owner'] },
   ];
 

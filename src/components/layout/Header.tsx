@@ -29,10 +29,12 @@ export const Header: React.FC<HeaderProps> = ({
     : mockUsers.find((u) => u.role === currentRole) || mockUsers[0];
 
   const roleLabels: Record<UserRole, string> = {
-    admin: 'Administrador General',
-    owner: 'Dueño / Director',
-    sales: 'Ventas & Asesor',
-    free_reception: 'Agente Recepción Libre',
+    admin: 'Administrador',
+    owner: 'Propietario',
+    sales: 'Vendedor',
+    free_reception: 'Recepción',
+    cashier: 'Cajero',
+    manager: 'Gerente'
   };
 
   return (

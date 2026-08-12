@@ -11,6 +11,9 @@ import {
   mockServicesCatalog,
 } from './data/mockData';
 import { odsService } from './services/odsService';
+import { customerService } from './services/customerService';
+import { vehicleService } from './services/vehicleService';
+import { treasuryService } from './services/treasuryService';
 import { inventoryService } from './services/inventoryService';
 import { supabase } from './lib/supabase';
 import { Header } from './components/layout/Header';
@@ -68,28 +71,9 @@ export function App() {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [inventoryMovements, setInventoryMovements] = useState<InventoryMovement[]>(mockInventoryMovements);
   const [isLoadingOrders, setIsLoadingOrders] = useState(true);
-  const [transactions, setTransactions] = useState<CashTransaction[]>(() => {
-    const saved = localStorage.getItem('sw_transactions');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        return parsed.filter((t: any) => t.id !== 'tx-101' && t.id !== 'tx-102');
-      } catch (e) {
-        return [];
-      }
-    }
-    return [];
-  });
-  const [customers, setCustomers] = useState<Customer[]>(() => {
-    const saved = localStorage.getItem('sw_customers');
-    if (saved) return JSON.parse(saved);
-    return mockCustomers;
-  });
-  const [vehicles, setVehicles] = useState<Vehicle[]>(() => {
-    const saved = localStorage.getItem('sw_vehicles');
-    if (saved) return JSON.parse(saved);
-    return mockVehicles;
-  });
+  const [transactions, setTransactions] = useState<CashTransaction[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [technicians, setTechnicians] = useState<Agent[]>(initialTechnicians);
   const [receptionAgents, setReceptionAgents] = useState<Agent[]>(initialReceptionAgents);
 
@@ -103,38 +87,10 @@ export function App() {
   const [servicesCatalog, setServicesCatalog] = useState<ServiceItem[]>(mockServicesCatalog);
 
   // Cash Register State
-  const [registerState, setRegisterState] = useState<{
-    isOpen: boolean;
-    openedAt: string | null;
-    initialAmount: number;
-  }>(() => {
-    const saved = localStorage.getItem('sw_register_state');
-    if (saved) return JSON.parse(saved);
-    return { isOpen: false, openedAt: null, initialAmount: 0 };
-  });
+  const [registerState, setRegisterState] = useState<{isOpen: boolean; openedAt: string | null; initialAmount: number}>({ isOpen: false, openedAt: null, initialAmount: 0 });
 
   // Selected Order for Detail Modal
   const [selectedOrder, setSelectedOrder] = useState<ServiceOrder | null>(null);
-
-  // Persist transactions to localStorage
-  React.useEffect(() => {
-    localStorage.setItem('sw_transactions', JSON.stringify(transactions));
-  }, [transactions]);
-
-  // Persist customers to localStorage
-  React.useEffect(() => {
-    localStorage.setItem('sw_customers', JSON.stringify(customers));
-  }, [customers]);
-
-  // Persist vehicles to localStorage
-  React.useEffect(() => {
-    localStorage.setItem('sw_vehicles', JSON.stringify(vehicles));
-  }, [vehicles]);
-
-  // Persist register state
-  React.useEffect(() => {
-    localStorage.setItem('sw_register_state', JSON.stringify(registerState));
-  }, [registerState]);
 
   // Fetch initial data from Supabase
   React.useEffect(() => {
@@ -164,6 +120,22 @@ export function App() {
         await inventoryService.seedMockDataIfNeeded(mockInventory);
         const invData = await inventoryService.getInventory();
         setInventory(invData);
+        
+        // 3. Fetch Customers, Vehicles, and Transactions
+        const [fetchedCustomers, fetchedVehicles] = await Promise.all([
+          customerService.getCustomers(),
+          vehicleService.getVehicles()
+        ]);
+        setCustomers(fetchedCustomers);
+        setVehicles(fetchedVehicles);
+        
+        // Fetch Cash Session State
+        const activeSession = await treasuryService.getActiveSession();
+        if (activeSession) {
+          setRegisterState({ isOpen: true, openedAt: activeSession.opened_at, initialAmount: 0 });
+        } else {
+          setRegisterState({ isOpen: false, openedAt: null, initialAmount: 0 });
+        }
       } catch (error) {
         console.error('Failed to fetch data from Supabase', error);
       } finally {
@@ -516,16 +488,25 @@ export function App() {
     }
   };
 
-  const handleAddCustomer = (newCust: Customer) => {
-    setCustomers([newCust, ...customers]);
+  const handleAddCustomer = async (newCust: Customer) => {
+    const created = await customerService.createCustomer(newCust);
+    if (created) {
+      setCustomers([created, ...customers]);
+    }
   };
 
-  const handleUpdateCustomer = (updatedCust: Customer) => {
-    setCustomers(customers.map((c) => (c.id === updatedCust.id ? updatedCust : c)));
+  const handleUpdateCustomer = async (updatedCust: Customer) => {
+    const success = await customerService.updateCustomer(updatedCust.id, updatedCust);
+    if (success) {
+      setCustomers(customers.map((c) => (c.id === updatedCust.id ? updatedCust : c)));
+    }
   };
 
-  const handleAddVehicle = (newVeh: Vehicle) => {
-    setVehicles([newVeh, ...vehicles]);
+  const handleAddVehicle = async (newVeh: Vehicle) => {
+    const created = await vehicleService.createVehicle(newVeh);
+    if (created) {
+      setVehicles([created, ...vehicles]);
+    }
   };
 
   if (appMode === 'splash') {
