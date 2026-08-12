@@ -521,10 +521,13 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                   </div>
                 );
               })}
-              <div className="flex justify-end pt-4 mt-6 border-t border-white/10">
+            </div>
+
+            {/* BOTÓN GLOBAL DE GUARDAR Y CERRAR */}
+            <div className="p-4 md:p-6 border-t border-white/10 bg-black/50">
+              <div className="flex justify-end">
                 <button 
                   onClick={() => {
-                    // Si están subiendo fotos, mostrar alerta, de lo contrario cerrar
                     if (isUploadingPhoto) {
                       alert('Espera a que termine de subir la foto actual.');
                     } else {
@@ -537,7 +540,6 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                   <CheckCircle className="w-5 h-5" /> Guardar y Cerrar
                 </button>
               </div>
-
             </div>
           </div>
         </div>
