@@ -413,6 +413,20 @@ export function App() {
     }
   };
 
+  const handleDeletePhotoFromOrder = async (orderId: string, photoId: string) => {
+    try {
+      await odsService.deletePhoto(photoId);
+      setOrders(
+        orders.map((o) => (o.id === orderId ? { ...o, photos: o.photos.filter(p => p.id !== photoId) } : o))
+      );
+      if (selectedOrder?.id === orderId) {
+        setSelectedOrder({ ...selectedOrder, photos: selectedOrder.photos.filter(p => p.id !== photoId) });
+      }
+    } catch (err) {
+      console.error('Failed to delete photo', err);
+    }
+  };
+
   const handleAddExtraServiceToOrder = async (orderId: string, serviceName: string, price: number) => {
     const order = orders.find(o => o.id === orderId);
     if (!order) return;
@@ -676,6 +690,7 @@ export function App() {
           onAddPhoto={handleAddPhotoToOrder}
           onAddExtraService={handleAddExtraServiceToOrder}
           onEditService={handleEditServiceInOrder}
+          onDeletePhoto={handleDeletePhotoFromOrder}
         />
 
       {/* Command Palette Search Modal */}

@@ -3,7 +3,7 @@ import { CurrencyDisplay } from '../common/CurrencyDisplay';
 import { ServiceOrder, CompanyData, OrderPhoto } from '../../types';
 import { FaviconLogo } from '../common/FaviconLogo';
 import { WorkshopOrderPrintTemplate } from './WorkshopOrderPrintTemplate';
-import { X, Printer, Share2, Phone, CheckCircle, FileText, Camera, ShieldAlert, Sparkles, User, Car, Plus, Pencil, Check } from 'lucide-react';
+import { X, Printer, Share2, Phone, CheckCircle, FileText, Camera, ShieldAlert, Sparkles, User, Car, Plus, Pencil, Check, Trash2 } from 'lucide-react';
 
 interface ODSDetailModalProps {
   order: ServiceOrder | null;
@@ -12,9 +12,10 @@ interface ODSDetailModalProps {
   onAddPhoto?: (orderId: string, photo: OrderPhoto) => void;
   onAddExtraService?: (orderId: string, serviceName: string, price: number) => void;
   onEditService?: (orderId: string, serviceId: string, serviceName: string, unitPrice: number, quantity: number) => void;
+  onDeletePhoto?: (orderId: string, photoId: string) => void;
 }
 
-export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, companyData, onAddPhoto, onAddExtraService, onEditService }) => {
+export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, companyData, onAddPhoto, onAddExtraService, onEditService, onDeletePhoto }) => {
   const [activeTab, setActiveTab] = useState<'quote' | 'photos' | 'checklist' | 'damages'>('quote');
   const [printMode, setPrintMode] = useState<'quote' | 'taller'>('quote');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -44,6 +45,8 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
     onEditService(order.id, editingServiceId, editServiceName.trim(), price, qty);
     setEditingServiceId(null);
   };
+
+  const [selectedPhotoUrl, setSelectedPhotoUrl] = useState<string | null>(null);
 
   const handleAddExtraService = () => {
     if (!order || !onAddExtraService || !extraServiceName.trim() || !extraServicePrice) return;
@@ -416,13 +419,21 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {order.photos.filter(p => p.category === 'general').map((p) => (
-                <div key={p.id} className="relative rounded-xl overflow-hidden border border-white/10 aspect-video group">
-                  <img src={p.photoUrl} alt={p.caption} className="w-full h-full object-cover" />
+                <div key={p.id} className="relative rounded-xl overflow-hidden border border-white/10 aspect-video group cursor-pointer" onClick={() => setSelectedPhotoUrl(p.photoUrl)}>
+                  <img src={p.photoUrl} alt={p.caption} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-3 flex flex-col justify-end">
                     <span className="font-mono text-[10px] text-[#00E5FF] uppercase">{p.category}</span>
                     <span className="text-xs font-bold text-white">{p.caption}</span>
                     <span className="text-[10px] text-slate-400 font-mono">{p.createdAt}</span>
                   </div>
+                  {onDeletePhoto && (
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); onDeletePhoto(order.id, p.id); }}
+                      className="absolute top-2 right-2 p-2 bg-red-500/20 text-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -474,8 +485,16 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                       {viewPhotos.length > 0 ? (
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           {viewPhotos.map(p => (
-                            <div key={p.id} className="relative rounded-lg overflow-hidden border border-white/10 aspect-square">
-                              <img src={p.photoUrl} alt={view.title} className="w-full h-full object-cover" />
+                            <div key={p.id} className="relative rounded-lg overflow-hidden border border-white/10 aspect-square group cursor-pointer" onClick={() => setSelectedPhotoUrl(p.photoUrl)}>
+                              <img src={p.photoUrl} alt={view.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                              {onDeletePhoto && (
+                                <button 
+                                  onClick={(e) => { e.stopPropagation(); onDeletePhoto(order.id, p.id); }}
+                                  className="absolute top-1 right-1 p-1.5 bg-red-500/20 text-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              )}
                             </div>
                           ))}
                         </div>
@@ -494,10 +513,33 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
 
         {/* WORKSHOP ORDER PRINT TEMPLATE (HIDDEN IN UI, SHOWN IN PRINT MODE 'TALLER') */}
         {printMode === 'taller' && (
-          <WorkshopOrderPrintTemplate order={order} />
+          <div className="hidden print:block w-full">
+            <WorkshopOrderPrintTemplate order={order} />
+          </div>
         )}
 
       </div>
+      
+      {/* LIGHTBOX FOR FULL SCREEN PHOTO PREVIEW */}
+      {selectedPhotoUrl && (
+        <div 
+          className="fixed inset-0 z-[60] bg-black/95 flex items-center justify-center p-4 backdrop-blur-sm print:hidden"
+          onClick={() => setSelectedPhotoUrl(null)}
+        >
+          <button 
+            className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white bg-white/10 rounded-full transition-colors"
+            onClick={(e) => { e.stopPropagation(); setSelectedPhotoUrl(null); }}
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <img 
+            src={selectedPhotoUrl} 
+            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl border border-white/10"
+            onClick={(e) => e.stopPropagation()} 
+            alt="Vista Previa"
+          />
+        </div>
+      )}
     </div>
   );
 };

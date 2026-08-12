@@ -277,6 +277,21 @@ export const odsService = {
   },
 
   /**
+   * Deletes a photo from an ODS
+   */
+  async deletePhoto(photoId: string): Promise<void> {
+    const { error } = await supabase
+      .from('order_photos')
+      .delete()
+      .eq('id', photoId);
+
+    if (error) {
+      console.error('Error deleting photo:', error);
+      throw error;
+    }
+  },
+
+  /**
    * Deletes an ODS from Supabase
    */
   async deleteODS(orderId: string): Promise<void> {
