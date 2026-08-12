@@ -50,6 +50,7 @@ export const customerService = {
       phone: data.phone,
       email: data.email,
       address: data.address,
+      createdAt: data.created_at || new Date().toISOString()
     };
   },
 
