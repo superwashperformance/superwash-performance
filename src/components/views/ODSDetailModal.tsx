@@ -3,6 +3,7 @@ import { CurrencyDisplay } from '../common/CurrencyDisplay';
 import { ServiceOrder, CompanyData, OrderPhoto } from '../../types';
 import { FaviconLogo } from '../common/FaviconLogo';
 import { WorkshopOrderPrintTemplate } from './WorkshopOrderPrintTemplate';
+import { storageService } from '../../services/storageService';
 import { X, Printer, Share2, Phone, CheckCircle, FileText, Camera, ShieldAlert, Sparkles, User, Car, Plus, Pencil, Check, Trash2 } from 'lucide-react';
 
 interface ODSDetailModalProps {
@@ -59,23 +60,34 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
     setShowExtraServiceForm(false);
   };
 
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !onAddPhoto) return;
+    if (!file || !onAddPhoto || !order) return;
 
+    setIsUploadingPhoto(true);
     const reader = new FileReader();
-    reader.onloadend = () => {
-      const newPhoto: OrderPhoto = {
-        id: `photo-${Date.now()}`,
-        photoUrl: reader.result as string,
-        category: uploadCategory,
-        caption: file.name,
-        createdAt: new Date().toLocaleString('es-ES')
-      };
-      if (order) {
+    reader.onloadend = async () => {
+      try {
+        const base64Data = reader.result as string;
+        const publicUrl = await storageService.uploadPhotoBase64(base64Data, file.name);
+
+        const newPhoto: OrderPhoto = {
+          id: `photo-${Date.now()}`,
+          photoUrl: publicUrl,
+          category: uploadCategory,
+          caption: file.name,
+          createdAt: new Date().toLocaleString('es-ES')
+        };
         onAddPhoto(order.id, newPhoto);
+      } catch (error) {
+        console.error('Error uploading photo:', error);
+        alert('Hubo un error al subir la fotografía a Supabase.');
+      } finally {
+        setIsUploadingPhoto(false);
+        if (fileInputRef.current) fileInputRef.current.value = '';
       }
-      if (fileInputRef.current) fileInputRef.current.value = '';
     };
     reader.readAsDataURL(file);
   };
@@ -412,9 +424,10 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
               <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleFileUpload} />
               <button 
                 onClick={() => triggerUpload('general')}
-                className="btn-nike-primary text-xs py-2 px-4 flex items-center gap-2"
+                disabled={isUploadingPhoto}
+                className="btn-nike-primary text-xs py-2 px-4 flex items-center gap-2 disabled:opacity-50"
               >
-                <Camera className="w-4 h-4" /> Agregar Fotografía
+                <Camera className="w-4 h-4" /> {isUploadingPhoto ? 'Subiendo...' : 'Agregar Fotografía'}
               </button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -475,9 +488,10 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                       {viewPhotos.length < 10 && (
                         <button 
                           onClick={() => triggerUpload(view.cat as any)}
-                          className="btn-nike-primary text-[10px] py-1.5 px-3 flex items-center gap-2 shadow-lg shadow-cyan-500/20 text-black"
+                          disabled={isUploadingPhoto}
+                          className="btn-nike-primary text-[10px] py-1.5 px-3 flex items-center gap-2 shadow-lg shadow-cyan-500/20 text-black disabled:opacity-50"
                         >
-                          <Camera className="w-3.5 h-3.5" /> Añadir Foto
+                          <Camera className="w-3.5 h-3.5" /> {isUploadingPhoto ? 'Subiendo...' : 'Añadir Foto'}
                         </button>
                       )}
                     </div>
@@ -507,6 +521,23 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                   </div>
                 );
               })}
+              <div className="flex justify-end pt-4 mt-6 border-t border-white/10">
+                <button 
+                  onClick={() => {
+                    // Si están subiendo fotos, mostrar alerta, de lo contrario cerrar
+                    if (isUploadingPhoto) {
+                      alert('Espera a que termine de subir la foto actual.');
+                    } else {
+                      onClose();
+                    }
+                  }}
+                  disabled={isUploadingPhoto}
+                  className="btn-nike-primary px-8 py-3 flex items-center gap-2 shadow-2xl disabled:opacity-50"
+                >
+                  <CheckCircle className="w-5 h-5" /> Guardar y Cerrar
+                </button>
+              </div>
+
             </div>
           </div>
         </div>

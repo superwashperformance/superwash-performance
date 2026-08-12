@@ -279,6 +279,28 @@ export const odsService = {
   /**
    * Deletes a photo from an ODS
    */
+  async addPhotoToOrder(orderId: string, photoUrl: string, category: string, caption: string): Promise<any> {
+    const { data, error } = await supabase.from('order_photos').insert({
+      order_id: orderId,
+      photo_url: photoUrl,
+      category: category,
+      caption: caption,
+    }).select().single();
+    
+    if (error) {
+      console.error('Error adding photo to order:', error);
+      throw error;
+    }
+    
+    return {
+      id: data.id,
+      photoUrl: data.photo_url,
+      category: data.category,
+      caption: data.caption,
+      createdAt: new Date(data.created_at).toLocaleTimeString('es-ES')
+    };
+  },
+
   async deletePhoto(photoId: string): Promise<void> {
     const { error } = await supabase
       .from('order_photos')

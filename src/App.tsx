@@ -23,6 +23,8 @@ import { ODSCreateView } from './components/views/ODSCreateView';
 import { KanbanView } from './components/views/KanbanView';
 import { InventoryView } from './components/views/InventoryView';
 import { CashierView } from './components/views/CashierView';
+import { TreasuryView } from './components/views/TreasuryView';
+import { LegacyCashView } from './components/views/LegacyCashView';
 import { CustomersView } from './components/views/CustomersView';
 import { VehiclesView } from './components/views/VehiclesView';
 import { SettingsView } from './components/views/SettingsView';
@@ -404,12 +406,21 @@ export function App() {
     return newTx;
   };
 
-  const handleAddPhotoToOrder = (orderId: string, photo: any) => {
-    setOrders(
-      orders.map((o) => (o.id === orderId ? { ...o, photos: [...o.photos, photo] } : o))
-    );
-    if (selectedOrder?.id === orderId) {
-      setSelectedOrder({ ...selectedOrder, photos: [...selectedOrder.photos, photo] });
+  const handleAddPhotoToOrder = async (orderId: string, photo: any) => {
+    try {
+      // We assume photo already has publicUrl, if it comes from ODSDetailModal upload
+      const photoUrl = photo.photoUrl || photo.url;
+      const dbPhoto = await odsService.addPhotoToOrder(orderId, photoUrl, photo.category, photo.caption);
+      
+      setOrders(
+        orders.map((o) => (o.id === orderId ? { ...o, photos: [...o.photos, dbPhoto] } : o))
+      );
+      if (selectedOrder?.id === orderId) {
+        setSelectedOrder({ ...selectedOrder, photos: [...selectedOrder.photos, dbPhoto] });
+      }
+    } catch (error) {
+      console.error('Error adding photo to ODS:', error);
+      alert('Hubo un error al guardar la foto en la orden.');
     }
   };
 
@@ -644,13 +655,16 @@ export function App() {
           {activeTab === 'cashier' && (
             <CashierView 
               orders={orders} 
-              transactions={transactions} 
               customers={customers}
-              onAddPayment={handleAddPayment} 
-              onAccountPayment={handleAccountPayment}
-              registerState={registerState}
-              setRegisterState={setRegisterState}
             />
+          )}
+
+          {activeTab === 'treasury' && (
+            <TreasuryView />
+          )}
+
+          {activeTab === 'legacy_cash' && (
+            <LegacyCashView transactions={transactions} />
           )}
 
           {activeTab === 'customers' && (
