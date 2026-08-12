@@ -172,44 +172,7 @@ export function App() {
     };
     fetchData();
 
-    // 3. Supabase Realtime Subscription for ODS and Photos
-    const fetchAndMergeOrders = () => {
-      odsService.getActiveODS().then(odsData => {
-        setOrders(prevOrders => {
-          return odsData.map(fetched => {
-            const existing = prevOrders.find(o => o.id === fetched.id);
-            if (existing) {
-              return {
-                ...fetched,
-                checklist: existing.checklist?.length ? existing.checklist : fetched.checklist,
-                // FASE B: Photos debe provenir de Supabase, no del estado local
-                photos: fetched.photos,
-                services: existing.services?.length ? existing.services : fetched.services,
-                damageMarkers: existing.damageMarkers?.length ? existing.damageMarkers : fetched.damageMarkers,
-              };
-            }
-            return fetched;
-          });
-        });
-
-        // FASE B: Actualizar también la orden seleccionada para que el modal se refresque en vivo
-        setSelectedOrder(prevSelected => {
-          if (!prevSelected) return null;
-          const updated = odsData.find(o => o.id === prevSelected.id);
-          if (updated) {
-            return {
-              ...updated,
-              checklist: prevSelected.checklist?.length ? prevSelected.checklist : updated.checklist,
-              photos: updated.photos, // Priorizamos Supabase
-              services: prevSelected.services?.length ? prevSelected.services : updated.services,
-              damageMarkers: prevSelected.damageMarkers?.length ? prevSelected.damageMarkers : updated.damageMarkers,
-            };
-          }
-          return prevSelected;
-        });
-      });
-    };
-
+    // 3. Supabase Realtime Subscription for ODS
     const channel = supabase
       .channel('ods_realtime_changes')
       .on(
@@ -217,15 +180,25 @@ export function App() {
         { event: '*', schema: 'public', table: 'service_orders' },
         (payload) => {
           console.log('Realtime ODS change received!', payload);
-          fetchAndMergeOrders();
-        }
-      )
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'order_photos' },
-        (payload) => {
-          console.log('Realtime Photo change received!', payload);
-          fetchAndMergeOrders();
+          // Re-fetch all but preserve local nested relations
+          odsService.getActiveODS().then(odsData => {
+            setOrders(prevOrders => {
+              return odsData.map(fetched => {
+                const existing = prevOrders.find(o => o.id === fetched.id);
+                if (existing) {
+                  return {
+                    ...fetched,
+                    checklist: existing.checklist?.length ? existing.checklist : fetched.checklist,
+                    // FASE B: Photos debe provenir de Supabase, no del estado local
+                    photos: fetched.photos,
+                    services: existing.services?.length ? existing.services : fetched.services,
+                    damageMarkers: existing.damageMarkers?.length ? existing.damageMarkers : fetched.damageMarkers,
+                  };
+                }
+                return fetched;
+              });
+            });
+          });
         }
       )
       .subscribe();
@@ -441,16 +414,12 @@ export function App() {
       const photoUrl = photo.photoUrl || photo.url;
       const dbPhoto = await odsService.addPhotoToOrder(orderId, photoUrl, photo.category, photo.caption);
       
-      setOrders(prevOrders => 
-        prevOrders.map((o) => (o.id === orderId ? { ...o, photos: [...o.photos, dbPhoto] } : o))
+      setOrders(
+        orders.map((o) => (o.id === orderId ? { ...o, photos: [...o.photos, dbPhoto] } : o))
       );
-      
-      setSelectedOrder(prev => {
-        if (prev?.id === orderId) {
-          return { ...prev, photos: [...prev.photos, dbPhoto] };
-        }
-        return prev;
-      });
+      if (selectedOrder?.id === orderId) {
+        setSelectedOrder({ ...selectedOrder, photos: [...selectedOrder.photos, dbPhoto] });
+      }
     } catch (error) {
       console.error('Error adding photo to ODS:', error);
       alert('Hubo un error al guardar la foto en la orden.');
