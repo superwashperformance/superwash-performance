@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UserRole, ServiceOrder, InventoryItem, InventoryMovement, CashTransaction, ODSStatus, Agent, CompanyData, ServiceItem, Customer, Vehicle } from './types';
+import { UserRole, ServiceOrder, InventoryItem, InventoryMovement, CashTransaction, ODSStatus, Agent, CompanyData, ServiceItem, Customer, Vehicle, Branch } from './types';
 import {
   mockInventory,
   mockInventoryMovements,
@@ -11,6 +11,7 @@ import {
   mockServicesCatalog,
 } from './data/mockData';
 import { odsService } from './services/odsService';
+import { branchService } from './services/branchService';
 import { customerService } from './services/customerService';
 import { vehicleService } from './services/vehicleService';
 import { treasuryService } from './services/treasuryService';
@@ -34,7 +35,6 @@ import { SettingsView } from './components/views/SettingsView';
 import { ODSDetailModal } from './components/views/ODSDetailModal';
 import { Search, X } from 'lucide-react';
 import { AuthModal, UserSession } from './components/views/AuthModal';
-import { validateUserCredentials } from './utils/security';
 
 export function App() {
   const [appMode, setAppMode] = useState<'splash' | 'admin' | 'tracking'>('splash');
@@ -43,28 +43,51 @@ export function App() {
   
   // User Session Management
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [userSession, setUserSession] = useState<UserSession | null>(() => {
-    const saved = localStorage.getItem('sw_current_user');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        return null;
+  const [userSession, setUserSession] = useState<UserSession | null>(null);
+
+  // Initialize Session from Supabase
+  React.useEffect(() => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session && session.user) {
+        const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+        const role = profile ? profile.role : 'admin';
+        const fullName = profile ? profile.full_name : session.user.email?.split('@')[0] || 'Usuario';
+        
+        setUserSession({
+          id: session.user.id,
+          email: session.user.email || '',
+          fullName,
+          role: role as UserRole,
+          avatar: fullName.substring(0, 2).toUpperCase(),
+          token: session.access_token,
+        });
+        setAppMode('admin');
       }
-    }
-    return null; // Require explicit login with credentials
-  });
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session && session.user) {
+        const { data: profile } = await supabase.from('profiles').select('*').eq('id', session.user.id).single();
+        const role = profile ? profile.role : 'admin';
+        const fullName = profile ? profile.full_name : session.user.email?.split('@')[0] || 'Usuario';
+        
+        setUserSession({
+          id: session.user.id,
+          email: session.user.email || '',
+          fullName,
+          role: role as UserRole,
+          avatar: fullName.substring(0, 2).toUpperCase(),
+          token: session.access_token,
+        });
+      } else {
+        setUserSession(null);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const currentRole: UserRole = userSession?.role || 'admin';
-
-  // Persist User Session
-  React.useEffect(() => {
-    if (userSession) {
-      localStorage.setItem('sw_current_user', JSON.stringify(userSession));
-    } else {
-      localStorage.removeItem('sw_current_user');
-    }
-  }, [userSession]);
 
   // Application State
   const [orders, setOrders] = useState<ServiceOrder[]>([]);
@@ -76,6 +99,7 @@ export function App() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [technicians, setTechnicians] = useState<Agent[]>(initialTechnicians);
   const [receptionAgents, setReceptionAgents] = useState<Agent[]>(initialReceptionAgents);
+  const [branches, setBranches] = useState<Branch[]>([]);
 
   const [companyData, setCompanyData] = useState<CompanyData>({
     name: 'Super Wash Performance C.A.',
@@ -116,12 +140,16 @@ export function App() {
           });
         });
 
-        // 2. Fetch & Seed Inventory
+        // 2. Fetch inventory
         await inventoryService.seedMockDataIfNeeded(mockInventory);
         const invData = await inventoryService.getInventory();
         setInventory(invData);
         
-        // 3. Fetch Customers, Vehicles, and Transactions
+        // 3. Fetch branches
+        const branchData = await branchService.getBranches();
+        setBranches(branchData);
+        
+        // 4. Fetch Customers, Vehicles, and Transactions
         const [fetchedCustomers, fetchedVehicles] = await Promise.all([
           customerService.getCustomers(),
           vehicleService.getVehicles()
@@ -240,13 +268,30 @@ export function App() {
 
   const handleDeleteODS = async (orderId: string) => {
     if (!window.confirm('¿Estás seguro de que deseas eliminar esta Orden de Servicio de forma permanente?')) return;
+    
+    const orderToDelete = orders.find(o => o.id === orderId);
+    if (!orderToDelete) return;
+
     try {
-      await odsService.deleteODS(orderId);
+      await odsService.deleteODS(orderId, orderToDelete.photos);
+      
+      // SOLO si no hubo error, eliminamos localmente (No hay actualizacin optimista)
       setOrders(orders.filter((o) => o.id !== orderId));
       if (selectedOrder?.id === orderId) setSelectedOrder(null);
-    } catch (error) {
-      console.error('Error al eliminar ODS:', error);
-      alert('Error al eliminar la ODS en la base de datos.');
+      alert('ODS eliminada correctamente.');
+    } catch (error: any) {
+      if (error?.message === 'SUCCESS_DB_FAIL_STORAGE') {
+        // ODS se borr de BD, por lo tanto actualizamos la UI para removerla,
+        // pero advertimos del problema en Storage
+        setOrders(orders.filter((o) => o.id !== orderId));
+        if (selectedOrder?.id === orderId) setSelectedOrder(null);
+        console.warn('La ODS se eliminó de la BD, pero hubo un error al borrar las fotos físicas de Storage.');
+        alert('ODS eliminada, PERO hubo un error limpiando algunas imgenes del Storage. Por favor repórtalo.');
+      } else {
+        console.error('Error al eliminar ODS:', error);
+        alert(error?.message || 'Error al eliminar la ODS en la base de datos.');
+        // Removemos el recargo forzoso para que puedas ver el error y la UI no parpadee 
+      }
     }
   };
 
@@ -512,21 +557,9 @@ export function App() {
   if (appMode === 'splash') {
     return (
       <SplashScreen 
-        onEnter={(email, password) => {
-          if (email && password) {
-            const validUser = validateUserCredentials(email, password);
-            if (validUser) {
-              setUserSession({
-                id: `usr-${Date.now()}`,
-                email: validUser.email,
-                fullName: validUser.name,
-                role: validUser.role as any,
-                avatar: validUser.name.substring(0, 2).toUpperCase(),
-                token: `jwt-${Date.now()}`,
-              });
-              setAppMode('admin');
-            }
-          }
+        onEnter={() => {
+          // Si el login fue exitoso en SplashScreen, la sesion se establece vía onAuthStateChange
+          setAppMode('admin');
         }} 
         onTrack={(plate) => { setTrackingPlate(plate); setAppMode('tracking'); }} 
       />
@@ -550,7 +583,7 @@ export function App() {
   );
 
   return (
-    <div className="min-h-screen bg-[#06080C] text-[#F0F6FC] flex flex-col font-sans antialiased selection:bg-[#00E5FF] selection:text-black">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans antialiased selection:bg-[#00E5FF] selection:text-black">
       {/* Header */}
       <div className="print:hidden">
         <Header
@@ -563,11 +596,8 @@ export function App() {
           onNewODS={() => setActiveTab('ods_new' as any)}
           onSearchOpen={() => setIsSearchOpen(true)}
           userSession={userSession}
-          onLogout={() => {
-            setUserSession(null);
-            try {
-              localStorage.removeItem('sw_current_user');
-            } catch (e) {}
+          onLogout={async () => {
+            await supabase.auth.signOut();
             setShowAuthModal(false);
             setAppMode('splash');
           }}
@@ -581,7 +611,7 @@ export function App() {
         <Sidebar activeTab={activeTab} onTabChange={setActiveTab} currentRole={currentRole} />
 
         {/* Dynamic View Area */}
-        <main className="flex-1 overflow-y-auto bg-gradient-to-b from-[#06080C] via-[#090C12] to-[#040609]">
+        <main className="flex-1 overflow-y-auto bg-slate-50">
           {activeTab === 'dashboard' && (
             <DashboardView
               orders={orders}
@@ -614,6 +644,7 @@ export function App() {
               orders={orders}
               onAddCustomer={handleAddCustomer}
               onAddVehicle={handleAddVehicle}
+              branches={branches}
             />
           )}
 
@@ -674,6 +705,8 @@ export function App() {
               servicesCatalog={servicesCatalog}
               setServicesCatalog={setServicesCatalog}
               inventory={inventory}
+              branches={branches}
+              setBranches={setBranches}
             />
           )}
         </main>
@@ -692,19 +725,19 @@ export function App() {
 
       {/* Command Palette Search Modal */}
       {isSearchOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-start justify-center pt-20 p-4">
-          <div className="nike-card w-full max-w-xl p-4 flex flex-col gap-3 shadow-2xl border-cyan-500/40">
-            <div className="flex items-center gap-2 border-b border-white/10 pb-3">
-              <Search className="w-5 h-5 text-[#00E5FF]" />
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-md flex items-start justify-center pt-20 p-4">
+          <div className="nike-card w-full max-w-xl p-4 flex flex-col gap-3 shadow-2xl border-slate-200 bg-white">
+            <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+              <Search className="w-5 h-5 text-slate-400" />
               <input
                 type="text"
                 placeholder="Escribe número de ODS, Placa, Cliente o Modelo..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoFocus
-                className="flex-1 bg-transparent text-sm text-white focus:outline-none font-mono"
+                className="flex-1 bg-transparent text-sm text-slate-900 focus:outline-none font-mono placeholder:text-slate-400"
               />
-              <button onClick={() => setIsSearchOpen(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setIsSearchOpen(false)} className="text-slate-400 hover:text-slate-800">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -722,18 +755,18 @@ export function App() {
                       setSelectedOrder(order);
                       setIsSearchOpen(false);
                     }}
-                    className="p-3 rounded-xl bg-slate-900/60 hover:bg-[#00E5FF]/10 border border-white/5 hover:border-cyan-500/30 cursor-pointer flex items-center justify-between transition-colors"
+                    className="p-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-cyan-500/30 cursor-pointer flex items-center justify-between transition-colors"
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-xs text-[#00E5FF]">{order.orderNumber}</span>
-                        <span className="font-bold text-white text-xs">{order.vehicleBrandModel}</span>
+                        <span className="font-mono font-bold text-xs text-cyan-600">{order.orderNumber}</span>
+                        <span className="font-bold text-slate-900 text-xs">{order.vehicleBrandModel}</span>
                       </div>
-                      <span className="text-[10px] text-slate-400 font-mono">
+                      <span className="text-[10px] text-slate-500 font-mono">
                         Placa: {order.vehiclePlate} | Cliente: {order.customerName}
                       </span>
                     </div>
-                    <span className="font-mono text-xs font-bold text-white">${order.totalAmount}</span>
+                    <span className="font-mono text-xs font-bold text-slate-900">${order.totalAmount}</span>
                   </div>
                 ))
               )}

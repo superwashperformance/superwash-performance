@@ -10,21 +10,21 @@ export const LegacyCashView: React.FC<LegacyCashViewProps> = ({ transactions }) 
     <div className="p-6 h-full flex flex-col">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-display font-bold text-white tracking-wider flex items-center gap-3">
+          <h1 className="text-2xl font-display font-bold text-slate-900 tracking-wider flex items-center gap-3">
             HISTÓRICO LEGACY
             <span className="bg-red-500/20 text-red-400 text-xs px-2 py-1 rounded border border-red-500/30 uppercase tracking-widest">
               Solo Lectura
             </span>
           </h1>
-          <p className="text-slate-400 mt-1 font-mono text-sm">
+          <p className="text-slate-500 mt-1 font-mono text-sm">
             Registro histórico de operaciones (v1). Esta información está congelada.
           </p>
         </div>
       </div>
 
       <div className="flex-1 overflow-auto rounded-xl border border-white/5 bg-[#090C12]">
-        <table className="w-full text-sm text-left text-slate-300">
-          <thead className="text-xs text-white uppercase bg-black/50 border-b border-white/10 font-display tracking-wider sticky top-0">
+        <table className="w-full text-sm text-left text-slate-700">
+          <thead className="text-xs text-slate-900 uppercase bg-black/50 border-b border-slate-200 font-display tracking-wider sticky top-0">
             <tr>
               <th className="px-4 py-3">Fecha</th>
               <th className="px-4 py-3">ODS / Ref</th>
@@ -38,8 +38,8 @@ export const LegacyCashView: React.FC<LegacyCashViewProps> = ({ transactions }) 
             {transactions.map((tx) => (
               <tr key={tx.id} className="hover:bg-white/5 transition-colors">
                 <td className="px-4 py-3">{tx.date}</td>
-                <td className="px-4 py-3 text-[#00E5FF]">{tx.orderNumber || tx.referenceNumber || '-'}</td>
-                <td className="px-4 py-3 text-white">{tx.customerName}</td>
+                <td className="px-4 py-3 text-cyan-600">{tx.orderNumber || tx.referenceNumber || '-'}</td>
+                <td className="px-4 py-3 text-slate-900">{tx.customerName}</td>
                 <td className="px-4 py-3">
                   <span className={`px-2 py-1 rounded text-xs ${
                     tx.type === 'payment' ? 'bg-emerald-500/20 text-emerald-400' :

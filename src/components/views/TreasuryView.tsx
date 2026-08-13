@@ -68,17 +68,17 @@ export const TreasuryView: React.FC = () => {
   const totalBalance = accounts.reduce((acc, a) => acc + a.balance, 0);
 
   if (isLoading) {
-    return <div className="p-8 text-white font-mono">Cargando tesorería...</div>;
+    return <div className="p-8 text-slate-900 font-mono">Cargando tesorería...</div>;
   }
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8 max-w-7xl mx-auto w-full relative">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-display text-3xl text-white tracking-wide flex items-center gap-2">
-            TESORERÍA Y MAYOR <ShieldCheck className="w-6 h-6 text-[#00E5FF]" />
+          <h2 className="font-display text-3xl text-slate-900 tracking-wide flex items-center gap-2">
+            TESORERÍA Y MAYOR <ShieldCheck className="w-6 h-6 text-cyan-600" />
           </h2>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500">
             Control central de liquidez, cuentas bancarias y transferencias internas.
           </p>
         </div>
@@ -86,29 +86,29 @@ export const TreasuryView: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="nike-card p-5 border-[#00E5FF]/30 col-span-1 md:col-span-3 lg:col-span-1">
-          <span className="text-[10px] font-mono text-slate-400 uppercase">LIQUIDEZ TOTAL</span>
-          <div className="font-display text-4xl text-[#00E5FF] font-mono">
+          <span className="text-[10px] font-mono text-slate-500 uppercase">LIQUIDEZ TOTAL</span>
+          <div className="font-display text-4xl text-cyan-600 font-mono">
             <CurrencyDisplay amount={totalBalance} size="lg" />
           </div>
         </div>
       </div>
 
-      <div className="flex gap-2 border-b border-white/10 pb-2">
+      <div className="flex gap-2 border-b border-slate-200 pb-2">
         <button 
           onClick={() => setActiveTab('accounts')}
-          className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'accounts' ? 'bg-[#00E5FF] text-black' : 'text-slate-400 hover:text-white'}`}
+          className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'accounts' ? 'bg-[#00E5FF] text-black' : 'text-slate-500 hover:text-slate-900'}`}
         >
           <Landmark className="w-4 h-4" /> Cuentas
         </button>
         <button 
           onClick={() => setActiveTab('transfers')}
-          className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'transfers' ? 'bg-[#00E5FF] text-black' : 'text-slate-400 hover:text-white'}`}
+          className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'transfers' ? 'bg-[#00E5FF] text-black' : 'text-slate-500 hover:text-slate-900'}`}
         >
           <ArrowRightLeft className="w-4 h-4" /> Transferencias Internas
         </button>
         <button 
           onClick={() => setActiveTab('mayor')}
-          className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'mayor' ? 'bg-[#00E5FF] text-black' : 'text-slate-400 hover:text-white'}`}
+          className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'mayor' ? 'bg-[#00E5FF] text-black' : 'text-slate-500 hover:text-slate-900'}`}
         >
           <List className="w-4 h-4" /> Mayor (Movimientos)
         </button>
@@ -126,8 +126,8 @@ export const TreasuryView: React.FC = () => {
                 </span>
                 <span className="text-slate-500 font-mono text-[10px]">{acc.currency}</span>
               </div>
-              <h4 className="text-white font-display text-xl">{acc.name}</h4>
-              <p className="text-slate-400 text-xs font-mono">Sin descripción</p>
+              <h4 className="text-slate-900 font-display text-xl">{acc.name}</h4>
+              <p className="text-slate-500 text-xs font-mono">Sin descripción</p>
               
               <div className="mt-4 pt-4 border-t border-white/5">
                 <span className="text-[10px] text-slate-500 uppercase">Saldo Actual</span>
@@ -142,17 +142,17 @@ export const TreasuryView: React.FC = () => {
 
       {activeTab === 'transfers' && (
         <div className="nike-card p-6 max-w-2xl animate-fade-in">
-          <h3 className="font-display text-xl text-white flex items-center gap-2 mb-4">
-            <ArrowRightLeft className="w-5 h-5 text-[#00E5FF]" /> NUEVA TRANSFERENCIA INTERNA
+          <h3 className="font-display text-xl text-slate-900 flex items-center gap-2 mb-4">
+            <ArrowRightLeft className="w-5 h-5 text-cyan-600" /> NUEVA TRANSFERENCIA INTERNA
           </h3>
           <form onSubmit={handleTransfer} className="flex flex-col gap-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs text-slate-400 mb-1 block">Cuenta Origen</label>
+                <label className="text-xs text-slate-500 mb-1 block">Cuenta Origen</label>
                 <select
                   value={fromAccount}
                   onChange={(e) => setFromAccount(e.target.value)}
-                  className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none"
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#00E5FF] outline-none"
                 >
                   <option value="">Seleccione origen...</option>
                   {accounts.map(a => (
@@ -161,11 +161,11 @@ export const TreasuryView: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="text-xs text-slate-400 mb-1 block">Cuenta Destino</label>
+                <label className="text-xs text-slate-500 mb-1 block">Cuenta Destino</label>
                 <select
                   value={toAccount}
                   onChange={(e) => setToAccount(e.target.value)}
-                  className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none"
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#00E5FF] outline-none"
                 >
                   <option value="">Seleccione destino...</option>
                   {accounts.map(a => (
@@ -177,22 +177,22 @@ export const TreasuryView: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs text-slate-400 mb-1 block">Monto a Transferir ($)</label>
+                <label className="text-xs text-slate-500 mb-1 block">Monto a Transferir ($)</label>
                 <input
                   type="number"
                   step="0.01"
                   min="0.01"
                   value={transferAmount}
                   onChange={(e) => setTransferAmount(Number(e.target.value))}
-                  className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-lg text-white font-mono font-bold focus:border-[#00E5FF] outline-none"
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-lg text-slate-900 font-mono font-bold focus:border-[#00E5FF] outline-none"
                 />
               </div>
               <div>
-                <label className="text-xs text-slate-400 mb-1 block">Medio</label>
+                <label className="text-xs text-slate-500 mb-1 block">Medio</label>
                 <select
                   value={transferMethod}
                   onChange={(e) => setTransferMethod(e.target.value)}
-                  className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-[#00E5FF] outline-none"
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#00E5FF] outline-none"
                 >
                   <option value="transferencia">Transferencia / Depósito</option>
                   <option value="efectivo">Efectivo (Físico)</option>
@@ -210,8 +210,8 @@ export const TreasuryView: React.FC = () => {
 
       {activeTab === 'mayor' && (
         <div className="nike-card p-0 overflow-hidden animate-fade-in">
-          <table className="w-full text-left text-sm text-slate-300">
-            <thead className="bg-black/80 font-display text-sm tracking-wider uppercase text-slate-400 border-b border-white/10">
+          <table className="w-full text-left text-sm text-slate-700">
+            <thead className="bg-black/80 font-display text-sm tracking-wider uppercase text-slate-500 border-b border-slate-200">
               <tr>
                 <th className="p-4">FECHA</th>
                 <th className="p-4">CUENTA</th>
@@ -223,10 +223,10 @@ export const TreasuryView: React.FC = () => {
             <tbody className="divide-y divide-white/5">
               {movements.map(m => (
                 <tr key={m.id} className="hover:bg-white/5 transition-colors">
-                  <td className="p-4 font-mono text-xs text-slate-400">
+                  <td className="p-4 font-mono text-xs text-slate-500">
                     {new Date(m.created_at || '').toLocaleString()}
                   </td>
-                  <td className="p-4 font-bold text-white">
+                  <td className="p-4 font-bold text-slate-900">
                     {m.treasury_account_id}
                   </td>
                   <td className="p-4">

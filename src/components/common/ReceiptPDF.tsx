@@ -46,8 +46,8 @@ export const ReceiptPDF: React.FC<ReceiptPDFProps> = ({ transaction, order, cust
                 max-width: 80mm;
                 margin: 0 auto;
               }
-              .bg-slate-900 { background: white !important; color: black !important; border-bottom: 2px dashed black !important; }
-              .text-white, .text-slate-400, .text-slate-700, .text-slate-800, .text-[#00E5FF] { color: black !important; }
+              .bg-white { background: white !important; color: black !important; border-bottom: 2px dashed black !important; }
+              .text-slate-900, .text-slate-500, .text-slate-700, .text-slate-800, .text-cyan-600 { color: black !important; }
               .bg-slate-50 { background: transparent !important; border: 1px solid black !important; }
               .border-b-\\[8px\\] { border-bottom: 2px solid black !important; }
               .shadow-inner { box-shadow: none !important; border: 1px solid black !important; }
@@ -78,10 +78,10 @@ export const ReceiptPDF: React.FC<ReceiptPDFProps> = ({ transaction, order, cust
       <div className="w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col relative" id="receipt-print-area">
         
         {/* Receipt Header */}
-        <div className="bg-slate-900 p-6 flex flex-col items-center justify-center text-center border-b-[8px] border-[#00E5FF]">
+        <div className="bg-white p-6 flex flex-col items-center justify-center text-center border-b-[8px] border-[#00E5FF]">
           <FaviconLogo size={48} />
-          <h2 className="text-white font-display text-xl mt-3 tracking-widest">SUPER WASH</h2>
-          <p className="text-slate-400 text-xs font-mono mt-1">Enterprise Performance Center</p>
+          <h2 className="text-slate-900 font-display text-xl mt-3 tracking-widest">SUPER WASH</h2>
+          <p className="text-slate-500 text-xs font-mono mt-1">Enterprise Performance Center</p>
           <div className="mt-4 flex items-center gap-2 bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full text-xs font-bold border border-emerald-500/30">
             <CheckCircle2 className="w-4 h-4" />
             PAGO PROCESADO
@@ -93,59 +93,59 @@ export const ReceiptPDF: React.FC<ReceiptPDFProps> = ({ transaction, order, cust
           
           <div className="flex justify-between items-end border-b border-slate-200 pb-3">
             <div>
-              <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Recibo N°</p>
+              <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Recibo N°</p>
               <p className="font-mono text-sm font-bold text-slate-700">REC-{transaction.id.split('-')[0].toUpperCase()}</p>
             </div>
             <div className="text-right">
-              <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Fecha</p>
+              <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Fecha</p>
               <p className="font-mono text-sm text-slate-700">{new Date(transaction.date).toLocaleDateString()} {new Date(transaction.date).toLocaleTimeString()}</p>
             </div>
           </div>
 
           <div className="flex flex-col gap-1">
-            <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Cliente / Cuenta</p>
+            <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Cliente / Cuenta</p>
             <p className="font-bold text-slate-800">{transaction.customerName}</p>
             {customer && <p className="text-xs text-slate-500 font-mono">ID: {customer.documentId}</p>}
           </div>
 
           <div className="flex flex-col gap-3 bg-slate-50 p-4 rounded-lg border border-slate-100">
             <div className="flex justify-between items-center">
-              <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Concepto</p>
+              <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Concepto</p>
               <p className="text-xs font-bold text-slate-700">{transaction.notes || 'Abono a cuenta'}</p>
             </div>
             
             {order && (
               <div className="flex justify-between items-center">
-                <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Orden Asoc.</p>
+                <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Orden Asoc.</p>
                 <p className="text-xs font-mono font-bold text-slate-700">{order.orderNumber}</p>
               </div>
             )}
 
             <div className="flex justify-between items-center">
-              <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Método de Pago</p>
+              <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Método de Pago</p>
               <p className="text-xs font-bold text-slate-700 uppercase">{transaction.paymentMethod.replace('_', ' ')}</p>
             </div>
 
             {transaction.referenceNumber && (
               <div className="flex justify-between items-center">
-                <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Referencia</p>
+                <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Referencia</p>
                 <p className="text-xs font-mono text-slate-700">{transaction.referenceNumber}</p>
               </div>
             )}
           </div>
 
           {/* Amount Area */}
-          <div className="flex flex-col items-center justify-center py-4 bg-slate-900 rounded-lg shadow-inner">
-            <p className="text-[10px] text-[#00E5FF] uppercase font-bold tracking-widest mb-1">Total Abonado</p>
-            <div className="font-display text-4xl text-white tracking-wider flex items-center">
-              <span className="text-2xl mr-1 text-slate-400">$</span>
+          <div className="flex flex-col items-center justify-center py-4 bg-white rounded-lg shadow-inner">
+            <p className="text-[10px] text-cyan-600 uppercase font-bold tracking-widest mb-1">Total Abonado</p>
+            <div className="font-display text-4xl text-slate-900 tracking-wider flex items-center">
+              <span className="text-2xl mr-1 text-slate-500">$</span>
               {transaction.amount.toFixed(2)}
             </div>
           </div>
 
           <div className="text-center mt-2">
-            <p className="text-[10px] text-slate-400">Atendido por: {transaction.receivedBy || 'Caja Principal'}</p>
-            <p className="text-[10px] text-slate-400 mt-1">¡Gracias por preferir Super Wash!</p>
+            <p className="text-[10px] text-slate-500">Atendido por: {transaction.receivedBy || 'Caja Principal'}</p>
+            <p className="text-[10px] text-slate-500 mt-1">¡Gracias por preferir Super Wash!</p>
           </div>
         </div>
 

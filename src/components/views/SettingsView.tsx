@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Settings, Shield, Building, Database, UserPlus, Trash2, Users, Wrench, Edit3, Check, X as XIcon, Plus, Package, Lock, ShieldCheck, Key, EyeOff, AlertTriangle, Save } from 'lucide-react';
-import { Agent, CompanyData, ServiceItem, InventoryItem } from '../../types';
-import { getAuthorizedUsers, updateUserData, AuthorizedUser } from '../../utils/security';
+import { Agent, CompanyData, ServiceItem, InventoryItem, Branch } from '../../types';
+import { branchService } from '../../services/branchService';
 
 interface SettingsViewProps {
   userRole?: string;
@@ -14,29 +14,29 @@ interface SettingsViewProps {
   servicesCatalog: ServiceItem[];
   setServicesCatalog: React.Dispatch<React.SetStateAction<ServiceItem[]>>;
   inventory: InventoryItem[];
+  branches: Branch[];
+  setBranches: React.Dispatch<React.SetStateAction<Branch[]>>;
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({ 
   userRole = 'admin',
   technicians, 
   setTechnicians, 
-  receptionAgents, 
+  receptionAgents,
   setReceptionAgents,
   companyData,
   setCompanyData,
   servicesCatalog,
   setServicesCatalog,
-  inventory
+  inventory,
+  branches,
+  setBranches,
 }) => {
   const [newTechName, setNewTechName] = useState('');
   const [newTechRole, setNewTechRole] = useState('');
   const [newAgentName, setNewAgentName] = useState('');
 
-  // Password & User Management State
-  const [authorizedUsersList, setAuthorizedUsersList] = useState<AuthorizedUser[]>(getAuthorizedUsers());
-  const [editingUserEmail, setEditingUserEmail] = useState<string | null>(null);
-  const [newNameValue, setNewNameValue] = useState('');
-  const [newPasswordValue, setNewPasswordValue] = useState('');
+  // Password & User Management State (Migrated to Supabase Auth)
   const [passwordSuccessMessage, setPasswordSuccessMessage] = useState('');
 
   // Editing Company Data State
@@ -49,25 +49,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
   const [tempService, setTempService] = useState<Partial<ServiceItem>>({});
 
-  const handleUserSave = (email: string) => {
-    if (!newNameValue || !newNameValue.trim()) {
-      alert('El nombre del usuario no puede estar vacío.');
-      return;
-    }
-    if (!newPasswordValue || newPasswordValue.trim().length < 4) {
-      alert('La nueva contraseña debe tener al menos 4 caracteres.');
-      return;
-    }
-    const success = updateUserData(email, newNameValue.trim(), newPasswordValue.trim());
-    if (success) {
-      setAuthorizedUsersList(getAuthorizedUsers());
-      setPasswordSuccessMessage(`✅ ¡Datos actualizados exitosamente para ${email}!`);
-      setEditingUserEmail(null);
-      setNewNameValue('');
-      setNewPasswordValue('');
-      setTimeout(() => setPasswordSuccessMessage(''), 4000);
-    }
-  };
+  // Managing Branches State
+  const [isAddingBranch, setIsAddingBranch] = useState(false);
+  const [editingBranchId, setEditingBranchId] = useState<string | null>(null);
+  const [tempBranch, setTempBranch] = useState<Partial<Branch>>({});
 
   const handleAddTechnician = (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,7 +60,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     
     const initials = newTechName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
     setTechnicians([...technicians, { 
-      id: `tech-${Date.now()}`, 
+      id: `tech-${Date.now()}`,
       name: newTechName, 
       role: newTechRole || 'Técnico General', 
       avatar: initials 
@@ -128,112 +113,66 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       setServicesCatalog(servicesCatalog.filter(s => s.id !== id));
     }
   };
+  const handleSaveBranch = async () => {
+    try {
+      if (editingBranchId) {
+        const updated = await branchService.updateBranch(editingBranchId, tempBranch);
+        setBranches(branches.map(b => b.id === editingBranchId ? updated : b));
+        setEditingBranchId(null);
+      } else {
+        if (!tempBranch.name || !tempBranch.address || !tempBranch.phone) {
+          alert('Nombre, dirección y teléfono son obligatorios');
+          return;
+        }
+        const created = await branchService.createBranch(tempBranch as Branch);
+        setBranches([...branches, created]);
+        setIsAddingBranch(false);
+      }
+      setTempBranch({});
+    } catch (e: any) {
+      alert('Error guardando sede: ' + e.message);
+    }
+  };
+
+  const handleToggleBranchActive = async (branch: Branch) => {
+    try {
+      const updated = await branchService.updateBranch(branch.id, { is_active: !branch.is_active });
+      setBranches(branches.map(b => b.id === branch.id ? updated : b));
+    } catch (e: any) {
+      alert('Error actualizando estado de sede: ' + e.message);
+    }
+  };
+
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8 max-w-5xl mx-auto w-full">
       <div>
-        <h2 className="font-display text-3xl text-white tracking-wide flex items-center gap-2">
-          CONFIGURACIÓN DEL SISTEMA <Settings className="w-6 h-6 text-[#00E5FF]" />
+        <h2 className="font-display text-3xl text-slate-900 tracking-wide flex items-center gap-2">
+          CONFIGURACIÓN DEL SISTEMA <Settings className="w-6 h-6 text-cyan-600" />
         </h2>
-        <p className="text-xs text-slate-400">Ajustes globales de sede, roles, técnicos, servicios y base de datos.</p>
+        <p className="text-xs text-slate-500">Ajustes globales de sede, roles, técnicos, servicios y base de datos.</p>
       </div>
 
       {/* Sección de Gestión de Contraseñas (Solo para Administrador y Dueño) */}
       {(userRole === 'admin' || userRole === 'owner') && (
-        <div className="nike-card p-5 flex flex-col gap-4 border-cyan-500/30 bg-slate-900/90 shadow-2xl">
-          <div className="flex items-center justify-between border-b border-white/10 pb-3">
-            <div className="flex items-center gap-3 text-[#00E5FF]">
+        <div className="nike-card p-5 flex flex-col gap-4 border-cyan-500/30 bg-white/ shadow-2xl">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+            <div className="flex items-center gap-3 text-cyan-600">
               <Key className="w-5 h-5" />
               <div>
-                <h3 className="font-display text-xl text-white">GESTIÓN DE CREDENCIALES Y CONTRASEÑAS</h3>
-                <p className="text-[11px] text-slate-400 font-mono">Panel exclusivo para Administrador (CEO) y Dueño (Director)</p>
+                <h3 className="font-display text-xl text-slate-900">GESTIÓN DE CREDENCIALES Y CONTRASEÑAS</h3>
+                <p className="text-[11px] text-slate-500 font-mono">Panel exclusivo para Administrador (CEO) y Dueño (Director)</p>
               </div>
             </div>
             <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 px-3 py-1 rounded-full flex items-center gap-1.5 font-bold">
-              <ShieldCheck className="w-3.5 h-3.5" /> CONTROL DE ACCESOS
+              <ShieldCheck className="w-3.5 h-3.5" /> SUPABASE AUTH
             </span>
           </div>
 
-          {passwordSuccessMessage && (
-            <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-semibold flex items-center gap-2">
-              <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>{passwordSuccessMessage}</span>
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {authorizedUsersList.map((user) => (
-              <div key={user.email} className="bg-black/50 border border-slate-800 p-4 rounded-2xl flex flex-col gap-2.5 relative">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <span className="text-[9px] uppercase font-mono px-2 py-0.5 rounded-full bg-slate-800 text-cyan-400 border border-slate-700">
-                      {user.role}
-                    </span>
-                    <p className="text-[11px] font-mono text-[#00E5FF] mt-1">{user.email}</p>
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-white/10 flex flex-col gap-2">
-                  {editingUserEmail === user.email ? (
-                    <div className="flex flex-col gap-2 w-full pt-1">
-                      <div>
-                        <label className="text-[10px] font-mono text-slate-400">NOMBRE DEL USUARIO</label>
-                        <input
-                          type="text"
-                          placeholder="Nombre Completo"
-                          value={newNameValue}
-                          onChange={(e) => setNewNameValue(e.target.value)}
-                          className="bg-slate-950 border border-cyan-500/50 rounded-xl px-3 py-1.5 text-xs text-white outline-none w-full font-sans font-medium mt-0.5"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] font-mono text-slate-400">NUEVA CONTRASEÑA</label>
-                        <input
-                          type="text"
-                          placeholder="Nueva Contraseña"
-                          value={newPasswordValue}
-                          onChange={(e) => setNewPasswordValue(e.target.value)}
-                          className="bg-slate-950 border border-cyan-500/50 rounded-xl px-3 py-1.5 text-xs text-white outline-none w-full font-mono mt-0.5"
-                        />
-                      </div>
-                      <div className="flex items-center justify-end gap-2 mt-1">
-                        <button
-                          onClick={() => { setEditingUserEmail(null); setNewNameValue(''); setNewPasswordValue(''); }}
-                          className="text-xs text-slate-400 hover:text-white px-3 py-1 rounded-xl border border-slate-700"
-                        >
-                          Cancelar
-                        </button>
-                        <button
-                          onClick={() => handleUserSave(user.email)}
-                          className="bg-[#00E5FF] text-black font-bold px-3.5 py-1 rounded-xl text-xs flex items-center gap-1 hover:bg-cyan-400"
-                        >
-                          <Save className="w-3.5 h-3.5" /> Guardar
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      <div>
-                        <h4 className="text-xs font-bold text-white">{user.name}</h4>
-                        <p className="text-[11px] font-mono text-slate-400 tracking-wider">
-                          Contraseña: <span className="text-slate-200">••••••••</span>
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => { 
-                          setEditingUserEmail(user.email); 
-                          setNewNameValue(user.name); 
-                          setNewPasswordValue(user.pass); 
-                        }}
-                        className="text-xs text-[#00E5FF] hover:underline font-medium flex items-center gap-1 self-start mt-1"
-                      >
-                        <Edit3 className="w-3.5 h-3.5" /> Editar Nombre y Contraseña
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-            ))}
+          <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center text-center">
+            <p className="text-sm font-mono text-slate-600">
+              La gestión de credenciales y contraseñas ahora está delegada a <strong>Supabase Auth</strong>. Por favor, utiliza el panel de administración de Supabase para añadir o modificar usuarios.
+            </p>
           </div>
         </div>
       )}
@@ -244,7 +183,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 text-emerald-400">
               <Users className="w-5 h-5" />
-              <h3 className="font-display text-xl text-white">TÉCNICOS</h3>
+              <h3 className="font-display text-xl text-slate-900">TÉCNICOS</h3>
             </div>
             <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">{technicians.length} ACTIVOS</span>
           </div>
@@ -253,12 +192,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             {technicians.map(tech => (
               <div key={tech.id} className="flex items-center justify-between bg-black/40 border border-white/5 p-2 rounded-lg">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded bg-[#00E5FF]/10 text-[#00E5FF] flex items-center justify-center font-display text-xs">
+                  <div className="w-8 h-8 rounded bg-cyan-50 text-cyan-600 flex items-center justify-center font-display text-xs">
                     {tech.avatar}
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-white">{tech.name}</p>
-                    <p className="text-[10px] text-slate-400">{tech.role}</p>
+                    <p className="text-xs font-bold text-slate-900">{tech.name}</p>
+                    <p className="text-[10px] text-slate-500">{tech.role}</p>
                   </div>
                 </div>
                 <button 
@@ -272,13 +211,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             ))}
           </div>
 
-          <form onSubmit={handleAddTechnician} className="mt-3 flex flex-col gap-2 pt-3 border-t border-white/10">
+          <form onSubmit={handleAddTechnician} className="mt-3 flex flex-col gap-2 pt-3 border-t border-slate-200">
             <input 
               type="text" 
               placeholder="Nombre del Técnico" 
               value={newTechName} 
               onChange={e => setNewTechName(e.target.value)}
-              className="bg-slate-900 border border-white/10 rounded px-3 py-1.5 text-xs text-white outline-none focus:border-[#00E5FF]"
+              className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-[#00E5FF]"
             />
             <div className="flex gap-2">
               <input 
@@ -286,9 +225,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 placeholder="Especialidad (ej. Pintura)" 
                 value={newTechRole} 
                 onChange={e => setNewTechRole(e.target.value)}
-                className="bg-slate-900 border border-white/10 rounded px-3 py-1.5 text-xs text-white outline-none focus:border-[#00E5FF] flex-1"
+                className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-[#00E5FF] flex-1"
               />
-              <button type="submit" className="bg-[#00E5FF]/20 text-[#00E5FF] px-3 py-1.5 rounded flex items-center gap-1 hover:bg-[#00E5FF] hover:text-black transition-colors">
+              <button type="submit" className="bg-[#00E5FF]/20 text-cyan-600 px-3 py-1.5 rounded flex items-center gap-1 hover:bg-[#00E5FF] hover:text-black transition-colors">
                 <UserPlus className="w-4 h-4" />
               </button>
             </div>
@@ -300,7 +239,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 text-amber-400">
               <Shield className="w-5 h-5" />
-              <h3 className="font-display text-xl text-white">AGENTES DE RECEPCIÓN</h3>
+              <h3 className="font-display text-xl text-slate-900">AGENTES DE RECEPCIÓN</h3>
             </div>
             <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">{receptionAgents.length} ACTIVOS</span>
           </div>
@@ -308,7 +247,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           <div className="flex flex-col gap-2 mt-2 max-h-48 overflow-y-auto pr-2">
             {receptionAgents.map(agent => (
               <div key={agent.id} className="flex items-center justify-between bg-black/40 border border-white/5 p-2 rounded-lg">
-                <p className="text-xs font-bold text-white ml-2">{agent.name}</p>
+                <p className="text-xs font-bold text-slate-900 ml-2">{agent.name}</p>
                 <button 
                   onClick={() => setReceptionAgents(receptionAgents.filter(a => a.id !== agent.id))}
                   className="p-1.5 text-red-400 hover:bg-red-500/20 rounded transition-colors"
@@ -320,13 +259,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             ))}
           </div>
 
-          <form onSubmit={handleAddAgent} className="mt-auto flex gap-2 pt-3 border-t border-white/10">
+          <form onSubmit={handleAddAgent} className="mt-auto flex gap-2 pt-3 border-t border-slate-200">
             <input 
               type="text" 
               placeholder="Nombre del Agente" 
               value={newAgentName} 
               onChange={e => setNewAgentName(e.target.value)}
-              className="bg-slate-900 border border-white/10 rounded px-3 py-1.5 text-xs text-white outline-none focus:border-[#00E5FF] flex-1"
+              className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-[#00E5FF] flex-1"
             />
             <button type="submit" className="bg-amber-500/20 text-amber-400 px-3 py-1.5 rounded flex items-center gap-1 hover:bg-amber-500 hover:text-black transition-colors">
               <UserPlus className="w-4 h-4" />
@@ -340,18 +279,18 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-3 text-purple-400">
             <Building className="w-5 h-5" />
-            <h3 className="font-display text-xl text-white">DATOS DE LA EMPRESA</h3>
+            <h3 className="font-display text-xl text-slate-900">DATOS DE LA EMPRESA</h3>
           </div>
           {!isEditingCompany ? (
-            <button onClick={() => { setTempCompanyData(companyData); setIsEditingCompany(true); }} className="text-xs flex items-center gap-1 text-[#00E5FF] hover:text-white transition-colors">
+            <button onClick={() => { setTempCompanyData(companyData); setIsEditingCompany(true); }} className="text-xs flex items-center gap-1 text-cyan-600 hover:text-slate-900 transition-colors">
               <Edit3 className="w-3.5 h-3.5" /> EDITAR
             </button>
           ) : (
             <div className="flex gap-2">
-              <button onClick={handleCancelCompany} className="text-xs flex items-center gap-1 text-slate-400 hover:text-white transition-colors">
+              <button onClick={handleCancelCompany} className="text-xs flex items-center gap-1 text-slate-500 hover:text-slate-900 transition-colors">
                 <XIcon className="w-3.5 h-3.5" /> CANCELAR
               </button>
-              <button onClick={handleSaveCompany} className="text-xs flex items-center gap-1 text-emerald-400 hover:text-white transition-colors">
+              <button onClick={handleSaveCompany} className="text-xs flex items-center gap-1 text-emerald-400 hover:text-slate-900 transition-colors">
                 <Check className="w-3.5 h-3.5" /> GUARDAR
               </button>
             </div>
@@ -360,47 +299,127 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1">
-            <label className="text-[10px] text-slate-400 font-mono">NOMBRE DE LA EMPRESA</label>
+            <label className="text-[10px] text-slate-500 font-mono">NOMBRE DE LA EMPRESA</label>
             {isEditingCompany ? (
-              <input type="text" value={tempCompanyData.name} onChange={e => setTempCompanyData({...tempCompanyData, name: e.target.value})} className="bg-slate-900 border border-white/10 rounded px-3 py-1.5 text-xs text-white outline-none focus:border-[#00E5FF]" />
+              <input type="text" value={tempCompanyData.name} onChange={e => setTempCompanyData({...tempCompanyData, name: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-[#00E5FF]" />
             ) : (
-              <p className="text-sm text-white font-bold">{companyData.name}</p>
+              <p className="text-sm text-slate-900 font-bold">{companyData.name}</p>
             )}
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-[10px] text-slate-400 font-mono">RIF / NIT</label>
+            <label className="text-[10px] text-slate-500 font-mono">RIF / NIT</label>
             {isEditingCompany ? (
-              <input type="text" value={tempCompanyData.documentId} onChange={e => setTempCompanyData({...tempCompanyData, documentId: e.target.value})} className="bg-slate-900 border border-white/10 rounded px-3 py-1.5 text-xs text-white outline-none focus:border-[#00E5FF]" />
+              <input type="text" value={tempCompanyData.documentId} onChange={e => setTempCompanyData({...tempCompanyData, documentId: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-[#00E5FF]" />
             ) : (
-              <p className="text-sm text-white font-mono">{companyData.documentId}</p>
+              <p className="text-sm text-slate-900 font-mono">{companyData.documentId}</p>
             )}
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-[10px] text-slate-400 font-mono">DIRECCIÓN</label>
+            <label className="text-[10px] text-slate-500 font-mono">DIRECCIÓN</label>
             {isEditingCompany ? (
-              <input type="text" value={tempCompanyData.address} onChange={e => setTempCompanyData({...tempCompanyData, address: e.target.value})} className="bg-slate-900 border border-white/10 rounded px-3 py-1.5 text-xs text-white outline-none focus:border-[#00E5FF]" />
+              <input type="text" value={tempCompanyData.address} onChange={e => setTempCompanyData({...tempCompanyData, address: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-[#00E5FF]" />
             ) : (
-              <p className="text-sm text-slate-300">{companyData.address}</p>
+              <p className="text-sm text-slate-700">{companyData.address}</p>
             )}
           </div>
           <div className="flex gap-4">
             <div className="flex flex-col gap-1 flex-1">
-              <label className="text-[10px] text-slate-400 font-mono">TELÉFONO</label>
+              <label className="text-[10px] text-slate-500 font-mono">TELÉFONO</label>
               {isEditingCompany ? (
-                <input type="text" value={tempCompanyData.phone} onChange={e => setTempCompanyData({...tempCompanyData, phone: e.target.value})} className="bg-slate-900 border border-white/10 rounded px-3 py-1.5 text-xs text-white outline-none focus:border-[#00E5FF]" />
+                <input type="text" value={tempCompanyData.phone} onChange={e => setTempCompanyData({...tempCompanyData, phone: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-[#00E5FF]" />
               ) : (
-                <p className="text-sm text-slate-300 font-mono">{companyData.phone}</p>
+                <p className="text-sm text-slate-700 font-mono">{companyData.phone}</p>
               )}
             </div>
             <div className="flex flex-col gap-1 flex-1">
-              <label className="text-[10px] text-slate-400 font-mono">EMAIL</label>
+              <label className="text-[10px] text-slate-500 font-mono">EMAIL</label>
               {isEditingCompany ? (
-                <input type="email" value={tempCompanyData.email} onChange={e => setTempCompanyData({...tempCompanyData, email: e.target.value})} className="bg-slate-900 border border-white/10 rounded px-3 py-1.5 text-xs text-white outline-none focus:border-[#00E5FF]" />
+                <input type="email" value={tempCompanyData.email} onChange={e => setTempCompanyData({...tempCompanyData, email: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-[#00E5FF]" />
               ) : (
-                <p className="text-sm text-slate-300 font-mono">{companyData.email}</p>
+                <p className="text-sm text-slate-700 font-mono">{companyData.email}</p>
               )}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Sedes (Company Branches) */}
+      <div className="nike-card p-5 flex flex-col gap-3">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-3 text-emerald-400">
+            <Building className="w-5 h-5" />
+            <h3 className="font-display text-xl text-slate-900">SEDES (BRANCHES)</h3>
+          </div>
+          {!isAddingBranch ? (
+            <button onClick={() => setIsAddingBranch(true)} className="btn-primary text-xs flex items-center gap-1 py-1.5 px-3">
+              <Plus className="w-4 h-4" /> AÑADIR SEDE
+            </button>
+          ) : (
+            <button onClick={() => { setIsAddingBranch(false); setTempBranch({}); }} className="text-xs flex items-center gap-1 text-slate-500 hover:text-slate-900 transition-colors">
+              <XIcon className="w-3.5 h-3.5" /> CANCELAR
+            </button>
+          )}
+        </div>
+
+        {/* Formulario Nueva/Editar Sede */}
+        {(isAddingBranch || editingBranchId) && (
+          <div className="bg-slate-50 border border-slate-100 rounded-lg p-4 mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] text-slate-500 font-mono">NOMBRE DE LA SEDE *</label>
+              <input type="text" value={tempBranch.name || ''} onChange={e => setTempBranch({...tempBranch, name: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#00E5FF]" placeholder="Ej. Sede Las Mercedes" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] text-slate-500 font-mono">TELÉFONO *</label>
+              <input type="text" value={tempBranch.phone || ''} onChange={e => setTempBranch({...tempBranch, phone: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#00E5FF]" placeholder="Ej. 0412-1234567" />
+            </div>
+            <div className="flex flex-col gap-1 md:col-span-2">
+              <label className="text-[10px] text-slate-500 font-mono">DIRECCIÓN *</label>
+              <input type="text" value={tempBranch.address || ''} onChange={e => setTempBranch({...tempBranch, address: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#00E5FF]" placeholder="Dirección completa" />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] text-slate-500 font-mono">EMAIL</label>
+              <input type="email" value={tempBranch.email || ''} onChange={e => setTempBranch({...tempBranch, email: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#00E5FF]" placeholder="correo@sede.com" />
+            </div>
+            <div className="flex items-end justify-end">
+              <button onClick={handleSaveBranch} className="btn-primary text-sm flex items-center gap-2 w-full md:w-auto justify-center">
+                <Save className="w-4 h-4" /> GUARDAR SEDE
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Listado de Sedes */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+          {branches.map(branch => (
+            <div key={branch.id} className={`border rounded-lg p-4 flex flex-col justify-between transition-colors ${branch.is_active ? 'border-slate-200 bg-white hover:border-[#00E5FF]/30' : 'border-slate-100 bg-slate-50/50 opacity-70'}`}>
+              <div>
+                <div className="flex justify-between items-start mb-2">
+                  <h4 className="font-bold text-slate-900">{branch.name}</h4>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${branch.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}`}>
+                    {branch.is_active ? 'ACTIVA' : 'INACTIVA'}
+                  </span>
+                </div>
+                <div className="text-xs text-slate-500 flex flex-col gap-1 mt-3">
+                  <p><span className="font-medium text-slate-700">Dirección:</span> {branch.address}</p>
+                  <p><span className="font-medium text-slate-700">Teléfono:</span> {branch.phone}</p>
+                  {branch.email && <p><span className="font-medium text-slate-700">Email:</span> {branch.email}</p>}
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-slate-100">
+                <button onClick={() => handleToggleBranchActive(branch)} className={`text-xs px-2 py-1 rounded ${branch.is_active ? 'text-amber-600 hover:bg-amber-50' : 'text-emerald-600 hover:bg-emerald-50'} transition-colors font-medium`}>
+                  {branch.is_active ? 'DESACTIVAR' : 'ACTIVAR'}
+                </button>
+                <button onClick={() => { setEditingBranchId(branch.id); setTempBranch(branch); setIsAddingBranch(false); }} className="text-xs px-2 py-1 rounded text-cyan-600 hover:bg-cyan-50 transition-colors flex items-center gap-1 font-medium">
+                  <Edit3 className="w-3 h-3" /> EDITAR
+                </button>
+              </div>
+            </div>
+          ))}
+          {branches.length === 0 && (
+            <div className="col-span-full py-8 text-center text-slate-400 text-sm border-2 border-dashed border-slate-100 rounded-lg">
+              No hay sedes configuradas. Añade una para comenzar.
+            </div>
+          )}
         </div>
       </div>
 
@@ -409,7 +428,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-3 text-pink-400">
             <Wrench className="w-5 h-5" />
-            <h3 className="font-display text-xl text-white">CATÁLOGO DE SERVICIOS</h3>
+            <h3 className="font-display text-xl text-slate-900">CATÁLOGO DE SERVICIOS</h3>
           </div>
           <div className="flex gap-2">
             <button 
@@ -418,7 +437,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 setIsAddingService(false);
                 setEditingServiceId(null);
               }} 
-              className="text-xs font-mono font-bold flex items-center gap-1 bg-purple-500/20 text-purple-400 px-3 py-1.5 rounded hover:bg-purple-500 hover:text-white transition-colors"
+              className="text-xs font-mono font-bold flex items-center gap-1 bg-purple-500/20 text-purple-400 px-3 py-1.5 rounded hover:bg-purple-500 hover:text-slate-900 transition-colors"
             >
               <Package className="w-3.5 h-3.5" /> IMPORTAR DE STOCK
             </button>
@@ -429,7 +448,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 setEditingServiceId(null);
                 setTempService({ name: '', price: 0, category: 'Detailing', estimatedHours: 1, assignedRole: 'free_reception' });
               }} 
-              className="text-xs font-mono font-bold flex items-center gap-1 bg-pink-500/20 text-pink-400 px-3 py-1.5 rounded hover:bg-pink-500 hover:text-white transition-colors"
+              className="text-xs font-mono font-bold flex items-center gap-1 bg-pink-500/20 text-pink-400 px-3 py-1.5 rounded hover:bg-pink-500 hover:text-slate-900 transition-colors"
             >
               <Plus className="w-3.5 h-3.5" /> AÑADIR SERVICIO
             </button>
@@ -439,15 +458,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         {/* Import from Inventory Form */}
         {isImportingFromInventory && (
           <div className="bg-black/60 border border-purple-500/30 p-4 rounded-xl flex flex-col gap-3 mb-4 shadow-xl">
-            <h4 className="text-sm font-bold text-white flex items-center gap-2">
+            <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
               <Package className="w-4 h-4 text-purple-400" /> Seleccionar Insumo del Inventario
             </h4>
-            <p className="text-xs text-slate-400">Selecciona un producto. El precio de venta empezará en 0 para que lo configures.</p>
+            <p className="text-xs text-slate-500">Selecciona un producto. El precio de venta empezará en 0 para que lo configures.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
               <div className="flex flex-col gap-1 md:col-span-2">
-                <label className="text-[10px] text-slate-400 font-mono">INSUMO</label>
+                <label className="text-[10px] text-slate-500 font-mono">INSUMO</label>
                 <select 
-                  className="bg-slate-900 border border-white/10 rounded px-3 py-2 text-xs text-white outline-none focus:border-purple-500"
+                  className="bg-white border border-slate-200 rounded px-3 py-2 text-xs text-slate-900 outline-none focus:border-purple-500"
                   onChange={(e) => {
                     const selectedItem = inventory.find(i => i.id === e.target.value);
                     if (selectedItem) {
@@ -473,7 +492,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               </div>
             </div>
             <div className="flex justify-end mt-2">
-              <button onClick={() => setIsImportingFromInventory(false)} className="text-xs bg-slate-800 text-white px-3 py-1.5 rounded hover:bg-slate-700 transition-colors">
+              <button onClick={() => setIsImportingFromInventory(false)} className="text-xs bg-slate-100 text-slate-900 px-3 py-1.5 rounded hover:bg-slate-700 transition-colors">
                 CANCELAR
               </button>
             </div>
@@ -485,16 +504,16 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           <div className="bg-black/60 border border-pink-500/30 p-4 rounded-xl flex flex-col gap-3 mb-4 shadow-xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-slate-400 font-mono">NOMBRE DEL SERVICIO</label>
-                <input type="text" value={tempService.name || ''} onChange={e => setTempService({...tempService, name: e.target.value})} className="bg-slate-900 border border-white/10 rounded px-3 py-1.5 text-xs text-white outline-none focus:border-pink-500" placeholder="Ej. Detailing VIP" />
+                <label className="text-[10px] text-slate-500 font-mono">NOMBRE DEL SERVICIO</label>
+                <input type="text" value={tempService.name || ''} onChange={e => setTempService({...tempService, name: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-pink-500" placeholder="Ej. Detailing VIP" />
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-slate-400 font-mono">PRECIO ($)</label>
-                <input type="number" value={tempService.price || 0} onChange={e => setTempService({...tempService, price: Number(e.target.value)})} className="bg-slate-900 border border-white/10 rounded px-3 py-1.5 text-xs text-white outline-none focus:border-pink-500" />
+                <label className="text-[10px] text-slate-500 font-mono">PRECIO ($)</label>
+                <input type="number" value={tempService.price || 0} onChange={e => setTempService({...tempService, price: Number(e.target.value)})} className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-pink-500" />
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-slate-400 font-mono">CATEGORÍA</label>
-                <select value={tempService.category || 'Detailing'} onChange={e => setTempService({...tempService, category: e.target.value as any})} className="bg-slate-900 border border-white/10 rounded px-3 py-1.5 text-xs text-white outline-none focus:border-pink-500">
+                <label className="text-[10px] text-slate-500 font-mono">CATEGORÍA</label>
+                <select value={tempService.category || 'Detailing'} onChange={e => setTempService({...tempService, category: e.target.value as any})} className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-pink-500">
                   <option value="Detailing">Detailing</option>
                   <option value="Pulitura">Pulitura</option>
                   <option value="Pintura">Pintura</option>
@@ -507,10 +526,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               </div>
             </div>
             <div className="flex justify-end gap-2 mt-2">
-              <button onClick={() => { setIsAddingService(false); setEditingServiceId(null); }} className="text-xs bg-slate-800 text-white px-3 py-1.5 rounded hover:bg-slate-700 transition-colors">
+              <button onClick={() => { setIsAddingService(false); setEditingServiceId(null); }} className="text-xs bg-slate-100 text-slate-900 px-3 py-1.5 rounded hover:bg-slate-700 transition-colors">
                 CANCELAR
               </button>
-              <button onClick={handleSaveService} className="text-xs bg-pink-600 text-white px-4 py-1.5 rounded hover:bg-pink-500 transition-colors font-bold">
+              <button onClick={handleSaveService} className="text-xs bg-pink-600 text-slate-900 px-4 py-1.5 rounded hover:bg-pink-500 transition-colors font-bold">
                 GUARDAR SERVICIO
               </button>
             </div>
@@ -520,22 +539,22 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         {/* Services List */}
         <div className="flex flex-col gap-2 max-h-96 overflow-y-auto pr-2">
           {servicesCatalog.map(service => (
-            <div key={service.id} className="flex items-center justify-between bg-black/40 border border-white/5 p-3 rounded-lg hover:border-white/10 transition-colors">
+            <div key={service.id} className="flex items-center justify-between bg-black/40 border border-white/5 p-3 rounded-lg hover:border-slate-200 transition-colors">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-pink-500/10 text-pink-400 flex items-center justify-center font-display text-sm">
                   ${service.price}
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-white">{service.name}</p>
-                  <div className="flex items-center gap-2 text-[10px] text-slate-400 font-mono mt-0.5">
-                    <span className="bg-slate-800 px-1.5 py-0.5 rounded text-slate-300">{service.category}</span>
+                  <p className="text-sm font-bold text-slate-900">{service.name}</p>
+                  <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono mt-0.5">
+                    <span className="bg-slate-100 px-1.5 py-0.5 rounded text-slate-700">{service.category}</span>
                   </div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
                 <button 
                   onClick={() => handleEditService(service)}
-                  className="p-1.5 text-[#00E5FF] hover:bg-[#00E5FF]/20 rounded transition-colors"
+                  className="p-1.5 text-cyan-600 hover:bg-[#00E5FF]/20 rounded transition-colors"
                   title="Editar"
                 >
                   <Edit3 className="w-4 h-4" />
@@ -555,12 +574,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
       {/* Security & Audit Panel */}
       <div className="nike-card p-6 flex flex-col gap-4 border-[#00E5FF]/30 bg-black/60 shadow-xl">
-        <div className="flex items-center justify-between border-b border-white/10 pb-3">
-          <div className="flex items-center gap-3 text-[#00E5FF]">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+          <div className="flex items-center gap-3 text-cyan-600">
             <ShieldCheck className="w-6 h-6" />
             <div>
-              <h3 className="font-display text-xl text-white">PANEL DE BLINDAJE DE SEGURIDAD & AUDITORÍA</h3>
-              <p className="text-xs text-slate-400">Protección activa de datos, control RBAC y sanitización de transacciones.</p>
+              <h3 className="font-display text-xl text-slate-900">PANEL DE BLINDAJE DE SEGURIDAD & AUDITORÍA</h3>
+              <p className="text-xs text-slate-500">Protección activa de datos, control RBAC y sanitización de transacciones.</p>
             </div>
           </div>
           <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-xs font-mono font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
@@ -569,31 +588,31 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
-          <div className="p-3.5 rounded-xl bg-slate-900/80 border border-emerald-500/20 flex flex-col gap-1">
+          <div className="p-3.5 rounded-xl bg-white/ border border-emerald-500/20 flex flex-col gap-1">
             <div className="flex items-center gap-2 text-emerald-400 font-bold">
               <Shield className="w-4 h-4" /> RBAC estricto
             </div>
-            <p className="text-[11px] text-slate-400 mt-1 font-sans">
+            <p className="text-[11px] text-slate-500 mt-1 font-sans">
               Restricción por roles (Admin, Owner, Sales, Reception) en caja, inventario y configuraciones.
             </p>
             <span className="text-[10px] text-emerald-400 mt-auto font-mono">ESTADO: ACTIVO ✔</span>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-slate-900/80 border border-cyan-500/20 flex flex-col gap-1">
+          <div className="p-3.5 rounded-xl bg-white/ border border-cyan-500/20 flex flex-col gap-1">
             <div className="flex items-center gap-2 text-cyan-400 font-bold">
               <Key className="w-4 h-4" /> Sanitización Anti-XSS
             </div>
-            <p className="text-[11px] text-slate-400 mt-1 font-sans">
+            <p className="text-[11px] text-slate-500 mt-1 font-sans">
               Validación y escape dinámico de entradas en búsquedas, recibos e inventario contra inyecciones.
             </p>
             <span className="text-[10px] text-cyan-400 mt-auto font-mono">ESTADO: BLINDADO ✔</span>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-slate-900/80 border border-purple-500/20 flex flex-col gap-1">
+          <div className="p-3.5 rounded-xl bg-white/ border border-purple-500/20 flex flex-col gap-1">
             <div className="flex items-center gap-2 text-purple-400 font-bold">
               <EyeOff className="w-4 h-4" /> Integridad de Caja
             </div>
-            <p className="text-[11px] text-slate-400 mt-1 font-sans">
+            <p className="text-[11px] text-slate-500 mt-1 font-sans">
               Validación de aperturas/cierres de caja sin inconsistencias o montos negativos.
             </p>
             <span className="text-[10px] text-purple-400 mt-auto font-mono">ESTADO: VERIFICADO ✔</span>
@@ -603,7 +622,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         <div className="pt-2 flex justify-end">
           <button
             onClick={() => alert('🛡️ ESCANEO DE SEGURIDAD COMPLETADO:\n- 0 Vulnerabilidades detectadas.\n- Permisos RBAC validados.\n- Sanitización de entradas activa.\n- Integridad de almacenamiento 100% segura.')}
-            className="bg-[#00E5FF]/20 text-[#00E5FF] border border-[#00E5FF]/40 hover:bg-[#00E5FF] hover:text-black font-bold text-xs px-4 py-2 rounded-lg font-mono transition-all flex items-center gap-2 uppercase tracking-wider"
+            className="bg-[#00E5FF]/20 text-cyan-600 border border-[#00E5FF]/40 hover:bg-[#00E5FF] hover:text-black font-bold text-xs px-4 py-2 rounded-lg font-mono transition-all flex items-center gap-2 uppercase tracking-wider"
           >
             <ShieldCheck className="w-4 h-4" /> AUDITAR E INTEGRIDAD DE SISTEMA
           </button>

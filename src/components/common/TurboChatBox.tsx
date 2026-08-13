@@ -61,7 +61,7 @@ export const TurboChatBox: React.FC<TurboChatBoxProps> = ({ role, orders, onClos
       {/* Header */}
       <div className="bg-gradient-to-r from-slate-900 to-black p-4 border-b border-cyan-500/20 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="relative w-8 h-8 rounded-full bg-slate-800 border border-cyan-400 flex items-center justify-center overflow-hidden">
+          <div className="relative w-8 h-8 rounded-full bg-slate-100 border border-cyan-400 flex items-center justify-center overflow-hidden">
             <div className="absolute inset-0 bg-cyan-500/20 animate-pulse" />
             <svg viewBox="0 0 120 120" className="w-6 h-6 relative z-10" fill="none">
               <path d="M30 45 L42 20 L55 35 Z" fill="#94A3B8" />
@@ -71,7 +71,7 @@ export const TurboChatBox: React.FC<TurboChatBoxProps> = ({ role, orders, onClos
             </svg>
           </div>
           <div>
-            <h3 className="text-white font-display text-sm tracking-wide">TURBO ASSISTANT</h3>
+            <h3 className="text-slate-900 font-display text-sm tracking-wide">TURBO ASSISTANT</h3>
             <div className="flex items-center gap-1.5">
               <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
               <span className="text-[10px] text-cyan-400 font-mono uppercase">En línea</span>
@@ -87,8 +87,8 @@ export const TurboChatBox: React.FC<TurboChatBoxProps> = ({ role, orders, onClos
             <div 
               className={`max-w-[85%] p-3 rounded-2xl text-sm ${
                 msg.sender === 'user' 
-                  ? 'bg-cyan-600 text-white rounded-tr-sm' 
-                  : 'bg-slate-800 border border-slate-700 text-slate-200 rounded-tl-sm'
+                  ? 'bg-cyan-600 text-slate-900 rounded-tr-sm' 
+                  : 'bg-slate-100 border border-slate-700 text-slate-200 rounded-tl-sm'
               }`}
             >
               <p className="whitespace-pre-wrap leading-relaxed">{msg.text}</p>
@@ -109,7 +109,7 @@ export const TurboChatBox: React.FC<TurboChatBoxProps> = ({ role, orders, onClos
 
         {isTyping && (
           <div className="flex items-start">
-            <div className="bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tl-sm flex gap-1">
+            <div className="bg-slate-100 border border-slate-700 p-3 rounded-2xl rounded-tl-sm flex gap-1">
               <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
               <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
               <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -120,7 +120,7 @@ export const TurboChatBox: React.FC<TurboChatBoxProps> = ({ role, orders, onClos
       </div>
 
       {/* Input Area */}
-      <div className="p-3 bg-slate-900 border-t border-white/5">
+      <div className="p-3 bg-white border-t border-white/5">
         <div className="relative flex items-center">
           <input
             type="text"
@@ -128,7 +128,7 @@ export const TurboChatBox: React.FC<TurboChatBoxProps> = ({ role, orders, onClos
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Pregunta o busca placas..."
-            className="w-full bg-black border border-slate-700 focus:border-cyan-500 rounded-full py-2.5 pl-4 pr-12 text-sm text-white placeholder:text-slate-600 outline-none transition-colors font-mono"
+            className="w-full bg-black border border-slate-700 focus:border-cyan-500 rounded-full py-2.5 pl-4 pr-12 text-sm text-slate-900 placeholder:text-slate-600 outline-none transition-colors font-mono"
           />
           <button 
             onClick={handleSend}

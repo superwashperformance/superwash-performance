@@ -92,6 +92,18 @@ export interface PresupuestoServiceItem {
   totalPrice: number;
 }
 
+export interface Branch {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  email?: string;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+
 export interface ServiceOrder {
   id: string;
   orderNumber: string; // e.g. ODS-1008
@@ -103,7 +115,8 @@ export interface ServiceOrder {
   vehicleBrandModel: string;
   vehicleColor: string;
   vehicleYear: number;
-  branchName: string;
+  branchId?: string; // ID de la sede en la BD
+  branchName?: string; // Nombre de la sede para visualización
   receptionAgent: string;
   assignedTechnician?: string;  // Técnico responsable del trabajo
   priority?: 'normal' | 'urgente' | 'vip';  // Nivel de prioridad

@@ -11,7 +11,7 @@ export const FaviconLogo: React.FC<FaviconLogoProps> = ({ size = 48, className =
     <div className={`inline-flex items-center gap-3 ${className}`}>
       {/* Official Super Wash Performance Logo Badge */}
       <div
-        className="relative flex items-center justify-center rounded-full bg-black border border-white/20 shadow-2xl overflow-hidden shrink-0 group"
+        className="relative flex items-center justify-center rounded-full bg-black border border-slate-300 shadow-2xl overflow-hidden shrink-0 group"
         style={{ width: size, height: size }}
       >
         <div className="absolute inset-0 bg-[#00E5FF]/20 rounded-full blur-md opacity-40 group-hover:opacity-80 transition-opacity" />
@@ -26,10 +26,10 @@ export const FaviconLogo: React.FC<FaviconLogoProps> = ({ size = 48, className =
       {/* Brand Text */}
       {showText && (
         <div className="flex flex-col">
-          <span className="font-display text-2xl tracking-wider text-white leading-none">
-            SUPER <span className="text-[#00E5FF]">WASH</span>
+          <span className="font-display text-2xl tracking-wider text-slate-900 leading-none">
+            SUPER <span className="text-cyan-600">WASH</span>
           </span>
-          <span className="font-heading text-[10px] tracking-[0.35em] text-slate-400 font-bold uppercase -mt-0.5">
+          <span className="font-heading text-[10px] tracking-[0.35em] text-slate-500 font-bold uppercase -mt-0.5">
             PERFORMANCE
           </span>
         </div>

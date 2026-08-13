@@ -4,7 +4,7 @@ import * as fs from 'fs';
 dotenv.config();
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL!;
-const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY!;
+const supabaseKey = process.env.VITE_SUPABASE_PUBLISHABLE_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // We need an active session to test authenticated upload, which we don't have.

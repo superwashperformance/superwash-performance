@@ -65,10 +65,10 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({ onSaveSignatur
   };
 
   return (
-    <div className="flex flex-col gap-2 p-3 rounded-xl bg-slate-950 border border-white/10">
+    <div className="flex flex-col gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-display text-white flex items-center gap-1.5">
-          <PenTool className="w-4 h-4 text-[#00E5FF]" /> FIRMA DIGITAL DE CONFORMIDAD DEL CLIENTE
+        <span className="text-xs font-display text-slate-900 flex items-center gap-1.5">
+          <PenTool className="w-4 h-4 text-cyan-600" /> FIRMA DIGITAL DE CONFORMIDAD DEL CLIENTE
         </span>
         {hasSignature && (
           <button
@@ -80,7 +80,7 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({ onSaveSignatur
         )}
       </div>
 
-      <div className="relative w-full h-36 bg-black rounded-lg border border-dashed border-white/20 touch-none">
+      <div className="relative w-full h-36 bg-black rounded-lg border border-dashed border-slate-300 touch-none">
         <canvas
           ref={canvasRef}
           width={500}

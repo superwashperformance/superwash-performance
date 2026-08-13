@@ -126,19 +126,19 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 overflow-y-auto print:absolute print:inset-0 print:w-full print:bg-transparent print:p-0 print:block print:overflow-visible">
       <div className="nike-card w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 border-cyan-500/30 shadow-2xl print:max-h-none print:shadow-none print:border-none print:max-w-full print:w-full print:block print:overflow-visible">
         {/* Modal Header */}
-        <div className={`p-4 md:p-6 border-b border-white/10 flex items-center justify-between bg-black/60 ${printMode === 'taller' ? 'print:hidden' : 'print:border-b-black/20 print:bg-transparent print:pb-2'}`}>
+        <div className={`p-4 md:p-6 border-b border-slate-200 flex items-center justify-between bg-black/60 ${printMode === 'taller' ? 'print:hidden' : 'print:border-b-black/20 print:bg-transparent print:pb-2'}`}>
           <div className="flex items-center gap-3">
             <div className="print:scale-125 origin-left">
               <FaviconLogo size={48} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-display text-2xl text-[#00E5FF] print:text-[#00E5FF]">{order.orderNumber}</span>
-                <span className="text-xs font-mono bg-white/10 print:bg-black/5 text-white print:text-black px-2 py-0.5 rounded-full uppercase border border-transparent print:border-black/20">
+                <span className="font-display text-2xl text-cyan-600 print:text-cyan-600">{order.orderNumber}</span>
+                <span className="text-xs font-mono bg-white/10 print:bg-black/5 text-slate-900 print:text-black px-2 py-0.5 rounded-full uppercase border border-transparent print:border-black/20">
                   {order.vehiclePlate}
                 </span>
               </div>
-              <span className="text-xs text-slate-400 print:text-black font-medium">
+              <span className="text-xs text-slate-500 print:text-black font-medium">
                 {order.vehicleBrandModel} ({order.vehicleColor}) - {order.customerName}
               </span>
             </div>
@@ -157,14 +157,14 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
             </button>
 
             {/* Close Modal */}
-            <button onClick={onClose} className="p-2 text-slate-400 hover:text-white hover:bg-white/10 rounded-full ml-2">
+            <button onClick={onClose} className="p-2 text-slate-500 hover:text-slate-900 hover:bg-white/10 rounded-full ml-2">
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
         {/* Modal Navigation Tabs */}
-        <div className="flex items-center gap-2 px-6 py-3 bg-slate-950 border-b border-white/10 overflow-x-auto print:hidden">
+        <div className="flex items-center gap-2 px-6 py-3 bg-slate-50 border-b border-slate-200 overflow-x-auto print:hidden">
           {[
             { id: 'quote', label: 'PRESUPUESTO Y ODS DEL TALLER', icon: FileText },
             { id: 'damages', label: `FOTOS DAÑOS (${order.photos.filter(p => p.category.startsWith('damage')).length})`, icon: ShieldAlert },
@@ -180,7 +180,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                 className={`flex items-center gap-2 px-4 py-1.5 rounded-full font-display text-xs tracking-wider uppercase transition-all whitespace-nowrap ${
                   isActive
                     ? 'bg-[#00E5FF] text-black font-bold shadow-md'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-white/5'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -193,40 +193,40 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
         {/* Modal Tab Content */}
         <div className={`flex-1 overflow-y-auto p-6 space-y-6 print:p-0 print:space-y-0 print:overflow-visible ${printMode === 'taller' ? 'print:hidden' : ''}`}>
           {/* TAB 1: PRESUPUESTO & NOTA DE ENTREGA PRINTABLE VIEW */}
-          <div id="printable-quote" className={`flex flex-col gap-6 bg-slate-950 print:bg-white p-6 print:p-4 print:m-0 rounded-2xl border border-white/10 print:border-none print:shadow-none print:break-inside-avoid print:gap-4 ${activeTab === 'quote' ? 'flex' : 'hidden print:flex'}`}>
+          <div id="printable-quote" className={`flex flex-col gap-6 bg-slate-50 print:bg-white p-6 print:p-4 print:m-0 rounded-2xl border border-slate-200 print:border-none print:shadow-none print:break-inside-avoid print:gap-4 ${activeTab === 'quote' ? 'flex' : 'hidden print:flex'}`}>
             {/* Header Invoice Brand */}
-              <div className="flex items-start justify-between border-b border-white/10 pb-4 print:pb-2">
+              <div className="flex items-start justify-between border-b border-slate-200 pb-4 print:pb-2">
                 <div>
-                  <h1 className="font-display text-3xl text-white print:text-black">{companyData.name.toUpperCase()}</h1>
-                  <p className="text-xs text-slate-400 print:text-black">Centro Especializado en Estética Automotriz, Detailing & Pintura</p>
+                  <h1 className="font-display text-3xl text-slate-900 print:text-black">{companyData.name.toUpperCase()}</h1>
+                  <p className="text-xs text-slate-500 print:text-black">Centro Especializado en Estética Automotriz, Detailing & Pintura</p>
                   <p className="text-xs text-slate-500 print:text-black font-mono">{companyData.address} | RIF: {companyData.documentId}</p>
                 </div>
                 <div className="text-right">
-                  <div className="font-display text-2xl text-[#00E5FF] print:text-[#00E5FF]">ODS-{order.orderNumber}</div>
-                  <div className="text-xs text-slate-400 print:text-black font-mono">Fecha: {order.entryDate}</div>
+                  <div className="font-display text-2xl text-cyan-600 print:text-cyan-600">ODS-{order.orderNumber}</div>
+                  <div className="text-xs text-slate-500 print:text-black font-mono">Fecha: {order.entryDate}</div>
                 </div>
               </div>
 
               {/* Customer & Vehicle Info Grid */}
               <div className="grid grid-cols-2 gap-4 text-xs">
                 <div className="p-3 rounded-xl bg-black/40 print:bg-transparent border border-white/5 print:border-black/20 flex flex-col gap-1">
-                  <span className="font-display text-sm text-[#00E5FF] print:text-black">DATOS DEL CLIENTE</span>
-                  <span className="text-white print:text-black font-bold">{order.customerName}</span>
-                  <span className="text-slate-400 print:text-black font-mono">Teléfono: {order.customerPhone}</span>
+                  <span className="font-display text-sm text-cyan-600 print:text-black">DATOS DEL CLIENTE</span>
+                  <span className="text-slate-900 print:text-black font-bold">{order.customerName}</span>
+                  <span className="text-slate-500 print:text-black font-mono">Teléfono: {order.customerPhone}</span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-black/40 print:bg-transparent border border-white/5 print:border-black/20 flex flex-col gap-1">
-                  <span className="font-display text-sm text-[#00E5FF] print:text-black">DATOS DEL VEHÍCULO</span>
-                  <span className="text-white print:text-black font-bold">{order.vehicleBrandModel} ({order.vehicleYear})</span>
-                  <span className="text-slate-400 print:text-black font-mono">Placa: {order.vehiclePlate} | Color: {order.vehicleColor}</span>
+                  <span className="font-display text-sm text-cyan-600 print:text-black">DATOS DEL VEHÍCULO</span>
+                  <span className="text-slate-900 print:text-black font-bold">{order.vehicleBrandModel} ({order.vehicleYear})</span>
+                  <span className="text-slate-500 print:text-black font-mono">Placa: {order.vehiclePlate} | Color: {order.vehicleColor}</span>
                 </div>
               </div>
 
               {/* Services Itemized Table */}
               <div>
-                <span className="font-display text-lg text-white print:text-black mb-2 block">SERVICIOS SELECCIONADOS</span>
-                <table className="w-full text-left text-xs text-slate-300 print:text-black">
-                  <thead className="bg-black/60 print:bg-transparent font-display text-sm tracking-wider uppercase text-slate-400 print:text-black border-b border-white/10 print:border-black/20">
+                <span className="font-display text-lg text-slate-900 print:text-black mb-2 block">SERVICIOS SELECCIONADOS</span>
+                <table className="w-full text-left text-xs text-slate-700 print:text-black">
+                  <thead className="bg-black/60 print:bg-transparent font-display text-sm tracking-wider uppercase text-slate-500 print:text-black border-b border-slate-200 print:border-black/20">
                     <tr>
                       <th className="p-2.5">DESCRIPCIÓN DEL SERVICIO</th>
                       <th className="p-2.5 text-center">CANT.</th>
@@ -244,7 +244,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                                 type="text"
                                 value={editServiceName}
                                 onChange={e => setEditServiceName(e.target.value)}
-                                className="w-full bg-black/40 border-b border-slate-700 px-2 py-1 text-xs text-white focus:border-[#00E5FF] outline-none"
+                                className="w-full bg-black/40 border-b border-slate-700 px-2 py-1 text-xs text-slate-900 focus:border-[#00E5FF] outline-none"
                               />
                             </td>
                             <td className="p-2.5 text-center">
@@ -252,37 +252,37 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                                 type="number"
                                 value={editServiceQuantity}
                                 onChange={e => setEditServiceQuantity(e.target.value)}
-                                className="w-16 bg-black/40 border-b border-slate-700 px-2 py-1 text-xs text-center text-white focus:border-[#00E5FF] outline-none font-mono"
+                                className="w-16 bg-black/40 border-b border-slate-700 px-2 py-1 text-xs text-center text-slate-900 focus:border-[#00E5FF] outline-none font-mono"
                               />
                             </td>
                             <td className="p-2.5 text-right">
                               <div className="flex items-center justify-end gap-1">
-                                <span className="text-slate-400 text-xs">$</span>
+                                <span className="text-slate-500 text-xs">$</span>
                                 <input
                                   type="number"
                                   value={editServiceUnitPrice}
                                   onChange={e => setEditServiceUnitPrice(e.target.value)}
-                                  className="w-20 bg-black/40 border-b border-slate-700 px-2 py-1 text-xs text-right text-white focus:border-[#00E5FF] outline-none font-mono"
+                                  className="w-20 bg-black/40 border-b border-slate-700 px-2 py-1 text-xs text-right text-slate-900 focus:border-[#00E5FF] outline-none font-mono"
                                 />
                               </div>
                             </td>
                             <td className="p-2.5 text-right whitespace-nowrap">
-                              <button onClick={handleSaveEdit} className="text-[#00E5FF] hover:text-white p-1 rounded hover:bg-white/5 mr-1 transition-colors">
+                              <button onClick={handleSaveEdit} className="text-cyan-600 hover:text-slate-900 p-1 rounded hover:bg-white/5 mr-1 transition-colors">
                                 <Check className="w-4 h-4" />
                               </button>
-                              <button onClick={() => setEditingServiceId(null)} className="text-slate-400 hover:text-red-400 p-1 rounded hover:bg-white/5 transition-colors">
+                              <button onClick={() => setEditingServiceId(null)} className="text-slate-500 hover:text-red-400 p-1 rounded hover:bg-white/5 transition-colors">
                                 <X className="w-4 h-4" />
                               </button>
                             </td>
                           </>
                         ) : (
                           <>
-                            <td className="p-2.5 font-bold text-white print:text-black flex items-center gap-2">
+                            <td className="p-2.5 font-bold text-slate-900 print:text-black flex items-center gap-2">
                               {s.serviceName}
                               {onEditService && (
                                 <button
                                   onClick={() => startEditing(s)}
-                                  className="opacity-0 group-hover:opacity-100 print:hidden text-slate-400 hover:text-[#00E5FF] transition-opacity"
+                                  className="opacity-0 group-hover:opacity-100 print:hidden text-slate-500 hover:text-cyan-600 transition-opacity"
                                 >
                                   <Pencil className="w-3.5 h-3.5" />
                                 </button>
@@ -292,7 +292,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                             <td className="p-2.5 text-right print:text-black">
                               <CurrencyDisplay amount={s.unitPrice} size="sm" />
                             </td>
-                            <td className="p-2.5 text-right text-white print:text-black font-bold">
+                            <td className="p-2.5 text-right text-slate-900 print:text-black font-bold">
                               <CurrencyDisplay amount={s.totalPrice} size="sm" />
                             </td>
                           </>
@@ -304,31 +304,31 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
 
                 {/* Add Extra Service Section (Hidden in print) */}
                 {onAddExtraService && (
-                  <div className="mt-4 print:hidden border-t border-white/10 pt-4">
+                  <div className="mt-4 print:hidden border-t border-slate-200 pt-4">
                     {!showExtraServiceForm ? (
                       <button 
                         onClick={() => setShowExtraServiceForm(true)}
-                        className="btn-nike-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-slate-300 hover:text-white"
+                        className="btn-nike-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 text-slate-700 hover:text-slate-900"
                       >
                         <Plus className="w-3.5 h-3.5" /> Agregar Servicio Adicional
                       </button>
                     ) : (
-                      <div className="flex flex-col sm:flex-row items-center gap-2 bg-black/40 p-3 rounded-lg border border-white/10">
+                      <div className="flex flex-col sm:flex-row items-center gap-2 bg-black/40 p-3 rounded-lg border border-slate-200">
                         <input
                           type="text"
                           placeholder="Nombre del servicio (Ej. Encerado)"
                           value={extraServiceName}
                           onChange={e => setExtraServiceName(e.target.value)}
-                          className="w-full sm:flex-1 bg-transparent border-b border-slate-700 px-2 py-1.5 text-xs text-white focus:border-[#00E5FF] outline-none"
+                          className="w-full sm:flex-1 bg-transparent border-b border-slate-700 px-2 py-1.5 text-xs text-slate-900 focus:border-[#00E5FF] outline-none"
                         />
                         <div className="flex items-center gap-2 w-full sm:w-auto">
-                          <span className="text-slate-400 text-xs">$</span>
+                          <span className="text-slate-500 text-xs">$</span>
                           <input
                             type="number"
                             placeholder="0.00"
                             value={extraServicePrice}
                             onChange={e => setExtraServicePrice(e.target.value)}
-                            className="w-24 bg-transparent border-b border-slate-700 px-2 py-1.5 text-xs text-white focus:border-[#00E5FF] outline-none font-mono"
+                            className="w-24 bg-transparent border-b border-slate-700 px-2 py-1.5 text-xs text-slate-900 focus:border-[#00E5FF] outline-none font-mono"
                           />
                           <button 
                             onClick={handleAddExtraService}
@@ -343,7 +343,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                               setExtraServiceName('');
                               setExtraServicePrice('');
                             }}
-                            className="p-1.5 text-slate-400 hover:text-red-400 rounded-full hover:bg-white/5 transition-colors"
+                            className="p-1.5 text-slate-500 hover:text-red-400 rounded-full hover:bg-white/5 transition-colors"
                           >
                             <X className="w-4 h-4" />
                           </button>
@@ -355,30 +355,30 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
               </div>
 
               {/* Financial Totals */}
-              <div className="flex flex-col items-end border-t border-white/10 print:border-black/20 pt-4 text-xs font-mono space-y-1">
+              <div className="flex flex-col items-end border-t border-slate-200 print:border-black/20 pt-4 text-xs font-mono space-y-1">
                 <div className="flex justify-between p-2">
-                  <span className="text-slate-400 print:text-black">Subtotal:</span>
-                  <span className="text-white print:text-black font-bold ml-4">
+                  <span className="text-slate-500 print:text-black">Subtotal:</span>
+                  <span className="text-slate-900 print:text-black font-bold ml-4">
                     <CurrencyDisplay amount={order.subtotalAmount} size="sm" />
                   </span>
                 </div>
                 <div className="flex justify-between p-2">
-                  <span className="text-slate-400 print:text-black">Abonado:</span>
+                  <span className="text-slate-500 print:text-black">Abonado:</span>
                   <span className="font-bold print:text-black ml-4">
                     <CurrencyDisplay amount={order.paidAmount} size="sm" />
                   </span>
                 </div>
-                <div className="flex justify-between p-2 border-t border-white/20 print:border-black/20 mt-2">
-                  <span className="text-slate-400 print:text-black">Pendiente:</span>
+                <div className="flex justify-between p-2 border-t border-slate-300 print:border-black/20 mt-2">
+                  <span className="text-slate-500 print:text-black">Pendiente:</span>
                   <span className="font-bold text-red-400 print:text-red-600 ml-4">
                     <CurrencyDisplay amount={order.totalAmount - order.paidAmount} size="sm" />
                   </span>
                 </div>
                 {/* Observations & Print Textual Details */}
                 <div className="p-3 rounded-xl bg-black/40 print:bg-transparent border border-white/5 print:border-black/20 text-xs w-full mt-4 print:mt-2">
-                  <span className="font-bold text-slate-400 print:text-black block mb-1">OBSERVACIONES:</span>
+                  <span className="font-bold text-slate-500 print:text-black block mb-1">OBSERVACIONES:</span>
                   {order.observations ? (
-                    <p className="text-slate-300 print:text-black italic">{order.observations}</p>
+                    <p className="text-slate-700 print:text-black italic">{order.observations}</p>
                   ) : (
                     <p className="text-slate-500 print:text-black italic">Sin observaciones iniciales.</p>
                   )}
@@ -432,17 +432,17 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {order.photos.filter(p => p.category === 'general').map((p) => (
-                <div key={p.id} className="relative rounded-xl overflow-hidden border border-white/10 aspect-video group cursor-pointer" onClick={() => setSelectedPhotoUrl(p.photoUrl)}>
+                <div key={p.id} className="relative rounded-xl overflow-hidden border border-slate-200 aspect-video group cursor-pointer" onClick={() => setSelectedPhotoUrl(p.photoUrl)}>
                   <img src={p.photoUrl} alt={p.caption} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-3 flex flex-col justify-end">
-                    <span className="font-mono text-[10px] text-[#00E5FF] uppercase">{p.category}</span>
-                    <span className="text-xs font-bold text-white">{p.caption}</span>
-                    <span className="text-[10px] text-slate-400 font-mono">{p.createdAt}</span>
+                    <span className="font-mono text-[10px] text-cyan-600 uppercase">{p.category}</span>
+                    <span className="text-xs font-bold text-slate-900">{p.caption}</span>
+                    <span className="text-[10px] text-slate-500 font-mono">{p.createdAt}</span>
                   </div>
                   {onDeletePhoto && (
                     <button 
                       onClick={(e) => { e.stopPropagation(); onDeletePhoto(order.id, p.id); }}
-                      className="absolute top-2 right-2 p-2 bg-red-500/20 text-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white"
+                      className="absolute top-2 right-2 p-2 bg-red-500/20 text-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-slate-900"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -456,8 +456,8 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
           <div className={activeTab === 'checklist' ? 'block print:hidden' : 'hidden'}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {(order.checklist || []).map((item) => (
-                <div key={item.id} className="p-3 rounded-xl bg-slate-900 border border-white/5 flex items-center justify-between text-xs">
-                  <span className="font-bold text-white">{item.label}</span>
+                <div key={item.id} className="p-3 rounded-xl bg-white border border-white/5 flex items-center justify-between text-xs">
+                  <span className="font-bold text-slate-900">{item.label}</span>
                   <span
                     className={`px-2.5 py-1 rounded-full text-[10px] font-display uppercase tracking-wider ${
                       item.condition === 'ok'
@@ -482,9 +482,9 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
               ].map(view => {
                 const viewPhotos = order.photos.filter(p => p.category === view.cat || p.category.startsWith('damage_'));
                 return (
-                  <div key={view.cat} className="p-4 rounded-xl bg-slate-900 border border-white/10 flex flex-col h-full">
+                  <div key={view.cat} className="p-4 rounded-xl bg-white border border-slate-200 flex flex-col h-full">
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-display text-sm text-[#00E5FF] uppercase tracking-wider">{view.title}</h4>
+                      <h4 className="font-display text-sm text-cyan-600 uppercase tracking-wider">{view.title}</h4>
                       {viewPhotos.length < 10 && (
                         <button 
                           onClick={() => triggerUpload(view.cat as any)}
@@ -499,12 +499,12 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                       {viewPhotos.length > 0 ? (
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                           {viewPhotos.map(p => (
-                            <div key={p.id} className="relative rounded-lg overflow-hidden border border-white/10 aspect-square group cursor-pointer" onClick={() => setSelectedPhotoUrl(p.photoUrl)}>
+                            <div key={p.id} className="relative rounded-lg overflow-hidden border border-slate-200 aspect-square group cursor-pointer" onClick={() => setSelectedPhotoUrl(p.photoUrl)}>
                               <img src={p.photoUrl} alt={view.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                               {onDeletePhoto && (
                                 <button 
                                   onClick={(e) => { e.stopPropagation(); onDeletePhoto(order.id, p.id); }}
-                                  className="absolute top-1 right-1 p-1.5 bg-red-500/20 text-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white"
+                                  className="absolute top-1 right-1 p-1.5 bg-red-500/20 text-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-slate-900"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>
@@ -513,7 +513,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                           ))}
                         </div>
                       ) : (
-                        <div className="aspect-[3/1] md:aspect-[4/1] w-full border border-dashed border-white/10 rounded-lg flex items-center justify-center text-slate-500 text-xs">
+                        <div className="aspect-[3/1] md:aspect-[4/1] w-full border border-dashed border-slate-200 rounded-lg flex items-center justify-center text-slate-500 text-xs">
                           Sin fotos registradas
                         </div>
                       )}
@@ -524,7 +524,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
             </div>
 
             {/* BOTÓN GLOBAL DE GUARDAR Y CERRAR */}
-            <div className="p-4 md:p-6 border-t border-white/10 bg-black/50">
+            <div className="p-4 md:p-6 border-t border-slate-200 bg-black/50">
               <div className="flex justify-end">
                 <button 
                   onClick={() => {
@@ -560,14 +560,14 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
           onClick={() => setSelectedPhotoUrl(null)}
         >
           <button 
-            className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white bg-white/10 rounded-full transition-colors"
+            className="absolute top-4 right-4 p-2 text-slate-500 hover:text-slate-900 bg-white/10 rounded-full transition-colors"
             onClick={(e) => { e.stopPropagation(); setSelectedPhotoUrl(null); }}
           >
             <X className="w-6 h-6" />
           </button>
           <img 
             src={selectedPhotoUrl} 
-            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl border border-white/10"
+            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl border border-slate-200"
             onClick={(e) => e.stopPropagation()} 
             alt="Vista Previa"
           />

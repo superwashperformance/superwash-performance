@@ -100,20 +100,20 @@ export const ClientTrackingPortal: React.FC<ClientTrackingPortalProps> = ({ init
   const currentStep = order ? getProgressStep(order.status) : 0;
 
   return (
-    <div className="min-h-screen bg-[#040609] text-white flex flex-col font-sans selection:bg-[#00E5FF] selection:text-black">
+    <div className="min-h-screen bg-[#040609] text-slate-900 flex flex-col font-sans selection:bg-[#00E5FF] selection:text-black">
       {/* Background Effects */}
       <div className="fixed inset-0 bg-[radial-gradient(#00E5FF_1px,transparent_1px)] [background-size:40px_40px] opacity-[0.03] pointer-events-none" />
       <div className="fixed top-0 left-0 w-full h-96 bg-gradient-to-b from-cyan-900/20 to-transparent pointer-events-none" />
 
       {/* Header */}
-      <header className="relative z-10 flex items-center justify-between p-4 md:px-8 border-b border-white/10 bg-black/50 backdrop-blur-md">
+      <header className="relative z-10 flex items-center justify-between p-4 md:px-8 border-b border-slate-200 bg-black/50 backdrop-blur-md">
         <div className="flex items-center gap-3">
           <FaviconLogo size={32} />
-          <span className="font-display tracking-widest text-sm md:text-lg text-white">SUPER WASH PERFORMANCE</span>
+          <span className="font-display tracking-widest text-sm md:text-lg text-slate-900">SUPER WASH PERFORMANCE</span>
         </div>
         <button 
           onClick={onExit}
-          className="text-xs font-mono text-slate-400 hover:text-white flex items-center gap-1"
+          className="text-xs font-mono text-slate-500 hover:text-slate-900 flex items-center gap-1"
         >
           <ArrowLeft className="w-4 h-4" /> VOLVER
         </button>
@@ -123,7 +123,7 @@ export const ClientTrackingPortal: React.FC<ClientTrackingPortalProps> = ({ init
       <main className="relative z-10 flex-1 flex flex-col items-center p-4 md:p-8">
         
         {/* Search Bar */}
-        <div className="w-full max-w-2xl bg-slate-900/80 border border-white/10 rounded-2xl p-2 flex items-center gap-2 mb-8 shadow-2xl backdrop-blur-xl">
+        <div className="w-full max-w-2xl bg-white/ border border-slate-200 rounded-2xl p-2 flex items-center gap-2 mb-8 shadow-2xl backdrop-blur-xl">
           <Search className="w-5 h-5 text-slate-500 ml-3" />
           <input
             type="text"
@@ -131,7 +131,7 @@ export const ClientTrackingPortal: React.FC<ClientTrackingPortalProps> = ({ init
             value={plate}
             onChange={(e) => setPlate(e.target.value.toUpperCase())}
             onKeyDown={(e) => e.key === 'Enter' && fetchOrder(plate)}
-            className="flex-1 bg-transparent border-none outline-none text-white px-2 uppercase font-mono placeholder:text-slate-600 placeholder:normal-case"
+            className="flex-1 bg-transparent border-none outline-none text-slate-900 px-2 uppercase font-mono placeholder:text-slate-600 placeholder:normal-case"
           />
           <button 
             onClick={() => fetchOrder(plate)}
@@ -151,8 +151,8 @@ export const ClientTrackingPortal: React.FC<ClientTrackingPortalProps> = ({ init
         ) : error ? (
           <div className="w-full max-w-2xl bg-red-950/30 border border-red-500/30 rounded-2xl p-8 text-center flex flex-col items-center gap-3">
             <AlertCircle className="w-12 h-12 text-red-500" />
-            <h3 className="text-xl font-display text-white">VEHÍCULO NO ENCONTRADO</h3>
-            <p className="text-sm text-slate-400 font-mono">{error}</p>
+            <h3 className="text-xl font-display text-slate-900">VEHÍCULO NO ENCONTRADO</h3>
+            <p className="text-sm text-slate-500 font-mono">{error}</p>
           </div>
         ) : order ? (
           <div className="w-full max-w-2xl flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4">
@@ -164,26 +164,26 @@ export const ClientTrackingPortal: React.FC<ClientTrackingPortalProps> = ({ init
                   <Car className="w-8 h-8 text-cyan-400" />
                 </div>
                 <div>
-                  <h2 className="font-display text-2xl text-white">{order.vehicleBrandModel}</h2>
+                  <h2 className="font-display text-2xl text-slate-900">{order.vehicleBrandModel}</h2>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="bg-white text-black px-2 py-0.5 rounded font-mono text-xs font-bold tracking-widest">{order.vehiclePlate}</span>
-                    <span className="text-slate-400 text-xs">• ODS: {order.orderNumber}</span>
+                    <span className="text-slate-500 text-xs">• ODS: {order.orderNumber}</span>
                   </div>
                 </div>
               </div>
               <div className="text-right">
                 <p className="text-[10px] font-mono text-slate-500 uppercase">Ingreso al taller</p>
-                <p className="text-sm text-slate-300 flex items-center gap-1 justify-end"><Clock className="w-3.5 h-3.5" /> {order.entryDate.split(',')[0]}</p>
+                <p className="text-sm text-slate-700 flex items-center gap-1 justify-end"><Clock className="w-3.5 h-3.5" /> {order.entryDate.split(',')[0]}</p>
               </div>
             </div>
 
             {/* Status Pipeline */}
             <div className="nike-card p-6 md:p-8">
-              <h3 className="font-display text-xl text-white mb-8 text-center">ESTADO ACTUAL</h3>
+              <h3 className="font-display text-xl text-slate-900 mb-8 text-center">ESTADO ACTUAL</h3>
               
               <div className="relative">
                 {/* Connecting Line */}
-                <div className="absolute top-5 left-[10%] right-[10%] h-1 bg-slate-800 rounded-full z-0">
+                <div className="absolute top-5 left-[10%] right-[10%] h-1 bg-slate-100 rounded-full z-0">
                   <div 
                     className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full transition-all duration-1000 ease-out" 
                     style={{ width: `${(Math.max(1, currentStep) - 1) * 33.33}%` }} 
@@ -193,7 +193,7 @@ export const ClientTrackingPortal: React.FC<ClientTrackingPortalProps> = ({ init
                 <div className="relative z-10 flex justify-between">
                   {/* Step 1: Recepción */}
                   <div className="flex flex-col items-center gap-2 w-1/4">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${currentStep >= 1 ? 'bg-cyan-500 border-cyan-400 text-black shadow-[0_0_15px_rgba(0,229,255,0.5)]' : 'bg-slate-900 border-slate-700 text-slate-500'}`}>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${currentStep >= 1 ? 'bg-cyan-500 border-cyan-400 text-black shadow-[0_0_15px_rgba(0,229,255,0.5)]' : 'bg-white border-slate-700 text-slate-500'}`}>
                       <CheckCircle2 className="w-5 h-5" />
                     </div>
                     <span className={`text-[10px] font-display uppercase tracking-wider text-center ${currentStep >= 1 ? 'text-cyan-400' : 'text-slate-500'}`}>Recepción</span>
@@ -201,7 +201,7 @@ export const ClientTrackingPortal: React.FC<ClientTrackingPortalProps> = ({ init
 
                   {/* Step 2: Aprobación */}
                   <div className="flex flex-col items-center gap-2 w-1/4">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${currentStep >= 2 ? 'bg-cyan-500 border-cyan-400 text-black shadow-[0_0_15px_rgba(0,229,255,0.5)]' : 'bg-slate-900 border-slate-700 text-slate-500'}`}>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${currentStep >= 2 ? 'bg-cyan-500 border-cyan-400 text-black shadow-[0_0_15px_rgba(0,229,255,0.5)]' : 'bg-white border-slate-700 text-slate-500'}`}>
                       <CheckCircle2 className="w-5 h-5" />
                     </div>
                     <span className={`text-[10px] font-display uppercase tracking-wider text-center ${currentStep >= 2 ? 'text-cyan-400' : 'text-slate-500'}`}>Aprobación</span>
@@ -209,7 +209,7 @@ export const ClientTrackingPortal: React.FC<ClientTrackingPortalProps> = ({ init
 
                   {/* Step 3: En Proceso */}
                   <div className="flex flex-col items-center gap-2 w-1/4">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${currentStep >= 3 ? 'bg-cyan-500 border-cyan-400 text-black shadow-[0_0_15px_rgba(0,229,255,0.5)]' : 'bg-slate-900 border-slate-700 text-slate-500'}`}>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${currentStep >= 3 ? 'bg-cyan-500 border-cyan-400 text-black shadow-[0_0_15px_rgba(0,229,255,0.5)]' : 'bg-white border-slate-700 text-slate-500'}`}>
                       <CheckCircle2 className="w-5 h-5" />
                     </div>
                     <span className={`text-[10px] font-display uppercase tracking-wider text-center ${currentStep >= 3 ? 'text-cyan-400' : 'text-slate-500'}`}>En Proceso</span>
@@ -217,7 +217,7 @@ export const ClientTrackingPortal: React.FC<ClientTrackingPortalProps> = ({ init
 
                   {/* Step 4: Finalizado */}
                   <div className="flex flex-col items-center gap-2 w-1/4">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${currentStep >= 4 ? 'bg-cyan-500 border-cyan-400 text-black shadow-[0_0_15px_rgba(0,229,255,0.5)]' : 'bg-slate-900 border-slate-700 text-slate-500'}`}>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${currentStep >= 4 ? 'bg-cyan-500 border-cyan-400 text-black shadow-[0_0_15px_rgba(0,229,255,0.5)]' : 'bg-white border-slate-700 text-slate-500'}`}>
                       <CheckCircle2 className="w-5 h-5" />
                     </div>
                     <span className={`text-[10px] font-display uppercase tracking-wider text-center ${currentStep >= 4 ? 'text-cyan-400' : 'text-slate-500'}`}>Control / Listo</span>
@@ -226,9 +226,9 @@ export const ClientTrackingPortal: React.FC<ClientTrackingPortalProps> = ({ init
               </div>
 
               {/* Status Message */}
-              <div className="mt-8 p-4 bg-slate-900/50 rounded-xl border border-white/5 text-center">
+              <div className="mt-8 p-4 bg-white/ rounded-xl border border-white/5 text-center">
                 <span className="font-mono text-cyan-400 block mb-1 uppercase tracking-widest text-xs">Fase Actual</span>
-                <p className="text-white text-lg font-medium">{getStatusMessage(order.status)}</p>
+                <p className="text-slate-900 text-lg font-medium">{getStatusMessage(order.status)}</p>
               </div>
 
             </div>

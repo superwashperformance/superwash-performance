@@ -16,7 +16,8 @@ const mapToServiceOrder = (data: any): ServiceOrder => {
     vehicleBrandModel: `${data.vehicles?.brand || ''} ${data.vehicles?.model || ''}`.trim(),
     vehicleColor: data.vehicles?.color || '',
     vehicleYear: data.vehicles?.year || new Date().getFullYear(),
-    branchName: 'Sede Principal (Las Mercedes)', // We can fetch from branches if needed
+    branchId: data.branch_id || undefined,
+    branchName: data.branches?.name || 'Sede Principal (Las Mercedes)',
     receptionAgent: 'Agente Recepción', // Can be mapped from profiles
     assignedTechnician: 'Técnico Asignado', // Can be mapped from profiles
     priority: data.priority || 'normal',
@@ -72,6 +73,7 @@ export const odsService = {
       .from('service_orders')
       .select(`
         *,
+        branches ( name ),
         customers ( full_name, phone ),
         vehicles ( plate, brand, model, year, color ),
         order_photos ( id, photo_url, category, caption, created_at ),
@@ -131,6 +133,7 @@ export const odsService = {
         .insert({
           customer_id: customerData.id,
           vehicle_id: vehicleData.id,
+          branch_id: odsData.branchId || null,
           status: odsData.status,
           observations: odsData.observations,
           belongings_list: odsData.belongingsList,
@@ -316,15 +319,41 @@ export const odsService = {
   /**
    * Deletes an ODS from Supabase
    */
-  async deleteODS(orderId: string): Promise<void> {
-    const { error } = await supabase
+  async deleteODS(orderId: string, photos: { photoUrl: string }[] = []): Promise<void> {
+    // 1. Eliminar registro en base de datos primero
+    // Si RLS falla, esto arrojará error (o afectará 0 filas, pero lo controlaremos)
+    const { error, count } = await supabase
       .from('service_orders')
-      .delete()
+      .delete({ count: 'exact' })
       .eq('id', orderId);
 
     if (error) {
       console.error('Error deleting ODS:', error);
       throw error;
+    }
+
+    // 2. Si count es 0, significa que no se borr (ej. por RLS o no existe)
+    if (count === 0) {
+      throw new Error('No se pudo eliminar la ODS. Verifica tus permisos o si la ODS existe.');
+    }
+
+    // 3. Si llegamos aqu, el ODS se borr exitosamente de BD.
+    // Ahora intentamos borrar las imgenes de Storage.
+    if (photos && photos.length > 0) {
+      const pathsToDelete = photos.map(p => {
+        const basePath = '/ods-photos/';
+        const index = p.photoUrl.indexOf(basePath);
+        return index !== -1 ? p.photoUrl.substring(index + basePath.length) : null;
+      }).filter(p => p !== null) as string[];
+
+      if (pathsToDelete.length > 0) {
+        const { error: storageError } = await supabase.storage.from('ods-photos').remove(pathsToDelete);
+        if (storageError) {
+          console.error('Error eliminando fotos del storage:', storageError);
+          // ODS se borr pero Storage fall
+          throw new Error('SUCCESS_DB_FAIL_STORAGE');
+        }
+      }
     }
   },
 
