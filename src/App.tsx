@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserRole, ServiceOrder, InventoryItem, InventoryMovement, CashTransaction, ODSStatus, Agent, CompanyData, ServiceItem, Customer, Vehicle, Branch } from './types';
 import {
   mockInventory,
@@ -105,13 +105,27 @@ export function App() {
   const [receptionAgents, setReceptionAgents] = useState<Agent[]>(initialReceptionAgents);
   const [branches, setBranches] = useState<Branch[]>([]);
 
-  const [companyData, setCompanyData] = useState<CompanyData>({
-    name: 'Super Wash Performance C.A.',
-    documentId: 'J-40199281-0',
-    address: 'Sede Principal Las Mercedes',
-    phone: '+58 412-1234567',
-    email: 'contacto@superwash.com'
+  const [companyData, setCompanyData] = useState<CompanyData>(() => {
+    const saved = localStorage.getItem('companyData');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Error parsing companyData from localStorage', e);
+      }
+    }
+    return {
+      name: 'Super Wash Performance C.A.',
+      documentId: 'J-40199281-0',
+      address: 'Sede Principal Las Mercedes',
+      phone: '+58 412-1234567',
+      email: 'contacto@superwash.com'
+    };
   });
+
+  useEffect(() => {
+    localStorage.setItem('companyData', JSON.stringify(companyData));
+  }, [companyData]);
   const [servicesCatalog, setServicesCatalog] = useState<ServiceItem[]>(mockServicesCatalog);
 
   // Cash Register State
