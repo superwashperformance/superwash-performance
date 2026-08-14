@@ -654,7 +654,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
           </div>
           
           {/* Branch Selection */}
-          <div className="flex flex-col gap-4 p-5 rounded-xl bg-black/40 border border-white/5 mt-6">
+          <div className="flex flex-col gap-4 p-5 rounded-xl bg-slate-50 border border-slate-200 mt-6">
             <div className="flex items-center justify-between">
               <span className="font-display text-lg text-emerald-400">3. SEDE ASIGNADA</span>
             </div>
@@ -722,7 +722,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
             </button>
           </div>
 
-          <div className="p-4 rounded-xl bg-black/40 border border-slate-200">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
             <h4 className="font-display text-sm text-cyan-600 uppercase tracking-wider mb-4">Fotos Capturadas</h4>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
