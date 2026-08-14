@@ -23,12 +23,17 @@ export const branchService = {
     return data;
   },
   async updateBranch(id: string, branchData: Partial<Branch>): Promise<Branch> {
-    const updateData = { ...branchData };
-    
-    const { data, error } = await supabase.from('branches').update({
-      ...updateData,
+    // Solo enviamos los campos que existen en la tabla (schema) para evitar errores si llegan datos heredados
+    const updatePayload: any = {
       updated_at: new Date().toISOString()
-    }).eq('id', id).select().single();
+    };
+    
+    if (branchData.name !== undefined) updatePayload.name = branchData.name;
+    if (branchData.address !== undefined) updatePayload.address = branchData.address;
+    if (branchData.phone !== undefined) updatePayload.phone = branchData.phone;
+    if (branchData.is_active !== undefined) updatePayload.is_active = branchData.is_active;
+
+    const { data, error } = await supabase.from('branches').update(updatePayload).eq('id', id).select().single();
     if (error) throw error;
     return data;
   }
