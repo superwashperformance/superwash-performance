@@ -661,17 +661,22 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
             <div>
               <label className="text-xs text-slate-500 mb-1 block">Selecciona la Sede de la Orden *</label>
               <select
-                value={branchId}
+                value={branchId || (branches.length === 0 ? 'default' : '')}
                 onChange={(e) => setBranchId(e.target.value)}
                 className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#00E5FF] outline-none font-bold"
-                required
+                disabled={branches.length === 0}
+                required={branches.length > 0}
               >
-                <option value="" disabled>-- Selecciona una Sede --</option>
+                {branches.length === 0 ? (
+                  <option value="default">Sede Principal (Predeterminada)</option>
+                ) : (
+                  <option value="" disabled>-- Selecciona una Sede --</option>
+                )}
                 {branches.filter(b => b.is_active).map(branch => (
                   <option key={branch.id} value={branch.id}>{branch.name}</option>
                 ))}
               </select>
-              {branches.length === 0 && <p className="text-xs text-red-500 mt-1">No hay sedes disponibles. Configura una sede en Ajustes.</p>}
+              {branches.length === 0 && <p className="text-xs text-slate-400 mt-1">Usando sede principal por defecto. Puedes añadir más sedes en Ajustes.</p>}
             </div>
           </div>
           
@@ -680,7 +685,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
               Cancelar
             </button>
             <button onClick={() => {
-              if (!branchId) {
+              if (!branchId && branches.length > 0) {
                 alert('Por favor selecciona una sede antes de continuar.');
                 return;
               }
