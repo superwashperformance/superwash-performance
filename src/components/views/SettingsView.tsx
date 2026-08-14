@@ -376,11 +376,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               <label className="text-[10px] text-slate-500 font-mono">DIRECCIÓN *</label>
               <input type="text" value={tempBranch.address || ''} onChange={e => setTempBranch({...tempBranch, address: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#7A1B28]" placeholder="Dirección completa" />
             </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-[10px] text-slate-500 font-mono">EMAIL</label>
-              <input type="email" value={tempBranch.email || ''} onChange={e => setTempBranch({...tempBranch, email: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#7A1B28]" placeholder="correo@sede.com" />
-            </div>
-            <div className="flex items-end justify-end">
+            <div className="flex items-end justify-end md:col-span-2">
               <button onClick={handleSaveBranch} className="btn-primary text-sm flex items-center gap-2 w-full md:w-auto justify-center">
                 <Save className="w-4 h-4" /> GUARDAR SEDE
               </button>
@@ -402,7 +398,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 <div className="text-xs text-slate-500 flex flex-col gap-1 mt-3">
                   <p><span className="font-medium text-slate-700">Dirección:</span> {branch.address}</p>
                   <p><span className="font-medium text-slate-700">Teléfono:</span> {branch.phone}</p>
-                  {branch.email && <p><span className="font-medium text-slate-700">Email:</span> {branch.email}</p>}
                 </div>
               </div>
               <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-slate-100">

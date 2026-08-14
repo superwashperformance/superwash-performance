@@ -1,4 +1,4 @@
-﻿import { supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 import { Branch } from '../types';
 
 export const branchService = {
@@ -17,15 +17,16 @@ export const branchService = {
       name: branchData.name,
       address: branchData.address,
       phone: branchData.phone,
-      email: branchData.email || null,
       is_active: branchData.is_active !== undefined ? branchData.is_active : true
     }]).select().single();
     if (error) throw error;
     return data;
   },
   async updateBranch(id: string, branchData: Partial<Branch>): Promise<Branch> {
+    const updateData = { ...branchData };
+    
     const { data, error } = await supabase.from('branches').update({
-      ...branchData,
+      ...updateData,
       updated_at: new Date().toISOString()
     }).eq('id', id).select().single();
     if (error) throw error;
