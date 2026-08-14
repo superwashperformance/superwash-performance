@@ -767,7 +767,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
           </div>
 
           {/* Belongings */}
-          <div className="p-4 rounded-xl bg-black/40 border border-slate-200 flex flex-col gap-4">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-4">
             <span className="font-display text-lg text-cyan-600">PERTENENCIAS EN EL VEHÍCULO</span>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -803,7 +803,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                     </div>
                   )}
                 </div>
-                <div className="flex-1 rounded-xl bg-white/ border border-white/5 overflow-hidden flex items-center justify-center min-h-[120px]">
+                <div className="flex-1 rounded-xl bg-slate-100 border border-dashed border-slate-300 overflow-hidden flex items-center justify-center min-h-[120px]">
                   {photos.filter(p => p.category === 'belonging').length > 0 ? (
                     photos.filter(p => p.category === 'belonging').map((p, idx) => (
                       <div key={idx} className="relative w-full h-full group">
@@ -830,7 +830,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
           {/* 20-Point Mandatory Checklist Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {checklist.map((item) => (
-              <div key={item.id} className="p-3 rounded-xl bg-black/30 border border-white/5 flex flex-col gap-2">
+              <div key={item.id} className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-slate-900">{item.label}</span>
                 </div>
