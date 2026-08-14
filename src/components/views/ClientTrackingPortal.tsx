@@ -186,7 +186,7 @@ export const ClientTrackingPortal: React.FC<ClientTrackingPortalProps> = ({ init
                 <div className="absolute top-5 left-[10%] right-[10%] h-1 bg-slate-200 rounded-full z-0">
                   <div 
                     className="h-full bg-[#7A1B28] rounded-full transition-all duration-1000 ease-out" 
-                    style={{ width: `${(Math.max(1, currentStep) - 1) * 33.33}%` }} 
+                    style={{ width: `${Math.min(100, (Math.max(1, currentStep) - 1) * 33.33)}%` }} 
                   />
                 </div>
 
@@ -231,6 +231,19 @@ export const ClientTrackingPortal: React.FC<ClientTrackingPortalProps> = ({ init
                 <p className="text-slate-900 text-lg font-medium">{getStatusMessage(order.status)}</p>
               </div>
 
+              {/* Final Photo if Archived/Completed */}
+              {(order.status === 'archived' || order.status === 'delivered') && order.photos && order.photos.length > 0 && (
+                <div className="mt-6 border-t border-slate-100 pt-6">
+                  <span className="font-mono text-slate-500 block mb-3 uppercase tracking-widest text-xs text-center">Ficha del Registro Final</span>
+                  <div className="rounded-xl overflow-hidden shadow-sm border border-slate-200">
+                    <img 
+                      src={order.photos.slice().reverse().find(p => p.category === 'post_service')?.photoUrl || order.photos[order.photos.length - 1].photoUrl} 
+                      alt="Registro Final" 
+                      className="w-full h-auto object-cover max-h-64"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Support / WhatsApp CTA */}
