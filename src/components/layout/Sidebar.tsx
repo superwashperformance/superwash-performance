@@ -39,7 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, curren
   const visibleNavItems = navItems.filter((item) => item.roles.includes(currentRole));
 
   return (
-    <aside className="w-16 md:w-64 bg-slate-50 border-r border-slate-200 flex flex-col py-6 shrink-0 transition-all shadow-sm z-20 h-full overflow-y-auto">
+    <aside className="w-16 md:w-64 bg-slate-50 border-r border-slate-200 flex flex-col py-6 shrink-0 transition-all shadow-sm z-20 overflow-y-auto">
       {/* Top Logo Area */}
       <div className="px-6 pb-8 flex flex-col items-center justify-center">
         <FaviconLogo size={90} />
