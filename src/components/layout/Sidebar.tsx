@@ -39,7 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, curren
   const visibleNavItems = navItems.filter((item) => item.roles.includes(currentRole));
 
   return (
-    <aside className="w-16 md:w-64 bg-[#0a0a0a] flex flex-col py-6 shrink-0 transition-all shadow-xl z-20 h-full overflow-y-auto">
+    <aside className="w-16 md:w-64 bg-slate-50 border-r border-slate-200 flex flex-col py-6 shrink-0 transition-all shadow-sm z-20 h-full overflow-y-auto">
       {/* Top Logo Area */}
       <div className="px-6 pb-8 flex flex-col items-center justify-center">
         <FaviconLogo size={90} />
@@ -55,11 +55,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, curren
               onClick={() => onTabChange(item.id as NavTab)}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm text-left group ${
                 isActive
-                  ? 'bg-[#7A1B28] text-white font-bold shadow-md'
-                  : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  ? 'bg-[#7A1B28] text-white font-bold shadow-sm'
+                  : 'text-slate-600 hover:text-[#7A1B28] hover:bg-[#7A1B28]/5 font-medium'
               }`}
             >
-              <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-white'}`} />
+              <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-[#7A1B28]'}`} />
               <span className="hidden md:inline truncate">{item.label}</span>
             </button>
           );
