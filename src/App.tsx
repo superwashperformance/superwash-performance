@@ -44,6 +44,7 @@ export function App() {
   // User Session Management
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [userSession, setUserSession] = useState<UserSession | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   // Initialize Session from Supabase
   React.useEffect(() => {
@@ -63,6 +64,7 @@ export function App() {
         });
         setAppMode('admin');
       }
+      setAuthLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
@@ -79,9 +81,11 @@ export function App() {
           avatar: fullName.substring(0, 2).toUpperCase(),
           token: session.access_token,
         });
+        setAppMode('admin');
       } else {
         setUserSession(null);
       }
+      setAuthLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -553,6 +557,17 @@ export function App() {
       setVehicles([created, ...vehicles]);
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-4 border-slate-200 border-t-[#7A1B28] rounded-full animate-spin" />
+          <p className="text-slate-500 font-mono text-xs tracking-widest uppercase">Restaurando sesión...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (appMode === 'splash') {
     return (

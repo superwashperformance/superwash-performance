@@ -11,5 +11,12 @@ if (!supabaseUrl || !supabasePublishableKey) {
 
 export const supabase = createClient(
   supabaseUrl || 'https://placeholder.supabase.co',
-  supabasePublishableKey || 'placeholder-publishable-key'
+  supabasePublishableKey || 'placeholder-publishable-key',
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  }
 );
