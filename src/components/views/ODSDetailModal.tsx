@@ -455,19 +455,29 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
           <div className={activeTab === 'checklist' ? 'block print:hidden' : 'hidden'}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {(order.checklist || []).map((item) => (
-                <div key={item.id} className="p-3 rounded-xl bg-white border border-slate-200 flex items-center justify-between text-xs shadow-sm">
-                  <span className="font-bold text-slate-800">{item.label}</span>
-                  <span
-                    className={`px-2.5 py-1 rounded-full text-[10px] font-display uppercase tracking-wider ${
-                      item.condition === 'ok'
-                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                        : item.condition === 'damaged'
-                        ? 'bg-red-50 text-red-700 border border-red-200'
-                        : 'bg-amber-50 text-amber-700 border border-amber-200'
-                    }`}
-                  >
-                    {item.condition}
-                  </span>
+                <div key={item.id} className="p-3 rounded-xl bg-white border border-slate-200 flex flex-col gap-2 text-xs shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-slate-800">{item.label}</span>
+                    <span
+                      className={`px-2.5 py-1 rounded-full text-[10px] font-display uppercase tracking-wider ${
+                        item.condition === 'ok'
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          : item.condition === 'damaged'
+                          ? 'bg-red-50 text-red-700 border border-red-200'
+                          : item.condition === 'missing'
+                          ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                          : 'bg-purple-50 text-purple-700 border border-purple-200'
+                      }`}
+                    >
+                      {item.condition === 'ok' ? 'EN ORDEN' : item.condition === 'damaged' ? 'DAÑADO' : item.condition === 'missing' ? 'NO POSEE' : 'OBSERVACIÓN'}
+                    </span>
+                  </div>
+                  {item.notes && (
+                    <div className="mt-1 text-slate-600 bg-slate-50 p-2 rounded-lg border border-slate-100">
+                      <span className="font-bold text-slate-700 block mb-0.5">Detalle / Observación:</span>
+                      {item.notes}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
