@@ -58,16 +58,17 @@ export const ODSListView: React.FC<ODSListViewProps> = ({ orders, onSelectOrder,
   });
 
   const statusLabels: Record<string, { label: string; color: string }> = {
-    received: { label: 'Recibido', color: 'bg-[#00E5FF]/20 text-cyan-600 border-cyan-500/30' },
-    diagnosis: { label: 'Diagnóstico', color: 'bg-amber-500/20 text-amber-400 border-amber-500/30' },
-    quote_sent: { label: 'Presupuesto Enviado', color: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
-    quote_approved: { label: 'Presupuesto Aprobado', color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' },
-    in_progress: { label: 'En Proceso', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
-    waiting_parts: { label: 'Esperando Repuestos', color: 'bg-orange-500/20 text-orange-400 border-orange-500/30' },
-    quality_control: { label: 'Control de Calidad', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
-    completed: { label: 'Finalizado', color: 'bg-green-500/20 text-green-400 border-green-500/30' },
-    delivered: { label: 'Entregado', color: 'bg-slate-700/40 text-slate-700 border-slate-600/30' },
-    archived: { label: 'Archivado (Historial)', color: 'bg-zinc-900/60 text-zinc-500 border-zinc-800' },
+    received: { label: 'Recibido', color: 'bg-cyan-100 text-cyan-700 border-cyan-200' },
+    diagnosis: { label: 'Diagnóstico', color: 'bg-amber-100 text-amber-700 border-amber-200' },
+    quote_sent: { label: 'Presupuesto Enviado', color: 'bg-purple-100 text-purple-700 border-purple-200' },
+    quote_pending: { label: 'Presupuesto Pnte', color: 'bg-slate-100 text-slate-600 border-slate-200' },
+    quote_approved: { label: 'Presupuesto Aprobado', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+    in_progress: { label: 'En Proceso', color: 'bg-blue-100 text-blue-700 border-blue-200' },
+    waiting_parts: { label: 'Esperando Repuestos', color: 'bg-orange-100 text-orange-700 border-orange-200' },
+    quality_control: { label: 'Control de Calidad', color: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
+    completed: { label: 'Finalizado', color: 'bg-green-100 text-green-700 border-green-200' },
+    delivered: { label: 'Entregado', color: 'bg-slate-100 text-slate-700 border-slate-200' },
+    archived: { label: 'Archivado (Historial)', color: 'bg-gray-100 text-gray-500 border-gray-200' },
   };
 
   return (
@@ -75,34 +76,34 @@ export const ODSListView: React.FC<ODSListViewProps> = ({ orders, onSelectOrder,
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="font-display text-3xl text-slate-900 tracking-wide flex items-center gap-2">
-            LISTA MAESTRA DE ÓRDENES DE SERVICIO <ClipboardList className="w-6 h-6 text-cyan-600" />
+          <h2 className="font-display text-3xl text-slate-800 tracking-wide flex items-center gap-2">
+            Órdenes de Servicio <ClipboardList className="w-6 h-6 text-[#7A1B28]" />
           </h2>
           <p className="text-xs text-slate-500">
             Registro histórico e inspección 360° de todas las ODS creadas en la plataforma.
           </p>
         </div>
 
-        <button onClick={onNewODS} className="btn-nike-primary text-xs md:text-sm py-2.5 px-6">
+        <button onClick={onNewODS} className="btn-primary text-xs md:text-sm py-2.5 px-6">
           <Plus className="w-4 h-4 stroke-[3]" /> NUEVA ODS
         </button>
       </div>
 
       {/* Filters Bar */}
-      <div className="flex flex-col gap-3 bg-black/50 p-4 rounded-2xl border border-slate-200">
+      <div className="flex flex-col gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
           {/* Text Search */}
           <div className="relative flex-1 min-w-[240px]">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Buscar por ODS, Placa, Cliente, Fecha (ej. 24/7/2026)..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-900 focus:border-[#00E5FF] outline-none"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-900 focus:border-[#7A1B28] outline-none"
             />
             {searchTerm && (
-              <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-900">
+              <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-800">
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
@@ -110,11 +111,11 @@ export const ODSListView: React.FC<ODSListViewProps> = ({ orders, onSelectOrder,
 
           {/* Status Filter */}
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-cyan-600" />
+            <Filter className="w-4 h-4 text-slate-400" />
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:border-[#00E5FF] outline-none font-mono"
+              className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:border-[#7A1B28] outline-none font-mono"
             >
               <option value="all">TODOS LOS ESTADOS</option>
               <option value="received">1. Recibido</option>
@@ -130,17 +131,16 @@ export const ODSListView: React.FC<ODSListViewProps> = ({ orders, onSelectOrder,
             </select>
           </div>
         </div>
-
         {/* Date Filter Quick Selector */}
-        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-white/5 text-xs">
+        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100 text-xs">
           <span className="text-slate-500 font-mono flex items-center gap-1.5 mr-2">
-            <Calendar className="w-3.5 h-3.5 text-cyan-600" /> Filtrar Fecha:
+            <Calendar className="w-3.5 h-3.5 text-slate-400" /> Filtrar Fecha:
           </span>
 
           <button
             onClick={() => setDatePeriod('all')}
             className={`px-3 py-1 rounded-lg font-mono text-[11px] uppercase tracking-wider transition-all ${
-              datePeriod === 'all' ? 'bg-[#00E5FF] text-black font-bold' : 'bg-white text-slate-500 hover:text-slate-900 border border-slate-200'
+              datePeriod === 'all' ? 'bg-[#7A1B28] text-white font-bold' : 'bg-slate-50 text-slate-500 hover:text-slate-800 border border-slate-200'
             }`}
           >
             Todas
@@ -149,7 +149,7 @@ export const ODSListView: React.FC<ODSListViewProps> = ({ orders, onSelectOrder,
           <button
             onClick={() => setDatePeriod('today')}
             className={`px-3 py-1 rounded-lg font-mono text-[11px] uppercase tracking-wider transition-all ${
-              datePeriod === 'today' ? 'bg-[#00E5FF] text-black font-bold' : 'bg-white text-slate-500 hover:text-slate-900 border border-slate-200'
+              datePeriod === 'today' ? 'bg-[#7A1B28] text-white font-bold' : 'bg-slate-50 text-slate-500 hover:text-slate-800 border border-slate-200'
             }`}
           >
             Hoy
@@ -158,7 +158,7 @@ export const ODSListView: React.FC<ODSListViewProps> = ({ orders, onSelectOrder,
           <button
             onClick={() => setDatePeriod('week')}
             className={`px-3 py-1 rounded-lg font-mono text-[11px] uppercase tracking-wider transition-all ${
-              datePeriod === 'week' ? 'bg-[#00E5FF] text-black font-bold' : 'bg-white text-slate-500 hover:text-slate-900 border border-slate-200'
+              datePeriod === 'week' ? 'bg-[#7A1B28] text-white font-bold' : 'bg-slate-50 text-slate-500 hover:text-slate-800 border border-slate-200'
             }`}
           >
             Esta Semana
@@ -167,7 +167,7 @@ export const ODSListView: React.FC<ODSListViewProps> = ({ orders, onSelectOrder,
           <button
             onClick={() => setDatePeriod('month')}
             className={`px-3 py-1 rounded-lg font-mono text-[11px] uppercase tracking-wider transition-all ${
-              datePeriod === 'month' ? 'bg-[#00E5FF] text-black font-bold' : 'bg-white text-slate-500 hover:text-slate-900 border border-slate-200'
+              datePeriod === 'month' ? 'bg-[#7A1B28] text-white font-bold' : 'bg-slate-50 text-slate-500 hover:text-slate-800 border border-slate-200'
             }`}
           >
             Este Mes
@@ -176,7 +176,7 @@ export const ODSListView: React.FC<ODSListViewProps> = ({ orders, onSelectOrder,
           <button
             onClick={() => setDatePeriod('year')}
             className={`px-3 py-1 rounded-lg font-mono text-[11px] uppercase tracking-wider transition-all ${
-              datePeriod === 'year' ? 'bg-[#00E5FF] text-black font-bold' : 'bg-white text-slate-500 hover:text-slate-900 border border-slate-200'
+              datePeriod === 'year' ? 'bg-[#7A1B28] text-white font-bold' : 'bg-slate-50 text-slate-500 hover:text-slate-800 border border-slate-200'
             }`}
           >
             Este Año
@@ -191,7 +191,7 @@ export const ODSListView: React.FC<ODSListViewProps> = ({ orders, onSelectOrder,
                 setCustomDate(e.target.value);
                 setDatePeriod('custom');
               }}
-              className="bg-black border border-slate-200 rounded-lg px-2 py-1 text-xs text-slate-900 outline-none focus:border-[#00E5FF] font-mono"
+              className="bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs text-slate-900 outline-none focus:border-[#7A1B28] font-mono"
             />
             {customDate && (
               <button
@@ -199,82 +199,89 @@ export const ODSListView: React.FC<ODSListViewProps> = ({ orders, onSelectOrder,
                   setCustomDate('');
                   setDatePeriod('all');
                 }}
-                className="text-xs text-red-400 hover:underline font-mono font-bold"
+                className="text-slate-400 hover:text-slate-800"
               >
-                Limpiar
+                <X className="w-4 h-4" />
               </button>
             )}
           </div>
         </div>
       </div>
 
-      {/* Master Orders Table */}
-      <div className="nike-card p-4 overflow-x-auto">
-        <table className="w-full text-left text-xs text-slate-700">
-          <thead className="bg-black/60 font-display text-sm tracking-wider uppercase text-slate-500 border-b border-slate-200">
-            <tr>
-              <th className="p-3">N° ODS</th>
-              <th className="p-3">VEHÍCULO</th>
-              <th className="p-3">CLIENTE</th>
-              <th className="p-3">SEDE / ASESOR</th>
-              <th className="p-3">ESTADO</th>
-              <th className="p-3 text-right">TOTAL PRESUPUESTO</th>
-              <th className="p-3 text-right">PAGADO</th>
-              <th className="p-3 text-center">ACCIÓN</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/5 font-sans">
-            {filteredOrders.map((order) => {
-              const statusInfo = statusLabels[order.status] || { label: order.status, color: 'bg-slate-100 text-slate-900' };
-              return (
-                <tr key={order.id} className="hover:bg-white/5 transition-colors">
-                  <td className="p-3 font-mono font-bold text-cyan-600">{order.orderNumber}</td>
-                  <td className="p-3">
-                    <div className="font-bold text-slate-900">{order.vehicleBrandModel}</div>
-                    <div className="text-[10px] font-mono text-slate-500">
-                      Placa: <span className="text-slate-900 uppercase font-bold">{order.vehiclePlate}</span> | {order.vehicleColor}
-                    </div>
-                  </td>
-                  <td className="p-3">
-                    <div className="text-slate-900 font-medium">{order.customerName}</div>
-                    <div className="text-[10px] text-slate-500 font-mono">{order.customerPhone}</div>
-                  </td>
-                  <td className="p-3">
-                    <div className="text-slate-700">{order.branchName}</div>
-                    <div className="text-[10px] text-slate-500 font-mono">Agente: {order.receptionAgent}</div>
-                  </td>
-                  <td className="p-3">
-                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-display uppercase tracking-wider border ${statusInfo.color}`}>
-                      {statusInfo.label}
-                    </span>
-                  </td>
-                  <td className="p-3 text-right font-mono font-bold text-slate-900">${order.totalAmount}</td>
-                  <td className="p-3 text-right font-mono font-bold text-emerald-400">${order.paidAmount}</td>
-                  <td className="p-3">
-                    <div className="flex items-center justify-center gap-2">
-                      <button
-                        onClick={() => onSelectOrder(order)}
-                        className="px-3 py-1.5 rounded-full bg-cyan-50 text-cyan-600 hover:bg-[#00E5FF] hover:text-black font-display text-xs transition-all flex items-center gap-1"
-                      >
-                        <Eye className="w-3.5 h-3.5" /> VER
-                      </button>
-                      
-                      {onDeleteODS && (
-                        <button
-                          onClick={() => onDeleteODS(order.id)}
-                          className="p-1.5 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-slate-900 rounded-full transition-colors border border-red-500/30"
-                          title="Eliminar ODS"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      )}
-                    </div>
+      {/* Main Table */}
+      <div className="glass-card overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs text-slate-700">
+            <thead className="bg-slate-50 font-display text-sm uppercase text-slate-500 border-b border-slate-200">
+              <tr>
+                <th className="p-4">Nº ODS</th>
+                <th className="p-4">VEHÍCULO</th>
+                <th className="p-4">CLIENTE</th>
+                <th className="p-4">ESTADO ACTUAL</th>
+                <th className="p-4">FECHA INGRESO</th>
+                <th className="p-4">ASESOR</th>
+                <th className="p-4 text-center">ACCIÓN</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 font-sans">
+              {filteredOrders.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="p-8 text-center text-slate-500 font-mono">
+                    No se encontraron órdenes de servicio con los filtros actuales.
                   </td>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+              ) : (
+                filteredOrders.map((order) => {
+                  const statusInfo = statusLabels[order.status] || { label: order.status, color: 'bg-slate-100 text-slate-900' };
+
+                  return (
+                    <tr key={order.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="p-4 font-mono font-bold text-[#7A1B28] text-sm">{order.orderNumber}</td>
+                      <td className="p-4">
+                        <div className="font-bold text-slate-800 text-sm">{order.vehicleBrandModel}</div>
+                        <div className="text-xs font-mono text-slate-500 mt-0.5">Placa: {order.vehiclePlate} | {order.vehicleColor}</div>
+                      </td>
+                      <td className="p-4">
+                        <div className="text-slate-800 font-medium text-sm">{order.customerName}</div>
+                        <div className="text-xs text-slate-500 font-mono mt-0.5">{order.customerPhone}</div>
+                      </td>
+                      <td className="p-4">
+                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${statusInfo.color}`}>
+                          {statusInfo.label}
+                        </span>
+                      </td>
+                      <td className="p-4 font-mono text-slate-500">{order.entryDate}</td>
+                      <td className="p-4 text-slate-600">{order.receptionAgent}</td>
+                      <td className="p-4 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => onSelectOrder(order)}
+                            className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-[#7A1B28] hover:text-white font-bold text-xs transition-all"
+                          >
+                            FICHA 360°
+                          </button>
+                          {onDeleteODS && (
+                             <button 
+                                onClick={() => {
+                                  if(window.confirm('¿Estás seguro de eliminar esta ODS? Esta acción no se puede deshacer.')) {
+                                    onDeleteODS(order.id);
+                                  }
+                                }}
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                                title="Eliminar ODS"
+                             >
+                                <Trash2 className="w-4 h-4" />
+                             </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

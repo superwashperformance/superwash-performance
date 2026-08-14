@@ -172,32 +172,32 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="font-display text-3xl text-slate-900 tracking-wide flex items-center gap-2">
-            DIRECTORIO DE CLIENTES <Users className="w-6 h-6 text-cyan-600" />
+          <h2 className="font-display text-3xl text-slate-800 tracking-wide flex items-center gap-2">
+            Directorio de Clientes <Users className="w-6 h-6 text-[#7A1B28]" />
           </h2>
           <p className="text-xs text-slate-500">Base de datos centralizada para crear, buscar y gestionar clientes.</p>
         </div>
 
         <button
           onClick={openNewCustomerModal}
-          className="btn-nike-primary text-xs py-2.5 px-4 flex items-center justify-center gap-2 shrink-0"
+          className="btn-primary text-xs py-2.5 px-4 flex items-center justify-center gap-2 shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[3]" /> AGREGAR CLIENTE
         </button>
       </div>
 
       {/* Search Bar */}
-      <div className="flex items-center gap-3 bg-white border border-slate-200 rounded-xl px-4 py-2.5 w-full max-w-md shadow-inner">
-        <Search className="w-5 h-5 text-slate-500 shrink-0" />
+      <div className="flex items-center gap-3 bg-white border border-slate-200 rounded-xl px-4 py-2.5 w-full max-w-md shadow-sm">
+        <Search className="w-5 h-5 text-slate-400 shrink-0" />
         <input
           type="text"
           placeholder="Buscar por Nombre, Cédula/RIF, Teléfono..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="bg-transparent border-none outline-none text-slate-900 w-full text-sm placeholder:text-slate-500"
+          className="bg-transparent border-none outline-none text-slate-900 w-full text-sm placeholder:text-slate-400"
         />
         {searchTerm && (
-          <button onClick={() => setSearchTerm('')} className="text-xs text-slate-500 hover:text-slate-900">
+          <button onClick={() => setSearchTerm('')} className="text-xs text-slate-400 hover:text-slate-800">
             <X className="w-4 h-4" />
           </button>
         )}
@@ -206,11 +206,11 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
       {/* Customers Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredCustomers.length === 0 ? (
-          <div className="col-span-full nike-card p-12 flex flex-col items-center justify-center text-center">
-            <UserCheck className="w-12 h-12 text-slate-600 mb-3" />
-            <h3 className="font-display text-xl text-slate-900 mb-1">No se encontraron clientes</h3>
+          <div className="col-span-full glass-card p-12 flex flex-col items-center justify-center text-center">
+            <UserCheck className="w-12 h-12 text-slate-400 mb-3" />
+            <h3 className="font-display text-xl text-slate-800 mb-1">No se encontraron clientes</h3>
             <p className="text-xs text-slate-500 mb-4">Intenta con otra búsqueda o crea un nuevo cliente.</p>
-            <button onClick={openNewCustomerModal} className="btn-nike-secondary text-xs py-2 px-4">
+            <button onClick={openNewCustomerModal} className="btn-secondary text-xs py-2 px-4">
               <Plus className="w-4 h-4" /> Agregar Nuevo Cliente
             </button>
           </div>
@@ -218,15 +218,15 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
           filteredCustomers.map((cust) => {
             const custVehicles = vehicles.filter((v) => v.customerId === cust.id);
             return (
-              <div key={cust.id} className="nike-card p-5 flex flex-col justify-between gap-4 group relative overflow-hidden">
+              <div key={cust.id} className="glass-card p-5 flex flex-col justify-between gap-4 group relative overflow-hidden">
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-mono text-xs text-cyan-600 font-bold">{cust.documentId}</span>
+                    <span className="font-mono text-xs text-[#7A1B28] font-bold">{cust.documentId}</span>
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] text-slate-500 font-mono">Desde {cust.createdAt}</span>
                       <button
                         onClick={() => openEditCustomerModal(cust)}
-                        className="p-1.5 bg-slate-100 hover:bg-[#00E5FF] text-slate-700 hover:text-black rounded-lg transition-colors"
+                        className="p-1.5 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 rounded-lg transition-colors border border-slate-200"
                         title="Modificar Cliente"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
@@ -234,22 +234,22 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                     </div>
                   </div>
 
-                  <h3 className="font-display text-2xl text-slate-900 tracking-wide">{cust.fullName}</h3>
+                  <h3 className="font-display text-2xl text-slate-800 tracking-wide">{cust.fullName}</h3>
 
-                  <div className="flex flex-col gap-1.5 mt-3 text-xs text-slate-700 font-mono">
+                  <div className="flex flex-col gap-1.5 mt-3 text-xs text-slate-600 font-mono">
                     <div className="flex items-center gap-2">
-                      <Phone className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                      <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                       <span>{cust.phone}</span>
                     </div>
                     {cust.email && (
                       <div className="flex items-center gap-2">
-                        <Mail className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                        <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                         <span className="truncate">{cust.email}</span>
                       </div>
                     )}
                     {cust.address && (
                       <div className="flex items-center gap-2">
-                        <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                        <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                         <span className="truncate">{cust.address}</span>
                       </div>
                     )}
@@ -257,26 +257,26 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                 </div>
 
                 {/* Registered Vehicles */}
-                <div className="border-t border-slate-200 pt-3">
+                <div className="border-t border-slate-100 pt-3">
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-[10px] font-mono text-slate-500 uppercase">
                       Vehículos Asociados ({custVehicles.length})
                     </span>
                     <button
                       onClick={() => openAddVehicleModal(cust)}
-                      className="text-[10px] font-mono font-bold text-cyan-600 hover:underline flex items-center gap-1"
+                      className="text-[10px] font-mono font-bold text-[#7A1B28] hover:underline flex items-center gap-1"
                     >
                       <Plus className="w-3 h-3" /> Agregar Auto
                     </button>
                   </div>
                   <div className="flex flex-col gap-1.5">
                     {custVehicles.length === 0 ? (
-                      <span className="text-[11px] text-slate-500 font-mono italic">Sin vehículos registrados</span>
+                      <span className="text-[11px] text-slate-400 font-mono italic">Sin vehículos registrados</span>
                     ) : (
                       custVehicles.map((v) => (
-                        <div key={v.id} className="p-2 rounded-lg bg-black/40 border border-white/5 text-xs flex items-center justify-between">
-                          <span className="font-bold text-slate-900">{v.brand} {v.model} ({v.year})</span>
-                          <span className="font-mono text-[10px] text-cyan-600 font-bold">{v.plate}</span>
+                        <div key={v.id} className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-xs flex items-center justify-between">
+                          <span className="font-bold text-slate-700">{v.brand} {v.model} ({v.year})</span>
+                          <span className="font-mono text-[10px] text-[#7A1B28] font-bold">{v.plate}</span>
                         </div>
                       ))
                     )}
@@ -290,14 +290,14 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
 
       {/* Add / Edit Customer Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="nike-card p-6 w-full max-w-md flex flex-col gap-4 border-slate-300 shadow-2xl animate-scale-up">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-              <h3 className="font-display text-xl text-slate-900 flex items-center gap-2">
-                <Users className="w-5 h-5 text-cyan-600" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="glass-card p-6 w-full max-w-md flex flex-col gap-4 border border-slate-200 shadow-2xl animate-scale-up">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h3 className="font-display text-xl text-slate-800 flex items-center gap-2">
+                <Users className="w-5 h-5 text-[#7A1B28]" />
                 {editingCustomer ? 'MODIFICAR CLIENTE' : 'NUEVO CLIENTE'}
               </h3>
-              <button onClick={closeModal} className="text-slate-500 hover:text-slate-900">
+              <button onClick={closeModal} className="text-slate-400 hover:text-slate-800">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -311,7 +311,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                   placeholder="Ej. Gustavo Cisneros"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#00E5FF] outline-none font-medium"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none font-medium"
                 />
               </div>
 
@@ -323,7 +323,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                   placeholder="Ej. V-18940293 o J-30199281-0"
                   value={documentId}
                   onChange={(e) => setDocumentId(e.target.value)}
-                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono focus:border-[#00E5FF] outline-none"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono focus:border-[#7A1B28] outline-none"
                 />
               </div>
 
@@ -336,7 +336,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                     placeholder="Ej. +58 412-1234567"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono focus:border-[#00E5FF] outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono focus:border-[#7A1B28] outline-none"
                   />
                 </div>
 
@@ -347,7 +347,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                     placeholder="cliente@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#00E5FF] outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none"
                   />
                 </div>
               </div>
@@ -359,16 +359,15 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                   placeholder="Ej. Av. Principal Las Mercedes, Edif. Centro, Piso 4"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#00E5FF] outline-none"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none"
                 />
               </div>
 
               {/* Section: Associated Vehicle (Optional during customer creation) */}
-              <div className="mt-2 pt-3 border-t border-slate-200 flex flex-col gap-3">
-                <span className="font-mono text-xs font-bold text-cyan-600 flex items-center gap-1.5 uppercase">
-                  <Car className="w-4 h-4 text-cyan-600" /> Registrar Vehículo del Cliente (Opcional)
+              <div className="mt-2 pt-3 border-t border-slate-100 flex flex-col gap-3">
+                <span className="font-mono text-xs font-bold text-slate-600 flex items-center gap-1.5 uppercase">
+                  <Car className="w-4 h-4 text-slate-400" /> Registrar Vehículo del Cliente (Opcional)
                 </span>
-
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="text-[10px] text-slate-500 block mb-1">Placa / Matrícula</label>
@@ -377,7 +376,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                       placeholder="Ej. AA991GT"
                       value={initialVehPlate}
                       onChange={(e) => setInitialVehPlate(e.target.value)}
-                      className="w-full bg-black border border-slate-200 rounded px-2 py-1.5 text-xs text-slate-900 font-mono uppercase font-bold focus:border-[#00E5FF] outline-none"
+                      className="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1.5 text-xs text-slate-900 font-mono uppercase font-bold focus:border-[#7A1B28] outline-none"
                     />
                   </div>
                   <div>
@@ -386,7 +385,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                       type="number"
                       value={initialVehYear}
                       onChange={(e) => setInitialVehYear(Number(e.target.value))}
-                      className="w-full bg-black border border-slate-200 rounded px-2 py-1.5 text-xs text-slate-900 font-mono focus:border-[#00E5FF] outline-none"
+                      className="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1.5 text-xs text-slate-900 font-mono focus:border-[#7A1B28] outline-none"
                     />
                   </div>
                 </div>
@@ -399,7 +398,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                       placeholder="Ej. Toyota"
                       value={initialVehBrand}
                       onChange={(e) => setInitialVehBrand(e.target.value)}
-                      className="w-full bg-black border border-slate-200 rounded px-2 py-1.5 text-xs text-slate-900 focus:border-[#00E5FF] outline-none"
+                      className="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1.5 text-xs text-slate-900 focus:border-[#7A1B28] outline-none"
                     />
                   </div>
                   <div>
@@ -409,7 +408,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                       placeholder="Ej. Hilux GT"
                       value={initialVehModel}
                       onChange={(e) => setInitialVehModel(e.target.value)}
-                      className="w-full bg-black border border-slate-200 rounded px-2 py-1.5 text-xs text-slate-900 focus:border-[#00E5FF] outline-none"
+                      className="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1.5 text-xs text-slate-900 focus:border-[#7A1B28] outline-none"
                     />
                   </div>
                 </div>
@@ -421,24 +420,24 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                     placeholder="Ej. Negro Zafiro"
                     value={initialVehColor}
                     onChange={(e) => setInitialVehColor(e.target.value)}
-                    className="w-full bg-black border border-slate-200 rounded px-2 py-1.5 text-xs text-slate-900 focus:border-[#00E5FF] outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1.5 text-xs text-slate-900 focus:border-[#7A1B28] outline-none"
                   />
                 </div>
               </div>
 
-              <div className="flex gap-3 mt-3 pt-3 border-t border-slate-200">
+              <div className="flex gap-3 mt-3 pt-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="flex-1 bg-transparent border border-slate-300 text-slate-900 py-2.5 rounded-lg text-xs font-bold hover:bg-white/5 transition-colors uppercase tracking-wider"
+                  className="flex-1 bg-white border border-slate-300 text-slate-700 py-2.5 rounded-lg text-xs font-bold hover:bg-slate-50 transition-colors uppercase tracking-wider"
                 >
                   CANCELAR
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-[#00E5FF] text-black py-2.5 rounded-lg text-xs font-bold hover:bg-cyan-400 transition-colors uppercase tracking-wider flex items-center justify-center gap-1.5"
+                  className="flex-1 btn-primary py-2.5 rounded-lg text-xs justify-center flex items-center gap-1.5"
                 >
-                  <CheckCircle className="w-4 h-4" /> {editingCustomer ? 'GUARDAR CAMBIOS' : 'CREAR CLIENTE'}
+                  <CheckCircle className="w-4 h-4" /> {editingCustomer ? 'GUARDAR CAMBIOS' : 'GUARDAR CLIENTE'}
                 </button>
               </div>
             </form>
@@ -448,16 +447,19 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
 
       {/* Add Vehicle Modal */}
       {isVehicleModalOpen && vehicleCustomer && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="nike-card p-6 w-full max-w-md flex flex-col gap-4 border-slate-300 shadow-2xl animate-scale-up">
-            <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="glass-card p-6 w-full max-w-md flex flex-col gap-4 border border-slate-200 shadow-2xl animate-scale-up">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
-                <h3 className="font-display text-xl text-slate-900 flex items-center gap-2">
-                  <Plus className="w-5 h-5 text-cyan-600" /> ASOCIAR NUEVO VEHÍCULO
+                <h3 className="font-display text-xl text-slate-800 flex items-center gap-2">
+                  <Car className="w-5 h-5 text-[#7A1B28]" />
+                  REGISTRAR VEHÍCULO
                 </h3>
-                <p className="text-xs text-slate-500">Cliente: <strong className="text-slate-900">{vehicleCustomer.fullName}</strong></p>
+                <p className="text-xs text-slate-500 font-mono mt-1">
+                  Cliente: <span className="font-bold text-slate-700">{vehicleCustomer.fullName}</span>
+                </p>
               </div>
-              <button onClick={() => setIsVehicleModalOpen(false)} className="text-slate-500 hover:text-slate-900">
+              <button onClick={() => setIsVehicleModalOpen(false)} className="text-slate-400 hover:text-slate-800">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -472,7 +474,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                     placeholder="Ej. AB123CD"
                     value={vehPlate}
                     onChange={(e) => setVehPlate(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono uppercase font-bold focus:border-[#00E5FF] outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono uppercase font-bold focus:border-[#7A1B28] outline-none"
                   />
                 </div>
                 <div>
@@ -482,7 +484,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                     required
                     value={vehYear}
                     onChange={(e) => setVehYear(Number(e.target.value))}
-                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono focus:border-[#00E5FF] outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono focus:border-[#7A1B28] outline-none"
                   />
                 </div>
               </div>
@@ -496,7 +498,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                     placeholder="Ej. Toyota / Porsche"
                     value={vehBrand}
                     onChange={(e) => setVehBrand(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#00E5FF] outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none"
                   />
                 </div>
                 <div>
@@ -507,7 +509,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                     placeholder="Ej. Corolla / 911"
                     value={vehModel}
                     onChange={(e) => setVehModel(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#00E5FF] outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none"
                   />
                 </div>
               </div>
@@ -520,7 +522,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                     placeholder="Ej. Negro Zafiro"
                     value={vehColor}
                     onChange={(e) => setVehColor(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#00E5FF] outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none"
                   />
                 </div>
                 <div>
@@ -530,22 +532,22 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                     placeholder="Opcional"
                     value={vehVin}
                     onChange={(e) => setVehVin(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono focus:border-[#00E5FF] outline-none"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono focus:border-[#7A1B28] outline-none"
                   />
                 </div>
               </div>
 
-              <div className="flex gap-3 mt-3 pt-3 border-t border-slate-200">
+              <div className="flex gap-3 mt-3 pt-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setIsVehicleModalOpen(false)}
-                  className="flex-1 bg-transparent border border-slate-300 text-slate-900 py-2.5 rounded-lg text-xs font-bold hover:bg-white/5 transition-colors uppercase tracking-wider"
+                  className="flex-1 bg-white border border-slate-300 text-slate-700 py-2.5 rounded-lg text-xs font-bold hover:bg-slate-50 transition-colors uppercase tracking-wider"
                 >
                   CANCELAR
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-[#00E5FF] text-black py-2.5 rounded-lg text-xs font-bold hover:bg-cyan-400 transition-colors uppercase tracking-wider flex items-center justify-center gap-1.5"
+                  className="flex-1 btn-primary py-2.5 rounded-lg text-xs justify-center flex items-center gap-1.5"
                 >
                   <CheckCircle className="w-4 h-4" /> GUARDAR VEHÍCULO
                 </button>

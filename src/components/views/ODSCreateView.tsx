@@ -311,7 +311,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
       <input type="file" accept="image/*" className="hidden" ref={galleryInputRef} onChange={handleFileUpload} />
 
       {/* Wizard Step Progress Indicator */}
-      <div className="nike-card p-4 flex items-center justify-between overflow-x-auto gap-2">
+      <div className="glass-card p-4 flex items-center justify-between overflow-x-auto gap-2">
         {[
           { num: 1, label: '1. Cliente y Vehículo', icon: User },
           { num: 2, label: '2. Fotos Daños', icon: Camera },
@@ -328,10 +328,10 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
               onClick={() => setStep(s.num as any)}
               className={`flex items-center gap-2 cursor-pointer transition-all px-3 py-1.5 rounded-full ${
                 isCurrent
-                  ? 'bg-[#00E5FF] text-black font-bold font-display shadow-lg'
+                  ? 'bg-[#7A1B28] text-white font-bold font-display shadow-lg'
                   : isDone
-                  ? 'text-cyan-400 font-mono text-xs'
-                  : 'text-slate-500 font-mono text-xs'
+                  ? 'text-[#7A1B28] font-mono text-xs'
+                  : 'text-slate-400 font-mono text-xs'
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -343,17 +343,17 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
 
       {/* STEP 1: CUSTOMER & VEHICLE DATA */}
       {step === 1 && (
-        <div className="nike-card p-6 flex flex-col gap-6 animate-in fade-in">
+        <div className="glass-card p-6 flex flex-col gap-6 animate-in fade-in">
           <div className="border-b border-slate-200 pb-4">
-            <h2 className="font-display text-3xl text-slate-900">PASO 1: DATOS DEL CLIENTE Y VEHÍCULO</h2>
+            <h2 className="font-display text-3xl text-slate-800">PASO 1: DATOS DEL CLIENTE Y VEHÍCULO</h2>
             <p className="text-xs text-slate-500">Selecciona o crea el cliente y haz clic en la tarjeta de su vehículo para cargar sus datos automáticamente.</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Customer Section */}
-            <div className="flex flex-col gap-4 p-5 rounded-xl bg-black/40 border border-white/5">
+            <div className="flex flex-col gap-4 p-5 rounded-xl bg-slate-50 border border-slate-200">
               <div className="flex items-center justify-between">
-                <span className="font-display text-lg text-cyan-600">1. CLIENTE</span>
+                <span className="font-display text-lg text-[#7A1B28]">1. CLIENTE</span>
                 <button
                   type="button"
                   onClick={() => {
@@ -363,7 +363,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                     setNewCustEmail('');
                     setShowAddCustomerModal(true);
                   }}
-                  className="text-xs font-mono font-bold text-cyan-600 hover:underline flex items-center gap-1"
+                  className="text-xs font-mono font-bold text-[#7A1B28] hover:underline flex items-center gap-1"
                 >
                   <Plus className="w-3.5 h-3.5" /> Crear Nuevo Cliente
                 </button>
@@ -408,7 +408,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                       }
                     }
                   }}
-                  className="w-full bg-white border border-cyan-500/30 rounded-lg px-3 py-2.5 text-sm text-slate-900 focus:border-[#00E5FF] outline-none font-medium"
+                  className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2.5 text-sm text-slate-900 focus:border-[#7A1B28] outline-none font-medium"
                 >
                   <option value="" disabled>-- Selecciona un cliente del directorio --</option>
                   {customers.map((c) => (
@@ -419,7 +419,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                 </select>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-white/5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-200">
                 <div>
                   <label className="text-xs text-slate-500 mb-1 block">Nombre Completo *</label>
                   <input
@@ -427,7 +427,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                     placeholder="Ej. Gustavo Cisneros"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:border-[#00E5FF] outline-none"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:border-[#7A1B28] outline-none"
                   />
                 </div>
                 <div>
@@ -437,7 +437,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                     placeholder="Ej. V-14892011"
                     value={documentId}
                     onChange={(e) => setDocumentId(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:border-[#00E5FF] outline-none font-mono"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:border-[#7A1B28] outline-none font-mono"
                   />
                 </div>
                 <div>
@@ -447,7 +447,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                     placeholder="Ej. +58 414-9982311"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:border-[#00E5FF] outline-none font-mono"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:border-[#7A1B28] outline-none font-mono"
                   />
                 </div>
                 <div>
@@ -457,16 +457,16 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                     placeholder="ejemplo@correo.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:border-[#00E5FF] outline-none"
+                    className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:border-[#7A1B28] outline-none"
                   />
                 </div>
               </div>
             </div>
 
             {/* Vehicle Section */}
-            <div className="flex flex-col gap-4 p-5 rounded-xl bg-black/40 border border-white/5">
+            <div className="flex flex-col gap-4 p-5 rounded-xl bg-slate-50 border border-slate-200">
               <div className="flex items-center justify-between">
-                <span className="font-display text-lg text-cyan-600">2. SELECCIÓN DE VEHÍCULO</span>
+                <span className="font-display text-lg text-[#7A1B28]">2. SELECCIÓN DE VEHÍCULO</span>
                 <button
                   type="button"
                   onClick={() => {
@@ -479,7 +479,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                     setNewVehMileage('');
                     setShowAddVehicleModal(true);
                   }}
-                  className="text-xs font-mono font-bold text-cyan-600 hover:underline flex items-center gap-1"
+                  className="text-xs font-mono font-bold text-[#7A1B28] hover:underline flex items-center gap-1"
                 >
                   <Plus className="w-3.5 h-3.5" /> Registrar Vehículo
                 </button>
@@ -539,26 +539,26 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                               }}
                               className={`p-3 rounded-xl border transition-all cursor-pointer flex flex-col gap-1.5 relative overflow-hidden ${
                                 isSelected
-                                  ? 'bg-cyan-50 border-[#00E5FF] shadow-lg shadow-cyan-500/10 ring-1 ring-[#00E5FF]'
-                                  : 'bg-white/ border-slate-200 hover:border-white/30'
+                                  ? 'bg-red-50 border-[#7A1B28] shadow-lg shadow-[#7A1B28]/10 ring-1 ring-[#7A1B28]'
+                                  : 'bg-white border-slate-200 hover:border-slate-300'
                               }`}
                             >
                               <div className="flex items-center justify-between">
                                 <span className="font-bold text-slate-900 text-xs">{v.brand} {v.model}</span>
-                                <span className="font-mono text-[10px] text-cyan-600 font-bold">{v.plate}</span>
+                                <span className="font-mono text-[10px] text-[#7A1B28] font-bold">{v.plate}</span>
                               </div>
 
                               <div className="text-[10px] text-slate-500 font-mono flex flex-col gap-0.5">
                                 <div>Año: <span className="text-slate-900">{v.year}</span> | Color: <span className="text-slate-900">{v.color}</span></div>
                                 <div>VIN: <span className="text-slate-700">{v.vin || 'N/A'}</span></div>
                                 <div>Km Registrado: <span className="text-slate-700">{v.mileage || 'Por ingresar'}</span></div>
-                                <div className="truncate">Última Visita: <span className="text-cyan-400">{lastVisit}</span></div>
+                                <div className="truncate">Última Visita: <span className="text-[#7A1B28]">{lastVisit}</span></div>
                                 <div className="truncate">Último Servicio: <span className="text-slate-700">{lastService}</span></div>
                               </div>
 
                               {isSelected && (
-                                <span className="absolute top-1 right-1 text-cyan-600">
-                                  <CheckCircle className="w-3.5 h-3.5 fill-[#00E5FF] text-black" />
+                                <span className="absolute top-1 right-1 text-[#7A1B28]">
+                                  <CheckCircle className="w-3.5 h-3.5 fill-[#7A1B28] text-white" />
                                 </span>
                               )}
                             </div>
@@ -881,9 +881,9 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
 
       {/* STEP 4: SERVICES & PRESUPUESTO */}
       {step === 4 && (
-        <div className="nike-card p-6 flex flex-col gap-6 animate-in fade-in">
+        <div className="glass-card p-6 flex flex-col gap-6 animate-in fade-in">
           <div>
-            <h2 className="font-display text-3xl text-slate-900">PASO 4: SELECCIÓN DE SERVICIOS Y PRESUPUESTO</h2>
+            <h2 className="font-display text-3xl text-slate-800">PASO 4: SELECCIÓN DE SERVICIOS Y PRESUPUESTO</h2>
             <p className="text-xs text-slate-500">Selecciona los servicios requeridos para este vehículo.</p>
           </div>
 
@@ -892,16 +892,16 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
             {servicesCatalog.map((service) => (
               <div
                 key={service.id}
-                className="p-3.5 rounded-xl bg-black/40 border border-slate-200 flex items-center justify-between gap-3 hover:border-cyan-500/40 transition-all"
+                className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-3 hover:border-[#7A1B28]/40 hover:shadow-sm transition-all"
               >
                 <div>
-                  <span className="text-[10px] font-mono text-cyan-600 uppercase">{service.category}</span>
+                  <span className="text-[10px] font-mono text-[#7A1B28] uppercase">{service.category}</span>
                   <div className="font-bold text-slate-900 text-xs">{service.name}</div>
                   <div className="text-[10px] text-slate-500">Aproximado: {service.estimatedHours} horas de taller</div>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="font-mono font-bold text-slate-900 text-sm">${service.price}</span>
-                  <button onClick={() => handleAddService(service.id)} className="btn-nike-primary text-xs py-1.5 px-3">
+                  <button onClick={() => handleAddService(service.id)} className="btn-primary text-xs py-1.5 px-3">
                     + Agregar
                   </button>
                 </div>
@@ -912,7 +912,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
           <div className="flex justify-end mt-1">
             <button
               onClick={handleAddCustomService}
-              className="btn-nike-secondary text-xs py-1.5 px-3 flex items-center gap-2 border-dashed border-[#00E5FF]/50 text-cyan-600 hover:bg-cyan-50 transition-colors"
+              className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-2 border-dashed border-[#7A1B28]/50 text-[#7A1B28] hover:bg-red-50 transition-colors"
             >
               <Plus className="w-3.5 h-3.5" /> Añadir Servicio Adicional
             </button>
@@ -920,16 +920,16 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
 
           {/* Selected Presupuesto Summary */}
           {selectedServices.length > 0 && (
-            <div className="p-4 rounded-xl bg-white border border-cyan-500/30 flex flex-col gap-3">
+            <div className="p-4 rounded-xl bg-white border border-[#7A1B28]/30 flex flex-col gap-3 shadow-sm">
               <span className="font-display text-xl text-slate-900">RESUMEN DEL PRESUPUESTO</span>
-              <div className="divide-y divide-white/5">
+              <div className="divide-y divide-slate-100">
                 {selectedServices.map((s) => (
                   <div key={s.serviceId} className="py-2 flex items-center justify-between text-xs gap-4">
                     <input
                       type="text"
                       value={s.serviceName}
                       onChange={(e) => handleUpdateService(s.serviceId, { serviceName: e.target.value })}
-                      className="flex-1 bg-black/30 border border-white/5 rounded px-2 py-1 text-slate-900 focus:border-[#00E5FF] outline-none"
+                      className="flex-1 bg-slate-50 border border-slate-200 rounded px-2 py-1 text-slate-900 focus:border-[#7A1B28] outline-none"
                     />
                     <div className="flex items-center gap-2">
                       <span className="text-slate-500 font-mono">$</span>
@@ -939,16 +939,16 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                         step="0.01"
                         value={s.unitPrice}
                         onChange={(e) => handleUpdateService(s.serviceId, { unitPrice: Number(e.target.value) })}
-                        className="w-20 bg-black/30 border border-white/5 rounded px-2 py-1 text-slate-900 font-mono focus:border-[#00E5FF] outline-none text-right"
+                        className="w-20 bg-slate-50 border border-slate-200 rounded px-2 py-1 text-slate-900 font-mono focus:border-[#7A1B28] outline-none text-right"
                       />
-                      <button onClick={() => handleRemoveService(s.serviceId)} className="text-red-400 hover:text-red-300 ml-2">
+                      <button onClick={() => handleRemoveService(s.serviceId)} className="text-red-500 hover:text-red-700 ml-2">
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>
                 ))}
               </div>
-              <div className="border-t border-slate-200 pt-3 flex items-center justify-between font-display text-2xl text-cyan-600">
+              <div className="border-t border-slate-200 pt-3 flex items-center justify-between font-display text-2xl text-[#7A1B28]">
                 <span>TOTAL ESTIMADO:</span>
                 <span className="font-mono">${subtotal}</span>
               </div>
@@ -956,10 +956,10 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
           )}
 
           <div className="flex justify-between items-center pt-4 border-t border-slate-200">
-            <button onClick={() => setStep(3)} className="btn-nike-secondary text-sm">
+            <button onClick={() => setStep(3)} className="btn-secondary text-sm">
               <ArrowLeft className="w-4 h-4" /> Anterior
             </button>
-            <button onClick={() => setStep(5)} className="btn-nike-primary text-sm">
+            <button onClick={() => setStep(5)} className="btn-primary text-sm">
               Siguiente: Fotos & Firma Digital <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -968,9 +968,9 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
 
       {/* STEP 5: PHOTOS & DIGITAL SIGNATURE */}
       {step === 5 && (
-        <div className="nike-card p-6 flex flex-col gap-6 animate-in fade-in">
+        <div className="glass-card p-6 flex flex-col gap-6 animate-in fade-in">
           <div>
-            <h2 className="font-display text-3xl text-slate-900">PASO 5: FOTOGRAFÍAS Y FIRMA DE CONFORMIDAD</h2>
+            <h2 className="font-display text-3xl text-slate-800">PASO 5: FOTOGRAFÍAS Y FIRMA DE CONFORMIDAD</h2>
             <p className="text-xs text-slate-500">Verifica las evidencias y captura la firma del cliente.</p>
           </div>
 
@@ -978,25 +978,25 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
             {/* Photos */}
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
-                <span className="font-display text-lg text-cyan-600">EVIDENCIAS FOTOGRÁFICAS</span>
+                <span className="font-display text-lg text-[#7A1B28]">EVIDENCIAS FOTOGRÁFICAS</span>
                 <div className="flex gap-2">
                   <button 
                     onClick={() => triggerCamera('general')}
-                    className="btn-nike-primary text-xs py-1.5 px-3 flex items-center gap-2 shadow-lg shadow-cyan-500/20"
+                    className="btn-primary text-xs py-1.5 px-3 flex items-center gap-2 shadow-lg"
                   >
                     <Camera className="w-3.5 h-3.5" /> Cámara
                   </button>
                   <button 
                     onClick={() => triggerUpload('general')}
-                    className="btn-nike-primary text-xs py-1.5 px-3 flex items-center gap-2 shadow-lg shadow-cyan-500/20"
+                    className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-2 shadow-lg"
                   >
                     <Upload className="w-3.5 h-3.5" /> Galería
                   </button>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 min-h-[150px] border border-dashed border-slate-200 rounded-xl p-4 bg-black/20">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 min-h-[150px] border border-dashed border-slate-300 rounded-xl p-4 bg-slate-50">
                 {photos.filter(p => p.category === 'general').length === 0 && (
-                  <div className="col-span-full flex flex-col items-center justify-center text-slate-500 gap-2 opacity-50">
+                  <div className="col-span-full flex flex-col items-center justify-center text-slate-400 gap-2">
                     <ImagePlus className="w-8 h-8" />
                     <span className="text-xs">No se han añadido fotos de evidencia</span>
                   </div>
@@ -1008,13 +1008,13 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                       <img src={p.url} alt={p.caption} className="w-full h-full object-cover" />
                       <button 
                         onClick={() => handleRemovePhoto(idx)}
-                        className="absolute top-2 right-2 p-1.5 bg-red-500/80 hover:bg-red-600 text-slate-900 rounded-full shadow-lg transition-all"
+                        className="absolute top-2 right-2 p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-lg transition-all"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-3 flex flex-col justify-end pointer-events-none">
-                        <span className="font-mono text-[10px] text-cyan-600 uppercase">{p.category}</span>
-                        <span className="text-xs font-bold text-slate-900">{p.caption}</span>
+                        <span className="font-mono text-[10px] text-white/80 uppercase">{p.category}</span>
+                        <span className="text-xs font-bold text-white">{p.caption}</span>
                       </div>
                     </div>
                   );
@@ -1028,8 +1028,8 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-cyan-50 border border-cyan-500/30 flex items-center gap-4">
-            <CheckCircle className="w-8 h-8 text-cyan-600 shrink-0" />
+          <div className="p-4 rounded-xl bg-green-50 border border-green-200 flex items-center gap-4">
+            <CheckCircle className="w-8 h-8 text-green-600 shrink-0" />
             <div>
               <div className="font-display text-lg text-slate-900">LISTO PARA REGISTRAR EN EL TALLER</div>
               <div className="text-xs text-slate-700">
@@ -1039,10 +1039,10 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
           </div>
 
           <div className="flex justify-between items-center pt-4 border-t border-slate-200">
-            <button onClick={() => setStep(4)} className="btn-nike-secondary text-sm">
+            <button onClick={() => setStep(4)} className="btn-secondary text-sm">
               <ArrowLeft className="w-4 h-4" /> Anterior
             </button>
-            <button onClick={handleCompleteODS} className="btn-nike-primary text-base py-3 px-8 shadow-2xl">
+            <button onClick={handleCompleteODS} className="btn-primary text-base py-3 px-8 shadow-2xl">
               <CheckCircle2 className="w-5 h-5" /> GENERAR ORDEN DE SERVICIO OFICIAL
             </button>
           </div>
@@ -1051,13 +1051,13 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
 
       {/* Modal: In-situ Add Customer */}
       {showAddCustomerModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="nike-card p-6 w-full max-w-md flex flex-col gap-4 border-slate-300 shadow-2xl animate-scale-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="glass-card p-6 w-full max-w-md flex flex-col gap-4 shadow-2xl animate-scale-up">
             <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <h3 className="font-display text-xl text-slate-900 flex items-center gap-2">
-                <UserCheck className="w-5 h-5 text-cyan-600" /> CREAR NUEVO CLIENTE
+                <UserCheck className="w-5 h-5 text-[#7A1B28]" /> CREAR NUEVO CLIENTE
               </h3>
-              <button onClick={() => setShowAddCustomerModal(false)} className="text-slate-500 hover:text-slate-900">
+              <button onClick={() => setShowAddCustomerModal(false)} className="text-slate-400 hover:text-slate-600">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -1143,13 +1143,13 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowAddCustomerModal(false)}
-                  className="flex-1 bg-transparent border border-slate-300 text-slate-900 py-2.5 rounded-lg text-xs font-bold hover:bg-white/5 transition-colors uppercase tracking-wider"
+                  className="flex-1 btn-secondary text-xs uppercase tracking-wider"
                 >
                   CANCELAR
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-[#00E5FF] text-black py-2.5 rounded-lg text-xs font-bold hover:bg-cyan-400 transition-colors uppercase tracking-wider flex items-center justify-center gap-1.5"
+                  className="flex-1 btn-primary text-xs uppercase tracking-wider"
                 >
                   <CheckCircle className="w-4 h-4" /> GUARDAR CLIENTE
                 </button>
@@ -1161,16 +1161,16 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
 
       {/* Modal: In-situ Add Vehicle */}
       {showAddVehicleModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="nike-card p-6 w-full max-w-md flex flex-col gap-4 border-slate-300 shadow-2xl animate-scale-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="glass-card p-6 w-full max-w-md flex flex-col gap-4 shadow-2xl animate-scale-up">
             <div className="flex items-center justify-between border-b border-slate-200 pb-3">
               <div>
                 <h3 className="font-display text-xl text-slate-900 flex items-center gap-2">
-                  <Car className="w-5 h-5 text-cyan-600" /> REGISTRAR NUEVO VEHÍCULO
+                  <Car className="w-5 h-5 text-[#7A1B28]" /> REGISTRAR NUEVO VEHÍCULO
                 </h3>
                 {customerName && <p className="text-xs text-slate-500">Para: <strong className="text-slate-900">{customerName}</strong></p>}
               </div>
-              <button onClick={() => setShowAddVehicleModal(false)} className="text-slate-500 hover:text-slate-900">
+              <button onClick={() => setShowAddVehicleModal(false)} className="text-slate-400 hover:text-slate-600">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -1297,13 +1297,13 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowAddVehicleModal(false)}
-                  className="flex-1 bg-transparent border border-slate-300 text-slate-900 py-2.5 rounded-lg text-xs font-bold hover:bg-white/5 transition-colors uppercase tracking-wider"
+                  className="flex-1 btn-secondary text-xs uppercase tracking-wider"
                 >
                   CANCELAR
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-[#00E5FF] text-black py-2.5 rounded-lg text-xs font-bold hover:bg-cyan-400 transition-colors uppercase tracking-wider flex items-center justify-center gap-1.5"
+                  className="flex-1 btn-primary text-xs uppercase tracking-wider"
                 >
                   <CheckCircle className="w-4 h-4" /> GUARDAR VEHÍCULO
                 </button>

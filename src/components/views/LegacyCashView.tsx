@@ -12,7 +12,7 @@ export const LegacyCashView: React.FC<LegacyCashViewProps> = ({ transactions }) 
         <div>
           <h1 className="text-2xl font-display font-bold text-slate-900 tracking-wider flex items-center gap-3">
             HISTÓRICO LEGACY
-            <span className="bg-red-500/20 text-red-400 text-xs px-2 py-1 rounded border border-red-500/30 uppercase tracking-widest">
+            <span className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded border border-red-200 uppercase tracking-widest">
               Solo Lectura
             </span>
           </h1>
@@ -22,9 +22,9 @@ export const LegacyCashView: React.FC<LegacyCashViewProps> = ({ transactions }) 
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto rounded-xl border border-white/5 bg-[#090C12]">
+      <div className="flex-1 overflow-auto rounded-xl border border-slate-200 bg-white">
         <table className="w-full text-sm text-left text-slate-700">
-          <thead className="text-xs text-slate-900 uppercase bg-black/50 border-b border-slate-200 font-display tracking-wider sticky top-0">
+          <thead className="text-xs text-slate-900 uppercase bg-slate-50 border-b border-slate-200 font-display tracking-wider sticky top-0">
             <tr>
               <th className="px-4 py-3">Fecha</th>
               <th className="px-4 py-3">ODS / Ref</th>
@@ -34,24 +34,24 @@ export const LegacyCashView: React.FC<LegacyCashViewProps> = ({ transactions }) 
               <th className="px-4 py-3 text-right">Monto</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5 font-mono">
+          <tbody className="divide-y divide-slate-200 font-mono">
             {transactions.map((tx) => (
-              <tr key={tx.id} className="hover:bg-white/5 transition-colors">
+              <tr key={tx.id} className="hover:bg-slate-50 transition-colors">
                 <td className="px-4 py-3">{tx.date}</td>
-                <td className="px-4 py-3 text-cyan-600">{tx.orderNumber || tx.referenceNumber || '-'}</td>
+                <td className="px-4 py-3 text-[#7A1B28]">{tx.orderNumber || tx.referenceNumber || '-'}</td>
                 <td className="px-4 py-3 text-slate-900">{tx.customerName}</td>
                 <td className="px-4 py-3">
                   <span className={`px-2 py-1 rounded text-xs ${
-                    tx.type === 'payment' ? 'bg-emerald-500/20 text-emerald-400' :
-                    tx.type === 'expense' ? 'bg-rose-500/20 text-rose-400' :
-                    'bg-blue-500/20 text-blue-400'
+                    tx.type === 'payment' ? 'bg-emerald-100 text-emerald-700' :
+                    tx.type === 'expense' ? 'bg-rose-100 text-rose-700' :
+                    'bg-blue-100 text-blue-700'
                   }`}>
                     {tx.type}
                   </span>
                 </td>
                 <td className="px-4 py-3 capitalize">{tx.paymentMethod.replace('_', ' ')}</td>
                 <td className={`px-4 py-3 text-right font-bold ${
-                  tx.type === 'expense' || tx.type === 'refund' ? 'text-rose-400' : 'text-emerald-400'
+                  tx.type === 'expense' || tx.type === 'refund' ? 'text-rose-600' : 'text-emerald-600'
                 }`}>
                   {tx.type === 'expense' || tx.type === 'refund' ? '-' : '+'}${tx.amount.toFixed(2)}
                 </td>

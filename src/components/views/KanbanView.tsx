@@ -25,7 +25,7 @@ export const KanbanView: React.FC<KanbanViewProps> = ({
   currentRole,
 }) => {
   const columns: { id: ODSStatus; label: string; color: string }[] = [
-    { id: 'received', label: '1. RECIBIDO', color: 'border-[#00E5FF] text-cyan-600' },
+    { id: 'received', label: '1. RECIBIDO', color: 'border-[#7A1B28] text-[#7A1B28]' },
     { id: 'diagnosis', label: '2. DIAGNÓSTICO', color: 'border-amber-500 text-amber-400' },
     { id: 'quote_sent', label: '3. PRESUPUESTO ENVIADO', color: 'border-purple-500 text-purple-400' },
     { id: 'quote_approved', label: '4. PRESUPUESTO APROBADO', color: 'border-emerald-500 text-emerald-400' },
@@ -74,7 +74,7 @@ export const KanbanView: React.FC<KanbanViewProps> = ({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0">
         <div>
           <h2 className="font-display text-3xl text-slate-900 tracking-wide flex items-center gap-2">
-            TABLERO EN VIVO <span className="w-2.5 h-2.5 rounded-full bg-[#00E5FF] animate-pulse" />
+            TABLERO EN VIVO <span className="w-2.5 h-2.5 rounded-full bg-[#7A1B28] animate-pulse" />
           </h2>
           <p className="text-xs text-slate-500">
             Control operativo de flujos por estaciones de trabajo. Sincronizado en tiempo real.
@@ -93,12 +93,12 @@ export const KanbanView: React.FC<KanbanViewProps> = ({
           return (
             <div
               key={col.id}
-              className="w-72 shrink-0 flex flex-col bg-slate-50/ border border-slate-200 rounded-2xl p-3 h-full"
+              className="w-72 shrink-0 flex flex-col bg-slate-50 border border-slate-200 rounded-2xl p-3 h-full"
             >
               {/* Column Header */}
               <div className={`flex items-center justify-between border-b pb-2 mb-3 ${col.color}`}>
                 <span className="font-display text-sm tracking-wider uppercase">{col.label}</span>
-                <span className="w-5 h-5 rounded-full bg-white/10 text-slate-900 font-mono text-xs flex items-center justify-center font-bold">
+                <span className="w-5 h-5 rounded-full bg-slate-200 text-slate-900 font-mono text-xs flex items-center justify-center font-bold">
                   {colOrders.length}
                 </span>
               </div>
@@ -117,18 +117,18 @@ export const KanbanView: React.FC<KanbanViewProps> = ({
                       <div
                         key={order.id}
                         onClick={() => onSelectOrder(order)}
-                        className="nike-card p-4 flex flex-col gap-3 cursor-pointer border-slate-200 hover:border-cyan-500/50 transition-all group"
+                        className="glass-card p-4 flex flex-col gap-3 cursor-pointer border-slate-200 hover:border-[#7A1B28]/50 transition-all group"
                       >
                         {/* Order Number & Vehicle Header */}
                         <div className="flex items-center justify-between">
-                          <span className="font-mono font-bold text-xs text-cyan-600">{order.orderNumber}</span>
-                          <span className="text-[10px] font-mono text-slate-500 bg-white/5 px-2 py-0.5 rounded-full">
+                          <span className="font-mono font-bold text-xs text-[#7A1B28]">{order.orderNumber}</span>
+                          <span className="text-[10px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
                             {order.vehiclePlate}
                           </span>
                         </div>
 
                         <div>
-                          <h4 className="font-bold text-slate-900 text-sm line-clamp-1 group-hover:text-cyan-600 transition-colors">
+                          <h4 className="font-bold text-slate-900 text-sm line-clamp-1 group-hover:text-[#7A1B28] transition-colors">
                             {order.vehicleBrandModel}
                           </h4>
                           <span className="text-xs text-slate-500 truncate block">{order.customerName}</span>
@@ -136,16 +136,16 @@ export const KanbanView: React.FC<KanbanViewProps> = ({
 
                         {/* Services preview */}
                         {order.services.length > 0 && (
-                          <div className="text-[10px] text-slate-500 bg-black/40 p-2 rounded-lg border border-white/5 truncate">
+                          <div className="text-[10px] text-slate-500 bg-slate-50 p-2 rounded-lg border border-slate-200 truncate">
                             {order.services[0].serviceName}
                             {order.services.length > 1 && ` (+${order.services.length - 1} más)`}
                           </div>
                         )}
 
                         {/* Assigned Techs & Delivery Time */}
-                        <div className="flex items-center justify-between text-[10px] text-slate-500 border-t border-white/5 pt-2">
+                        <div className="flex items-center justify-between text-[10px] text-slate-500 border-t border-slate-200 pt-2">
                           <div className="flex items-center gap-1">
-                            <User className="w-3 h-3 text-cyan-400" />
+                            <User className="w-3 h-3 text-[#7A1B28]" />
                             <span>{order.assignedStaff?.[0]?.name || 'Por Asignar'}</span>
                           </div>
                           <span className="font-mono text-slate-900 font-bold">${order.totalAmount}</span>
@@ -156,7 +156,7 @@ export const KanbanView: React.FC<KanbanViewProps> = ({
                           {prev ? (
                             <button
                               onClick={() => onUpdateStatus(order.id, prev)}
-                              className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-slate-500 hover:text-slate-900 transition-colors"
+                              className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 border border-transparent hover:border-slate-300 transition-colors"
                               title="Retroceder estado"
                             >
                               <ChevronLeft className="w-4 h-4" />
@@ -175,7 +175,7 @@ export const KanbanView: React.FC<KanbanViewProps> = ({
                           ) : next && (
                             <button
                               onClick={() => onUpdateStatus(order.id, next)}
-                              className="px-2.5 py-1 rounded-lg bg-[#00E5FF] text-black font-display text-xs font-bold hover:bg-[#33EBFF] flex items-center gap-1 transition-colors ml-auto shadow-md"
+                              className="px-2.5 py-1 rounded-lg bg-[#7A1B28] text-white font-display text-xs font-bold hover:bg-[#8B1E2D] flex items-center gap-1 transition-colors ml-auto shadow-md"
                               title="Avanzar siguiente estado"
                             >
                               <span>Avanzar</span>

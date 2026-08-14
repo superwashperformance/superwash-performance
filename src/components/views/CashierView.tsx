@@ -128,7 +128,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
       <div className="flex items-center justify-between">
         <div>
           <h2 className="font-display text-3xl text-slate-900 tracking-wide flex items-center gap-2">
-            CAJA Y COBRANZA <DollarSign className="w-6 h-6 text-cyan-600" />
+            CAJA Y COBRANZA <DollarSign className="w-6 h-6 text-[#7A1B28]" />
           </h2>
           <p className="text-xs text-slate-500">
             Apertura/Cierre de sesión y registro de cobranzas de clientes.
@@ -150,13 +150,13 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Register Payment Form */}
-        <div className="lg:col-span-1 nike-card p-6 flex flex-col gap-4 relative overflow-hidden">
+        <div className="lg:col-span-1 glass-card p-6 flex flex-col gap-4 relative overflow-hidden border-slate-200">
           <h3 className="font-display text-2xl text-slate-900 flex items-center gap-2">
-            <Plus className="w-5 h-5 text-cyan-600" /> NUEVA COBRANZA
+            <Plus className="w-5 h-5 text-[#7A1B28]" /> NUEVA COBRANZA
           </h3>
 
           {!session ? (
-            <div className="absolute inset-0 bg-white/ backdrop-blur-sm z-10 flex flex-col items-center justify-center p-6 text-center border border-slate-200 rounded-2xl">
+            <div className="absolute inset-0 bg-white/90 backdrop-blur-sm z-10 flex flex-col items-center justify-center p-6 text-center border border-slate-200 rounded-2xl">
               <DollarSign className="w-12 h-12 text-slate-500 mb-4" />
               <h4 className="text-slate-900 font-display text-xl mb-2">CAJA CERRADA</h4>
               <p className="text-xs text-slate-500 mb-6">Debes abrir una sesión de caja para procesar cobranzas.</p>
@@ -181,7 +181,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
               <select
                 value={selectedCustomerId}
                 onChange={(e) => setSelectedCustomerId(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#00E5FF] outline-none"
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none"
               >
                 <option value="">Seleccione un cliente...</option>
                 {customers.map((c) => (
@@ -200,7 +200,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                 min="0.01"
                 value={paymentAmount}
                 onChange={(e) => setPaymentAmount(Number(e.target.value))}
-                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-lg text-slate-900 font-mono font-bold focus:border-[#00E5FF] outline-none"
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-lg text-slate-900 font-mono font-bold focus:border-[#7A1B28] outline-none"
               />
             </div>
 
@@ -209,7 +209,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
               <select
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#00E5FF] outline-none mb-3"
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none mb-3"
               >
                 <option value="efectivo">Efectivo ($ USD)</option>
                 <option value="zelle">Zelle</option>
@@ -219,16 +219,16 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
               </select>
             </div>
 
-            <button type="submit" disabled={isProcessing} className="btn-nike-primary text-sm py-3 mt-2 justify-center disabled:opacity-50">
+            <button type="submit" disabled={isProcessing} className="btn-primary text-sm py-3 mt-2 justify-center disabled:opacity-50">
               {isProcessing ? 'PROCESANDO...' : 'PROCESAR COBRANZA'}
             </button>
           </form>
         </div>
 
         {/* Current State & Recent Transactions (Placeholder for brevity) */}
-        <div className="lg:col-span-2 nike-card p-6 flex flex-col gap-4">
+        <div className="lg:col-span-2 glass-card p-6 flex flex-col gap-4 border-slate-200">
            <h3 className="font-display text-2xl text-slate-900 flex items-center gap-2">
-             <Receipt className="w-5 h-5 text-cyan-600" /> SESIÓN ACTUAL
+             <Receipt className="w-5 h-5 text-[#7A1B28]" /> SESIÓN ACTUAL
            </h3>
            
            {session ? (
@@ -250,8 +250,8 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
 
       {/* Close Register Modal */}
       {showCloseModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-sm w-full flex flex-col gap-6 animate-scale-up shadow-2xl shadow-[#00E5FF]/10">
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 max-w-sm w-full flex flex-col gap-6 animate-scale-up shadow-xl shadow-slate-200/50">
             <div className="text-center">
               <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/30">
                 <DollarSign className="w-8 h-8 text-red-500" />
@@ -265,7 +265,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
             <div className="flex gap-3">
               <button 
                 onClick={() => setShowCloseModal(false)}
-                className="flex-1 bg-transparent border border-slate-300 text-slate-900 py-3 rounded-xl font-bold text-sm hover:bg-white/5 transition-colors"
+                className="flex-1 bg-transparent border border-slate-300 text-slate-900 py-3 rounded-xl font-bold text-sm hover:bg-slate-100 transition-colors"
                 disabled={isProcessing}
               >
                 CANCELAR
@@ -273,7 +273,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
               <button 
                 onClick={handleCloseRegister}
                 disabled={isProcessing}
-                className="flex-1 bg-red-500 text-slate-900 py-3 rounded-xl font-bold text-sm hover:bg-red-400 transition-colors uppercase tracking-wider disabled:opacity-50"
+                className="flex-1 bg-red-500 text-white py-3 rounded-xl font-bold text-sm hover:bg-red-600 transition-colors uppercase tracking-wider disabled:opacity-50"
               >
                 {isProcessing ? '...' : 'CERRAR CAJA'}
               </button>

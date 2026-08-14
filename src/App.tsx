@@ -713,7 +713,7 @@ export function App() {
       </div>
 
       {/* ODS Detail Modal */}
-        <ODSDetailModal
+      <ODSDetailModal
           order={selectedOrder}
           onClose={() => setSelectedOrder(null)}
           companyData={companyData}
@@ -725,8 +725,8 @@ export function App() {
 
       {/* Command Palette Search Modal */}
       {isSearchOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-md flex items-start justify-center pt-20 p-4">
-          <div className="nike-card w-full max-w-xl p-4 flex flex-col gap-3 shadow-2xl border-slate-200 bg-white">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-start justify-center pt-20 p-4">
+          <div className="glass-card w-full max-w-xl p-4 flex flex-col gap-3">
             <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
               <Search className="w-5 h-5 text-slate-400" />
               <input
@@ -737,7 +737,7 @@ export function App() {
                 autoFocus
                 className="flex-1 bg-transparent text-sm text-slate-900 focus:outline-none font-mono placeholder:text-slate-400"
               />
-              <button onClick={() => setIsSearchOpen(false)} className="text-slate-400 hover:text-slate-800">
+              <button onClick={() => setIsSearchOpen(false)} className="text-slate-400 hover:text-slate-800 transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -755,18 +755,18 @@ export function App() {
                       setSelectedOrder(order);
                       setIsSearchOpen(false);
                     }}
-                    className="p-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-cyan-500/30 cursor-pointer flex items-center justify-between transition-colors"
+                    className="p-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#7A1B28]/30 cursor-pointer flex items-center justify-between transition-colors"
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-xs text-cyan-600">{order.orderNumber}</span>
-                        <span className="font-bold text-slate-900 text-xs">{order.vehicleBrandModel}</span>
+                        <span className="font-mono font-bold text-xs text-[#7A1B28]">{order.orderNumber}</span>
+                        <span className="font-bold text-slate-800 text-xs">{order.vehicleBrandModel}</span>
                       </div>
                       <span className="text-[10px] text-slate-500 font-mono">
                         Placa: {order.vehiclePlate} | Cliente: {order.customerName}
                       </span>
                     </div>
-                    <span className="font-mono text-xs font-bold text-slate-900">${order.totalAmount}</span>
+                    <span className="font-mono text-xs font-bold text-slate-800">${order.totalAmount}</span>
                   </div>
                 ))
               )}

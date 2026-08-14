@@ -77,8 +77,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onLoginSuccess, onCancel }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/ backdrop-blur-sm p-4 animate-fade-in">
-      <div className="nike-card p-8 w-full max-w-md flex flex-col gap-6 shadow-2xl relative overflow-hidden bg-white rounded-3xl border border-slate-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 animate-fade-in">
+      <div className="glass-card p-8 w-full max-w-md flex flex-col gap-6 shadow-2xl relative overflow-hidden bg-white rounded-3xl border border-slate-200">
         
         {onCancel && (
           <button
@@ -110,7 +110,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onLoginSuccess, onCancel }
               placeholder="Correo electrónico"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-300 rounded-2xl px-4 py-3.5 text-sm text-slate-900 placeholder:text-slate-500 focus:border-[#00E5FF] focus:ring-1 focus:ring-[#00E5FF] outline-none transition-all"
+              className="w-full bg-slate-50 border border-slate-300 rounded-2xl px-4 py-3.5 text-sm text-slate-900 placeholder:text-slate-500 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all"
             />
           </div>
 
@@ -121,12 +121,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onLoginSuccess, onCancel }
               placeholder="Contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-300 rounded-2xl px-4 py-3.5 pr-12 text-sm text-slate-900 placeholder:text-slate-500 focus:border-[#00E5FF] focus:ring-1 focus:ring-[#00E5FF] outline-none transition-all font-mono"
+              className="w-full bg-slate-50 border border-slate-300 rounded-2xl px-4 py-3.5 pr-12 text-sm text-slate-900 placeholder:text-slate-500 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all font-mono"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-cyan-600 transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-[#7A1B28] transition-colors"
             >
               {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
@@ -135,7 +135,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onLoginSuccess, onCancel }
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-[#00E5FF] hover:bg-cyan-400 text-slate-900 font-bold py-3.5 rounded-full text-base font-display tracking-wide shadow-lg shadow-cyan-500/20 transition-all mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-[#7A1B28] hover:bg-[#9c2233] text-white font-bold py-3.5 rounded-full text-base font-display tracking-wide shadow-lg shadow-[#7A1B28]/20 transition-all mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? 'Iniciando...' : 'Iniciar sesión'}
           </button>
