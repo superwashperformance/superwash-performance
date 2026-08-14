@@ -237,7 +237,7 @@ export const ClientTrackingPortal: React.FC<ClientTrackingPortalProps> = ({ init
                   <span className="font-mono text-slate-500 block mb-3 uppercase tracking-widest text-xs text-center">Ficha del Registro Final</span>
                   <div className="rounded-xl overflow-hidden shadow-sm border border-slate-200">
                     <img 
-                      src={order.photos.slice().reverse().find(p => p.category === 'post_service')?.photoUrl || order.photos[order.photos.length - 1].photoUrl} 
+                      src={order.photos.slice().reverse().find(p => p.category === 'final')?.photoUrl || order.photos[order.photos.length - 1].photoUrl} 
                       alt="Registro Final" 
                       className="w-full h-auto object-cover max-h-64"
                     />
