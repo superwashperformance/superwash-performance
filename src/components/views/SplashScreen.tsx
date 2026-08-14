@@ -57,9 +57,14 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
   };
 
   return (
-    <div className="min-h-screen lg:h-screen w-full bg-slate-50 text-slate-900 flex flex-col items-center justify-between p-3 sm:p-4 md:p-6 overflow-y-auto select-none">
+    <div 
+      className="relative min-h-screen lg:h-screen w-full text-slate-900 flex flex-col items-center justify-between p-3 sm:p-4 md:p-6 overflow-y-auto select-none bg-cover bg-center"
+      style={{ backgroundImage: 'url(/login-bg.png)' }}
+    >
+      {/* Background Opacity Layer */}
+      <div className="absolute inset-0 bg-slate-50/85 pointer-events-none z-0" />
       {/* Background Cyber Glow & Grid */}
-      <div className="absolute inset-0 bg-[radial-gradient(#7A1B28_1.5px,transparent_1.5px)] [background-size:32px_32px] opacity-15 pointer-events-none" />
+      <div className="absolute inset-0 z-0 bg-[radial-gradient(#7A1B28_1.5px,transparent_1.5px)] [background-size:32px_32px] opacity-15 pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] bg-slate-200/50 rounded-full blur-[100px] sm:blur-[140px] pointer-events-none" />
 
       {/* Top Header */}
