@@ -348,7 +348,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-3 text-emerald-600">
             <Building className="w-5 h-5" />
-            <h3 className="font-display text-xl text-slate-800">SEDES (BRANCHES)</h3>
+            <h3 className="font-display text-xl text-slate-800">SEDES</h3>
           </div>
           {!isAddingBranch ? (
             <button onClick={() => setIsAddingBranch(true)} className="btn-primary text-xs flex items-center gap-1 py-1.5 px-3">
