@@ -572,62 +572,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         </div>
       </div>
 
-      {/* Security & Audit Panel */}
-      <div className="glass-card p-6 flex flex-col gap-4 border-slate-200 bg-slate-50 shadow-sm">
-        <div className="flex items-center justify-between border-b border-slate-200 pb-3">
-          <div className="flex items-center gap-3 text-slate-700">
-            <ShieldCheck className="w-6 h-6" />
-            <div>
-              <h3 className="font-display text-xl text-slate-800">PANEL DE BLINDAJE DE SEGURIDAD & AUDITORÍA</h3>
-              <p className="text-xs text-slate-500">Protección activa de datos, control RBAC y sanitización de transacciones.</p>
-            </div>
-          </div>
-          <span className="bg-emerald-50 text-emerald-600 border border-emerald-200 text-xs font-mono font-bold px-3 py-1 rounded-full flex items-center gap-1.5">
-            <Lock className="w-3.5 h-3.5" /> 100% BLINDADO
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
-          <div className="p-3.5 rounded-xl bg-white border border-slate-200 flex flex-col gap-1 shadow-sm">
-            <div className="flex items-center gap-2 text-emerald-600 font-bold">
-              <Shield className="w-4 h-4" /> RBAC estricto
-            </div>
-            <p className="text-[11px] text-slate-500 mt-1 font-sans">
-              Restricción por roles (Admin, Owner, Sales, Reception) en caja, inventario y configuraciones.
-            </p>
-            <span className="text-[10px] text-emerald-600 mt-auto font-mono">ESTADO: ACTIVO ✔</span>
-          </div>
-
-          <div className="p-3.5 rounded-xl bg-white border border-slate-200 flex flex-col gap-1 shadow-sm">
-            <div className="flex items-center gap-2 text-blue-600 font-bold">
-              <Key className="w-4 h-4" /> Sanitización Anti-XSS
-            </div>
-            <p className="text-[11px] text-slate-500 mt-1 font-sans">
-              Validación y escape dinámico de entradas en búsquedas, recibos e inventario contra inyecciones.
-            </p>
-            <span className="text-[10px] text-blue-600 mt-auto font-mono">ESTADO: BLINDADO ✔</span>
-          </div>
-
-          <div className="p-3.5 rounded-xl bg-white border border-slate-200 flex flex-col gap-1 shadow-sm">
-            <div className="flex items-center gap-2 text-purple-600 font-bold">
-              <EyeOff className="w-4 h-4" /> Integridad de Caja
-            </div>
-            <p className="text-[11px] text-slate-500 mt-1 font-sans">
-              Validación de aperturas/cierres de caja sin inconsistencias o montos negativos.
-            </p>
-            <span className="text-[10px] text-purple-600 mt-auto font-mono">ESTADO: VERIFICADO ✔</span>
-          </div>
-        </div>
-
-        <div className="pt-2 flex justify-end">
-          <button
-            onClick={() => alert('🛡️ ESCANEO DE SEGURIDAD COMPLETADO:\n- 0 Vulnerabilidades detectadas.\n- Permisos RBAC validados.\n- Sanitización de entradas activa.\n- Integridad de almacenamiento 100% segura.')}
-            className="bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200 font-bold text-xs px-4 py-2 rounded-lg font-mono transition-all flex items-center gap-2 uppercase tracking-wider"
-          >
-            <ShieldCheck className="w-4 h-4" /> AUDITAR E INTEGRIDAD DE SISTEMA
-          </button>
-        </div>
-      </div>
     </div>
   );
 };
