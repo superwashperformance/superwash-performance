@@ -194,8 +194,10 @@ export interface UserProfile {
 export interface Agent {
   id: string;
   name: string;
-  role?: string;
+  role: string;
   avatar?: string;
+  specialties?: string[];
+  is_active?: boolean;
 }
 
 export interface CompanyData {

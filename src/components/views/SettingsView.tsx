@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Settings, Shield, Building, Database, UserPlus, Trash2, Users, Wrench, Edit3, Check, X as XIcon, Plus, Package, Lock, ShieldCheck, Key, EyeOff, AlertTriangle, Save } from 'lucide-react';
 import { Agent, CompanyData, ServiceItem, InventoryItem, Branch } from '../../types';
 import { branchService } from '../../services/branchService';
-
+import { agentService } from '../../services/agentService';
+import { companyService } from '../../services/companyService';
 interface SettingsViewProps {
   userRole?: string;
   technicians: Agent[];
@@ -54,41 +55,94 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   const [editingBranchId, setEditingBranchId] = useState<string | null>(null);
   const [tempBranch, setTempBranch] = useState<Partial<Branch>>({});
 
-  const handleAddTechnician = (e: React.FormEvent) => {
+  const handleAddTechnician = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTechName) return;
     
-    const initials = newTechName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-    setTechnicians([...technicians, { 
-      id: `tech-${Date.now()}`,
-      name: newTechName, 
-      role: newTechRole || 'Técnico General', 
-      avatar: initials 
-    }]);
-    setNewTechName('');
-    setNewTechRole('');
+    try {
+      const newAgent = await agentService.createAgent({
+        name: newTechName,
+        role: 'technician',
+        specialties: newTechRole ? [newTechRole] : []
+      });
+      setTechnicians([...technicians, newAgent]);
+      setNewTechName('');
+      setNewTechRole('');
+    } catch (error) {
+      alert('Error al añadir técnico');
+    }
   };
 
-  const handleAddAgent = (e: React.FormEvent) => {
+  const handleAddAgent = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newAgentName) return;
     
-    setReceptionAgents([...receptionAgents, { 
-      id: `recep-${Date.now()}`, 
-      name: newAgentName 
-    }]);
-    setNewAgentName('');
+    try {
+      const newAgent = await agentService.createAgent({
+        name: newAgentName,
+        role: 'free_reception'
+      });
+      setReceptionAgents([...receptionAgents, newAgent]);
+      setNewAgentName('');
+    } catch (error) {
+      alert('Error al añadir agente');
+    }
   };
 
   // Company Data Handlers
-  const handleSaveCompany = () => {
-    setCompanyData(tempCompanyData);
-    setIsEditingCompany(false);
+  const handleSaveCompany = async () => {
+    try {
+      // Assuming we have only one company_settings record and its id is known or we just update the first one.
+      // Wait, in App.tsx we just get the first one. Let's make sure companyService can just update the existing one.
+      // Since companyService.updateCompanySettings requires an ID, we need to know the ID.
+      // But companyData from App.tsx doesn't have an ID if it's the old type. Let's check CompanyData type.
+      // I'll call a special function or we just re-insert. Actually, if it's the first time we should create.
+      // Let's check if tempCompanyData has an id.
+      // Let's implement a simpler "upsert" or just let the user save it locally for now? No, we need it in Supabase!
+      // Let's add a `saveSettings` to companyService that just updates the first row.
+      const saved = await companyService.updateFirstCompanySettings(tempCompanyData);
+      if (saved) {
+        setCompanyData({
+          name: saved.name,
+          documentId: saved.document_id,
+          address: saved.address || '',
+          phone: saved.phone || '',
+          email: saved.email || ''
+        });
+        setIsEditingCompany(false);
+      }
+    } catch (error) {
+      alert('Error guardando empresa');
+    }
   };
 
   const handleCancelCompany = () => {
     setTempCompanyData(companyData);
     setIsEditingCompany(false);
+  };
+
+  const handleDeleteTechnician = async (id: string) => {
+    if (!window.confirm('¿Eliminar este técnico?')) return;
+    try {
+      if (!id.startsWith('tech-')) {
+        await agentService.deleteAgent(id);
+      }
+      setTechnicians(technicians.filter(t => t.id !== id));
+    } catch (error) {
+      alert('Error eliminando técnico');
+    }
+  };
+
+  const handleDeleteReceptionAgent = async (id: string) => {
+    if (!window.confirm('¿Eliminar este agente?')) return;
+    try {
+      if (!id.startsWith('recep-')) {
+        await agentService.deleteAgent(id);
+      }
+      setReceptionAgents(receptionAgents.filter(a => a.id !== id));
+    } catch (error) {
+      alert('Error eliminando agente');
+    }
   };
 
   // Services Handlers
@@ -201,7 +255,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                   </div>
                 </div>
                 <button 
-                  onClick={() => setTechnicians(technicians.filter(t => t.id !== tech.id))}
+                  onClick={() => handleDeleteTechnician(tech.id)}
                   className="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors"
                   title="Eliminar"
                 >
@@ -249,7 +303,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               <div key={agent.id} className="flex items-center justify-between bg-slate-50 border border-slate-200 p-2 rounded-lg">
                 <p className="text-xs font-bold text-slate-900 ml-2">{agent.name}</p>
                 <button 
-                  onClick={() => setReceptionAgents(receptionAgents.filter(a => a.id !== agent.id))}
+                  onClick={() => handleDeleteReceptionAgent(agent.id)}
                   className="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors"
                   title="Eliminar"
                 >

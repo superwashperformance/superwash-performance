@@ -14,6 +14,8 @@ import { odsService } from './services/odsService';
 import { branchService } from './services/branchService';
 import { customerService } from './services/customerService';
 import { vehicleService } from './services/vehicleService';
+import { agentService } from './services/agentService';
+import { companyService } from './services/companyService';
 import { treasuryService } from './services/treasuryService';
 import { inventoryService } from './services/inventoryService';
 import { supabase } from './lib/supabase';
@@ -101,31 +103,18 @@ export function App() {
   const [transactions, setTransactions] = useState<CashTransaction[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [technicians, setTechnicians] = useState<Agent[]>(initialTechnicians);
-  const [receptionAgents, setReceptionAgents] = useState<Agent[]>(initialReceptionAgents);
+  const [technicians, setTechnicians] = useState<Agent[]>([]);
+  const [receptionAgents, setReceptionAgents] = useState<Agent[]>([]);
   const [branches, setBranches] = useState<Branch[]>([]);
 
-  const [companyData, setCompanyData] = useState<CompanyData>(() => {
-    const saved = localStorage.getItem('companyData');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error('Error parsing companyData from localStorage', e);
-      }
-    }
-    return {
-      name: 'Super Wash Performance C.A.',
-      documentId: 'J-40199281-0',
-      address: 'Sede Principal Las Mercedes',
-      phone: '+58 412-1234567',
-      email: 'contacto@superwash.com'
-    };
+  const [companyData, setCompanyData] = useState<CompanyData>({
+    name: 'Super Wash Performance C.A.',
+    documentId: 'J-40199281-0',
+    address: 'Sede Principal Las Mercedes',
+    phone: '+58 412-1234567',
+    email: 'contacto@superwash.com'
   });
 
-  useEffect(() => {
-    localStorage.setItem('companyData', JSON.stringify(companyData));
-  }, [companyData]);
   const [servicesCatalog, setServicesCatalog] = useState<ServiceItem[]>(mockServicesCatalog);
 
   // Cash Register State
@@ -168,12 +157,29 @@ export function App() {
         setBranches(branchData);
         
         // 4. Fetch Customers, Vehicles, and Transactions
-        const [fetchedCustomers, fetchedVehicles] = await Promise.all([
+        const [fetchedCustomers, fetchedVehicles, fetchedAgents, fetchedCompanyData] = await Promise.all([
           customerService.getCustomers(),
-          vehicleService.getVehicles()
+          vehicleService.getVehicles(),
+          agentService.getAgents(),
+          companyService.getCompanySettings()
         ]);
         setCustomers(fetchedCustomers);
         setVehicles(fetchedVehicles);
+        
+        if (fetchedAgents.length > 0) {
+          setTechnicians(fetchedAgents.filter(a => a.role === 'technician'));
+          setReceptionAgents(fetchedAgents.filter(a => a.role === 'free_reception'));
+        }
+
+        if (fetchedCompanyData) {
+          setCompanyData({
+            name: fetchedCompanyData.name,
+            documentId: fetchedCompanyData.document_id,
+            address: fetchedCompanyData.address || '',
+            phone: fetchedCompanyData.phone || '',
+            email: fetchedCompanyData.email || ''
+          });
+        }
         
         // Fetch Cash Session State
         const activeSession = await treasuryService.getActiveSession();
