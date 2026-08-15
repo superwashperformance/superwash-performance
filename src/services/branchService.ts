@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase';
 import { Branch } from '../types';
 
+// Payload sanitized to avoid 'email' column schema cache errors
 export const branchService = {
   async getBranches(): Promise<Branch[]> {
     const { data, error } = await supabase.from('branches').select('*').order('name', { ascending: true });
