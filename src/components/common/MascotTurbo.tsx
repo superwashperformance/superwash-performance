@@ -13,9 +13,9 @@ export const MascotTurbo: React.FC<MascotTurboProps> = ({
   className = ''
 }) => {
   const avatarSizes = {
-    sm: 'w-10 h-14',
-    md: 'w-16 h-20',
-    lg: 'w-24 h-32'
+    sm: 'w-12 h-12',
+    md: 'w-16 h-16',
+    lg: 'w-24 h-24'
   };
 
   const containerPadding = size === 'sm' ? 'py-3' : 'py-5';
@@ -23,11 +23,15 @@ export const MascotTurbo: React.FC<MascotTurboProps> = ({
   return (
     <div className={`flex items-center gap-4 ${containerPadding} border-y border-slate-100 bg-transparent ${className}`}>
       {/* Turbo Mascot Avatar */}
-      <div className={`relative shrink-0 ${avatarSizes[size]} rounded-xl bg-black p-1 border-2 border-transparent flex items-center justify-center overflow-hidden group shadow-md`}>
+      <div className={`relative shrink-0 ${avatarSizes[size]} rounded-full bg-black p-1 border-2 border-transparent flex items-center justify-center overflow-hidden group shadow-md`}>
         <div className="absolute inset-0 bg-cyan-500/10 animate-pulse-glow" />
         
-        {/* Funko Pop Mascot Image */}
-        <img src="/turbo-mascot.png" alt="Turbo Mascot" className="w-full h-full relative z-10 object-contain rounded-lg" />
+        {/* Funko Pop Mascot Image framed to the face */}
+        <img 
+          src="/turbo-mascot.png" 
+          alt="Turbo Mascot" 
+          className="w-full h-full relative z-10 object-cover object-[center_20%] scale-[1.3] rounded-full" 
+        />
 
         <div className="absolute bottom-0 right-0 bg-[#00E5FF] text-black rounded-full p-0.5 shadow-md">
           <Zap className="w-2.5 h-2.5 fill-black" />
