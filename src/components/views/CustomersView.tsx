@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { Customer, Vehicle } from '../../types';
-import { Users, Phone, Mail, MapPin, Plus, Search, Edit3, X, CheckCircle, UserCheck, Car } from 'lucide-react';
+import { Users, Phone, Mail, MapPin, Plus, Search, Edit3, X, CheckCircle, UserCheck, Car, Trash2 } from 'lucide-react';
 
 interface CustomersViewProps {
   customers: Customer[];
   vehicles: Vehicle[];
   onAddCustomer: (customer: Customer) => void;
   onUpdateCustomer: (customer: Customer) => void;
+  onDeleteCustomer?: (id: string) => void;
   onAddVehicle: (vehicle: Vehicle) => void;
+  onUpdateVehicle?: (vehicle: Vehicle) => void;
+  onDeleteVehicle?: (id: string) => void;
 }
 
 export const CustomersView: React.FC<CustomersViewProps> = ({
@@ -15,7 +18,10 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
   vehicles,
   onAddCustomer,
   onUpdateCustomer,
+  onDeleteCustomer,
   onAddVehicle,
+  onUpdateVehicle,
+  onDeleteVehicle,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,6 +30,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
   // Vehicle Modal State
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [vehicleCustomer, setVehicleCustomer] = useState<Customer | null>(null);
+  const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
   const [vehPlate, setVehPlate] = useState('');
   const [vehBrand, setVehBrand] = useState('');
   const [vehModel, setVehModel] = useState('');
@@ -33,6 +40,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
 
   const openAddVehicleModal = (cust: Customer) => {
     setVehicleCustomer(cust);
+    setEditingVehicle(null);
     setVehPlate('');
     setVehBrand('');
     setVehModel('');
@@ -42,24 +50,50 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
     setIsVehicleModalOpen(true);
   };
 
-  const handleCreateVehicle = (e: React.FormEvent) => {
+  const openEditVehicleModal = (cust: Customer, vehicle: Vehicle) => {
+    setVehicleCustomer(cust);
+    setEditingVehicle(vehicle);
+    setVehPlate(vehicle.plate);
+    setVehBrand(vehicle.brand);
+    setVehModel(vehicle.model);
+    setVehYear(vehicle.year);
+    setVehColor(vehicle.color || '');
+    setVehVin(vehicle.vin || '');
+    setIsVehicleModalOpen(true);
+  };
+
+  const handleSaveVehicle = (e: React.FormEvent) => {
     e.preventDefault();
     if (!vehicleCustomer || !vehPlate.trim() || !vehBrand.trim() || !vehModel.trim()) return;
 
-    const newVeh: Vehicle = {
-      id: `veh-${Date.now()}`,
-      customerId: vehicleCustomer.id,
-      plate: vehPlate.trim().toUpperCase(),
-      brand: vehBrand.trim(),
-      model: vehModel.trim(),
-      year: vehYear,
-      color: vehColor.trim() || 'Desconocido',
-      vin: vehVin.trim() || undefined,
-    };
+    if (editingVehicle && onUpdateVehicle) {
+      const updatedVeh: Vehicle = {
+        ...editingVehicle,
+        plate: vehPlate.trim().toUpperCase(),
+        brand: vehBrand.trim(),
+        model: vehModel.trim(),
+        year: vehYear,
+        color: vehColor.trim() || 'Desconocido',
+        vin: vehVin.trim() || undefined,
+      };
+      onUpdateVehicle(updatedVeh);
+    } else {
+      const newVeh: Vehicle = {
+        id: `veh-${Date.now()}`,
+        customerId: vehicleCustomer.id,
+        plate: vehPlate.trim().toUpperCase(),
+        brand: vehBrand.trim(),
+        model: vehModel.trim(),
+        year: vehYear,
+        color: vehColor.trim() || 'Desconocido',
+        vin: vehVin.trim() || undefined,
+      };
+      onAddVehicle(newVeh);
+    }
 
-    onAddVehicle(newVeh);
     setIsVehicleModalOpen(false);
     setVehicleCustomer(null);
+    setEditingVehicle(null);
   };
 
   // Form State (Customer)
@@ -231,6 +265,19 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                       >
                         <Edit3 className="w-3.5 h-3.5" />
                       </button>
+                      {onDeleteCustomer && (
+                        <button
+                          onClick={() => {
+                            if (window.confirm(`¿Estás seguro de eliminar a ${cust.fullName}?`)) {
+                              onDeleteCustomer(cust.id);
+                            }
+                          }}
+                          className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-900 rounded-lg transition-colors border border-red-200"
+                          title="Eliminar Cliente"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
                     </div>
                   </div>
 
@@ -274,9 +321,33 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                       <span className="text-[11px] text-slate-400 font-mono italic">Sin vehículos registrados</span>
                     ) : (
                       custVehicles.map((v) => (
-                        <div key={v.id} className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-xs flex items-center justify-between">
+                        <div key={v.id} className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-xs flex items-center justify-between group/veh">
                           <span className="font-bold text-slate-700">{v.brand} {v.model} ({v.year})</span>
-                          <span className="font-mono text-[10px] text-[#7A1B28] font-bold">{v.plate}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-[10px] text-[#7A1B28] font-bold">{v.plate}</span>
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => openEditVehicleModal(cust, v)}
+                                className="p-1 text-slate-400 hover:text-slate-800 transition-colors"
+                                title="Editar Vehículo"
+                              >
+                                <Edit3 className="w-3 h-3" />
+                              </button>
+                              {onDeleteVehicle && (
+                                <button
+                                  onClick={() => {
+                                    if (window.confirm(`¿Estás seguro de eliminar el vehículo ${v.plate}?`)) {
+                                      onDeleteVehicle(v.id);
+                                    }
+                                  }}
+                                  className="p-1 text-red-400 hover:text-red-700 transition-colors"
+                                  title="Eliminar Vehículo"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       ))
                     )}
@@ -453,7 +524,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
               <div>
                 <h3 className="font-display text-xl text-slate-800 flex items-center gap-2">
                   <Car className="w-5 h-5 text-[#7A1B28]" />
-                  REGISTRAR VEHÍCULO
+                  {editingVehicle ? 'MODIFICAR VEHÍCULO' : 'REGISTRAR VEHÍCULO'}
                 </h3>
                 <p className="text-xs text-slate-500 font-mono mt-1">
                   Cliente: <span className="font-bold text-slate-700">{vehicleCustomer.fullName}</span>
@@ -464,7 +535,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
               </button>
             </div>
 
-            <form onSubmit={handleCreateVehicle} className="flex flex-col gap-3">
+            <form onSubmit={handleSaveVehicle} className="flex flex-col gap-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-slate-500 mb-1 block">Placa / Matrícula *</label>
@@ -549,7 +620,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                   type="submit"
                   className="flex-1 btn-primary py-2.5 rounded-lg text-xs justify-center flex items-center gap-1.5"
                 >
-                  <CheckCircle className="w-4 h-4" /> GUARDAR VEHÍCULO
+                  <CheckCircle className="w-4 h-4" /> {editingVehicle ? 'GUARDAR CAMBIOS' : 'GUARDAR VEHÍCULO'}
                 </button>
               </div>
             </form>

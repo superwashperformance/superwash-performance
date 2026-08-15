@@ -72,5 +72,18 @@ export const customerService = {
       return false;
     }
     return true;
+  },
+
+  async deleteCustomer(id: string): Promise<boolean> {
+    const { error } = await supabase
+      .from('customers')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting customer:', error);
+      return false;
+    }
+    return true;
   }
 };

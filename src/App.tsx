@@ -578,6 +578,27 @@ export function App() {
     }
   };
 
+  const handleUpdateVehicle = async (updatedVeh: Vehicle) => {
+    const success = await vehicleService.updateVehicle(updatedVeh.id, updatedVeh);
+    if (success) {
+      setVehicles(vehicles.map((v) => (v.id === updatedVeh.id ? updatedVeh : v)));
+    }
+  };
+
+  const handleDeleteVehicle = async (id: string) => {
+    const success = await vehicleService.deleteVehicle(id);
+    if (success) {
+      setVehicles(vehicles.filter((v) => v.id !== id));
+    }
+  };
+
+  const handleDeleteCustomer = async (id: string) => {
+    const success = await customerService.deleteCustomer(id);
+    if (success) {
+      setCustomers(customers.filter((c) => c.id !== id));
+    }
+  };
+
   if (authLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -722,11 +743,20 @@ export function App() {
               vehicles={vehicles} 
               onAddCustomer={handleAddCustomer}
               onUpdateCustomer={handleUpdateCustomer}
+              onDeleteCustomer={handleDeleteCustomer}
               onAddVehicle={handleAddVehicle}
+              onUpdateVehicle={handleUpdateVehicle}
+              onDeleteVehicle={handleDeleteVehicle}
             />
           )}
 
-          {activeTab === 'vehicles' && <VehiclesView vehicles={vehicles} />}
+          {activeTab === 'vehicles' && (
+            <VehiclesView 
+              vehicles={vehicles} 
+              onUpdateVehicle={handleUpdateVehicle}
+              onDeleteVehicle={handleDeleteVehicle}
+            />
+          )}
 
           {activeTab === 'settings' && (
             <SettingsView 

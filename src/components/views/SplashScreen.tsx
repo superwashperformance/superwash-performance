@@ -57,7 +57,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
   };
 
   return (
-    <div className="relative min-h-screen lg:h-screen w-full text-slate-900 flex flex-col items-center justify-between p-3 sm:p-4 md:p-6 overflow-hidden select-none">
+    <div className="relative min-h-screen lg:h-screen w-full text-white flex flex-col items-center justify-between p-3 sm:p-4 md:p-6 overflow-hidden select-none">
       
       {/* Background Image Scaled Up to remove white borders */}
       <div 
@@ -65,15 +65,15 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
         style={{ backgroundImage: 'url(/login-bg.png)' }}
       />
       
-      {/* Background Opacity Layer (White) */}
-      <div className="absolute inset-0 bg-slate-50/85 pointer-events-none z-0" />
+      {/* Background Opacity Layer (Black) */}
+      <div className="absolute inset-0 bg-black/75 pointer-events-none z-0" />
       
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] bg-slate-200/50 rounded-full blur-[100px] sm:blur-[140px] pointer-events-none z-0" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] bg-slate-200/10 rounded-full blur-[100px] sm:blur-[140px] pointer-events-none z-0" />
 
       {/* Top Header */}
       <div className="relative z-10 w-full flex flex-row items-center justify-between gap-2">
         <FaviconLogo size={36} showText />
-        <div className="px-3 py-1 rounded-full bg-white border border-slate-200 text-[10px] sm:text-xs font-mono text-[#7A1B28] flex items-center gap-1.5 shrink-0 shadow-sm">
+        <div className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-[10px] sm:text-xs font-mono text-white flex items-center gap-1.5 shrink-0 shadow-sm">
           <span className="w-2 h-2 rounded-full bg-[#7A1B28] animate-ping" />
           <span className="hidden sm:inline">SISTEMA DE GESTIÓN TALLER EN VIVO</span>
           <span className="sm:hidden">TALLER EN VIVO</span>
@@ -84,10 +84,10 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
       <div className="relative z-10 flex flex-col items-center text-center max-w-4xl my-auto py-1 sm:py-2 w-full px-2">
         <div className="relative mb-2 sm:mb-3 group cursor-pointer" onClick={() => {}}>
           {/* Glowing Aura Ring */}
-          <div className="absolute -inset-3 sm:-inset-5 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 rounded-full blur-lg sm:blur-xl opacity-60 group-hover:opacity-100 transition-opacity z-0" />
+          <div className="absolute -inset-3 sm:-inset-5 bg-gradient-to-r from-[#7A1B28] via-red-500 to-[#7A1B28] rounded-full blur-lg sm:blur-xl opacity-40 group-hover:opacity-70 transition-opacity z-0" />
 
           {/* Official Emblem Container - Compact for Full Screen View */}
-          <div className="relative z-10 w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full bg-black border-2 border-slate-200 shadow-sm flex items-center justify-center overflow-hidden">
+          <div className="relative z-10 w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full bg-black border-2 border-slate-700 shadow-sm flex items-center justify-center overflow-hidden">
             <img
               src="/logo.png"
               alt="Super Wash Performance Emblem"
@@ -97,10 +97,10 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
         </div>
 
         {/* Athletic High-Impact Title */}
-        <h1 className="font-display text-2xl sm:text-3xl md:text-4xl tracking-wider text-slate-900 mb-1">
+        <h1 className="font-display text-2xl sm:text-3xl md:text-4xl tracking-wider text-white mb-1">
           SUPER WASH <span className="text-[#7A1B28] drop-shadow-sm">PERFORMANCE</span>
         </h1>
-        <p className="font-heading text-xs sm:text-sm text-slate-700 font-medium max-w-lg mb-2 px-2 leading-snug">
+        <p className="font-heading text-xs sm:text-sm text-slate-300 font-medium max-w-lg mb-2 px-2 leading-snug">
           Plataforma Enterprise de Estética Automotriz, Detailing, Pintura y Gestión 360° de Órdenes de Servicio.
         </p>
 
@@ -190,8 +190,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
       </div>
 
       {/* Footer Info & Centered Developer Badge */}
-      <div className="relative z-10 w-full text-center text-[10px] sm:text-xs text-slate-500 font-mono flex flex-col items-center justify-center gap-1 sm:gap-1.5 border-t border-slate-200 pt-2 pb-1 mt-1 shrink-0">
-        <span className="uppercase tracking-wide font-bold text-slate-500 px-2">
+      <div className="relative z-10 w-full text-center text-[10px] sm:text-xs text-white/50 font-mono flex flex-col items-center justify-center gap-1 sm:gap-1.5 border-t border-white/10 pt-2 pb-1 mt-1 shrink-0">
+        <span className="uppercase tracking-wide font-bold text-white/60 px-2">
           © 2026 SUPER WASH PERFORMANCE C.A. - TODOS LOS DERECHOS RESERVADOS.
         </span>
 
@@ -206,14 +206,14 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
           className="inline-flex flex-col items-center justify-center group transition-all duration-300 cursor-pointer"
           title="BY ARFENIXTECH"
         >
-          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-50 border border-slate-200 group-hover:border-slate-300 p-0.5 shadow-sm group-hover:shadow-md backdrop-blur-md overflow-hidden flex items-center justify-center">
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-black/50 border border-white/20 group-hover:border-white/40 p-0.5 shadow-sm group-hover:shadow-md backdrop-blur-md overflow-hidden flex items-center justify-center">
             <img
               src="/arfenixtech-logo.png"
               alt="ARfenixTech"
               className="w-full h-full object-cover rounded-full opacity-95 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 filter drop-shadow-none"
             />
           </div>
-          <span className="text-[9px] font-mono font-bold tracking-widest text-slate-500 group-hover:text-[#7A1B28] uppercase mt-0.5 transition-colors">
+          <span className="text-[9px] font-mono font-bold tracking-widest text-white/50 group-hover:text-white uppercase mt-0.5 transition-colors">
             BY ARFENIXTECH
           </span>
         </a>

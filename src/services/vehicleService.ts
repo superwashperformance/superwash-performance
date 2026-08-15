@@ -52,5 +52,38 @@ export const vehicleService = {
       color: data.color,
       customerId: data.owner_id
     };
+  },
+
+  async updateVehicle(id: string, vehicle: Partial<Vehicle>): Promise<boolean> {
+    const { error } = await supabase
+      .from('vehicles')
+      .update({
+        plate: vehicle.plate,
+        brand: vehicle.brand,
+        model: vehicle.model,
+        year: vehicle.year,
+        color: vehicle.color,
+        owner_id: vehicle.customerId
+      })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error updating vehicle:', error);
+      return false;
+    }
+    return true;
+  },
+
+  async deleteVehicle(id: string): Promise<boolean> {
+    const { error } = await supabase
+      .from('vehicles')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting vehicle:', error);
+      return false;
+    }
+    return true;
   }
 };
