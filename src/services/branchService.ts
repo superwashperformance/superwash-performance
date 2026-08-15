@@ -9,7 +9,8 @@ export const branchService = {
     return data || [];
   },
   async getActiveBranches(): Promise<Branch[]> {
-    const { data, error } = await supabase.from('branches').select('*').eq('is_active', true).order('name', { ascending: true });
+    // Como la columna is_active no existe, devolvemos todas las sedes
+    const { data, error } = await supabase.from('branches').select('*').order('name', { ascending: true });
     if (error) throw error;
     return data || [];
   },
@@ -17,8 +18,7 @@ export const branchService = {
     const { data, error } = await supabase.from('branches').insert([{
       name: branchData.name,
       address: branchData.address,
-      phone: branchData.phone,
-      is_active: branchData.is_active !== undefined ? branchData.is_active : true
+      phone: branchData.phone
     }]).select().single();
     if (error) throw error;
     return data;
@@ -32,7 +32,7 @@ export const branchService = {
     if (branchData.name !== undefined) updatePayload.name = branchData.name;
     if (branchData.address !== undefined) updatePayload.address = branchData.address;
     if (branchData.phone !== undefined) updatePayload.phone = branchData.phone;
-    if (branchData.is_active !== undefined) updatePayload.is_active = branchData.is_active;
+
 
     const { data, error } = await supabase.from('branches').update(updatePayload).eq('id', id).select().single();
     if (error) throw error;

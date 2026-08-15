@@ -188,14 +188,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     }
   };
 
-  const handleToggleBranchActive = async (branch: Branch) => {
-    try {
-      const updated = await branchService.updateBranch(branch.id, { is_active: !branch.is_active });
-      setBranches(branches.map(b => b.id === branch.id ? updated : b));
-    } catch (e: any) {
-      alert('Error actualizando estado de sede: ' + e.message);
-    }
-  };
+  // Se elimina handleToggleBranchActive ya que la tabla de sedes no soporta is_active
 
 
   return (
@@ -452,12 +445,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               </thead>
               <tbody>
                 {branches.map((branch) => (
-                  <tr key={branch.id} className={`border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors ${!branch.is_active ? 'opacity-60 bg-slate-50/50' : ''}`}>
+                  <tr key={branch.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors">
                     <td className="px-4 py-3 text-sm font-bold text-slate-800">
                       {branch.name}
-                      {!branch.is_active && (
-                        <span className="ml-2 text-[10px] bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full font-medium">INACTIVA</span>
-                      )}
                     </td>
                     <td className="px-4 py-3 text-sm text-slate-600 font-mono">{branch.phone}</td>
                     <td className="px-4 py-3 text-sm text-slate-600">{branch.address}</td>
@@ -469,13 +459,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                           title="Editar"
                         >
                           <Edit3 className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleToggleBranchActive(branch)} 
-                          className={`p-1.5 rounded transition-colors ${branch.is_active ? 'text-amber-500 hover:bg-amber-50' : 'text-emerald-500 hover:bg-emerald-50'}`}
-                          title={branch.is_active ? 'Desactivar Sede' : 'Activar Sede'}
-                        >
-                          {branch.is_active ? <EyeOff className="w-4 h-4" /> : <Check className="w-4 h-4" />}
                         </button>
                       </div>
                     </td>

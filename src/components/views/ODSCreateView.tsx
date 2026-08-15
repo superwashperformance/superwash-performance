@@ -666,7 +666,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                 className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none font-bold"
               >
                 <option value="">-- No especificar sede --</option>
-                {branches.filter(b => b.is_active).map(branch => (
+                {branches.map(branch => (
                   <option key={branch.id} value={branch.id}>{branch.name}</option>
                 ))}
               </select>
