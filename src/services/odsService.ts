@@ -97,42 +97,50 @@ export const odsService = {
    */
   async createODS(odsData: ServiceOrder): Promise<ServiceOrder> {
     try {
-      // 1. Create or get customer (Mocking for now, inserting a new one)
-      const { data: customerData, error: custError } = await supabase
-        .from('customers')
-        .insert({
-          full_name: odsData.customerName,
-          document_id: `DOC-${Date.now()}`, // Temporary fallback
-          phone: odsData.customerPhone,
-        })
-        .select()
-        .single();
+      let finalCustomerId = odsData.customerId;
+      if (!finalCustomerId || finalCustomerId.startsWith('cust-') || finalCustomerId.length < 10) {
+        // 1. Create or get customer (Mocking for now, inserting a new one)
+        const { data: customerData, error: custError } = await supabase
+          .from('customers')
+          .insert({
+            full_name: odsData.customerName,
+            document_id: `DOC-${Date.now()}`, // Temporary fallback
+            phone: odsData.customerPhone,
+          })
+          .select()
+          .single();
 
-      if (custError) throw custError;
+        if (custError) throw custError;
+        finalCustomerId = customerData.id;
+      }
 
-      // 2. Create vehicle
-      const [brand, ...modelParts] = odsData.vehicleBrandModel.split(' ');
-      const { data: vehicleData, error: vehError } = await supabase
-        .from('vehicles')
-        .insert({
-          customer_id: customerData.id,
-          plate: odsData.vehiclePlate,
-          brand: brand || 'Desconocido',
-          model: modelParts.join(' ') || 'Desconocido',
-          year: odsData.vehicleYear || 2024,
-          color: odsData.vehicleColor,
-        })
-        .select()
-        .single();
+      let finalVehicleId = odsData.vehicleId;
+      if (!finalVehicleId || finalVehicleId.startsWith('veh-') || finalVehicleId.length < 10) {
+        // 2. Create vehicle
+        const [brand, ...modelParts] = odsData.vehicleBrandModel.split(' ');
+        const { data: vehicleData, error: vehError } = await supabase
+          .from('vehicles')
+          .insert({
+            customer_id: finalCustomerId,
+            plate: odsData.vehiclePlate,
+            brand: brand || 'Desconocido',
+            model: modelParts.join(' ') || 'Desconocido',
+            year: odsData.vehicleYear || 2024,
+            color: odsData.vehicleColor,
+          })
+          .select()
+          .single();
 
-      if (vehError) throw vehError;
+        if (vehError) throw vehError;
+        finalVehicleId = vehicleData.id;
+      }
 
       // 3. Create ODS
       const { data: orderData, error: orderError } = await supabase
         .from('service_orders')
         .insert({
-          customer_id: customerData.id,
-          vehicle_id: vehicleData.id,
+          customer_id: finalCustomerId,
+          vehicle_id: finalVehicleId,
           branch_id: odsData.branchId || null,
           status: odsData.status,
           observations: odsData.observations,

@@ -561,7 +561,9 @@ export function App() {
     const created = await customerService.createCustomer(newCust);
     if (created) {
       setCustomers([created, ...customers]);
+      return created;
     }
+    return null;
   };
 
   const handleUpdateCustomer = async (updatedCust: Customer) => {
@@ -571,11 +573,20 @@ export function App() {
     }
   };
 
+  const handleDeleteCustomer = async (id: string) => {
+    const success = await customerService.deleteCustomer(id);
+    if (success) {
+      setCustomers(customers.filter(c => c.id !== id));
+    }
+  };
+
   const handleAddVehicle = async (newVeh: Vehicle) => {
     const created = await vehicleService.createVehicle(newVeh);
     if (created) {
       setVehicles([created, ...vehicles]);
+      return created;
     }
+    return null;
   };
 
   if (authLoading) {
@@ -717,11 +728,12 @@ export function App() {
           )}
 
           {activeTab === 'customers' && (
-            <CustomersView 
-              customers={customers} 
-              vehicles={vehicles} 
+            <CustomersView
+              customers={customers}
+              vehicles={vehicles}
               onAddCustomer={handleAddCustomer}
               onUpdateCustomer={handleUpdateCustomer}
+              onDeleteCustomer={handleDeleteCustomer}
               onAddVehicle={handleAddVehicle}
             />
           )}

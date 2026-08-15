@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Customer, Vehicle } from '../../types';
-import { Users, Phone, Mail, MapPin, Plus, Search, Edit3, X, CheckCircle, UserCheck, Car } from 'lucide-react';
+import { Users, Phone, Mail, MapPin, Plus, Search, Edit3, X, CheckCircle, UserCheck, Car, Trash2 } from 'lucide-react';
 
 interface CustomersViewProps {
   customers: Customer[];
@@ -8,6 +8,7 @@ interface CustomersViewProps {
   onAddCustomer: (customer: Customer) => void;
   onUpdateCustomer: (customer: Customer) => void;
   onAddVehicle: (vehicle: Vehicle) => void;
+  onDeleteCustomer: (id: string) => void;
 }
 
 export const CustomersView: React.FC<CustomersViewProps> = ({
@@ -16,6 +17,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
   onAddCustomer,
   onUpdateCustomer,
   onAddVehicle,
+  onDeleteCustomer,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -230,6 +232,17 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                         title="Modificar Cliente"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (window.confirm('¿Está seguro de que desea eliminar este cliente y sus vehículos asociados? Esta acción no se puede deshacer.')) {
+                            onDeleteCustomer(cust.id);
+                          }
+                        }}
+                        className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 rounded-lg transition-colors border border-red-200"
+                        title="Eliminar Cliente"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </div>

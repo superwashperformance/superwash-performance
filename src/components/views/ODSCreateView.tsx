@@ -33,8 +33,8 @@ interface ODSCreateViewProps {
   customers?: Customer[];
   vehicles?: Vehicle[];
   orders?: ServiceOrder[];
-  onAddCustomer?: (customer: Customer) => void;
-  onAddVehicle?: (vehicle: Vehicle) => void;
+  onAddCustomer?: (customer: Customer) => Promise<Customer | null | void> | void;
+  onAddVehicle?: (vehicle: Vehicle) => Promise<Vehicle | null | void> | void;
   branches: Branch[];
 }
 
@@ -259,10 +259,12 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
     const newODS: ServiceOrder = {
       id: `ods-${Date.now()}`,
       orderNumber: nextNumber,
-      customerId: `cust-${Date.now()}`,
+      customerId: selectedCustomerId || `cust-${Date.now()}`,
       customerName: customerName || 'Cliente General',
       customerPhone: phone || '+58 414-0000000',
-      vehicleId: `veh-${Date.now()}`,
+      customerDocumentId: documentId || undefined,
+      clientSignature: clientSignature || undefined,
+      vehicleId: selectedVehicleId || `veh-${Date.now()}`,
       vehiclePlate: plate.toUpperCase() || 'ABC123X',
       vehicleBrandModel: `${brand} ${model}`.trim() || 'Vehículo Deportivo',
       vehicleColor: color || 'Negro',
@@ -1056,7 +1058,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
             </div>
 
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
                 if (!newCustName.trim() || !newCustDoc.trim() || !newCustPhone.trim()) return;
 
@@ -1069,11 +1071,15 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                   createdAt: new Date().toLocaleDateString('es-ES'),
                 };
 
+                let finalId = newCust.id;
                 if (onAddCustomer) {
-                  onAddCustomer(newCust);
+                  const result = await onAddCustomer(newCust);
+                  if (result && result.id) {
+                    finalId = result.id;
+                  }
                 }
 
-                setSelectedCustomerId(newCust.id);
+                setSelectedCustomerId(finalId);
                 setCustomerName(newCust.fullName);
                 setDocumentId(newCust.documentId);
                 setPhone(newCust.phone);
@@ -1169,7 +1175,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
             </div>
 
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
                 if (!newVehPlate.trim() || !newVehBrand.trim() || !newVehModel.trim()) return;
 
@@ -1187,11 +1193,15 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                   mileage: newVehMileage.trim() || undefined,
                 };
 
+                let finalId = newVeh.id;
                 if (onAddVehicle) {
-                  onAddVehicle(newVeh);
+                  const result = await onAddVehicle(newVeh);
+                  if (result && result.id) {
+                    finalId = result.id;
+                  }
                 }
 
-                setSelectedVehicleId(newVeh.id);
+                setSelectedVehicleId(finalId);
                 setPlate(newVeh.plate);
                 setBrand(newVeh.brand);
                 setModel(newVeh.model);

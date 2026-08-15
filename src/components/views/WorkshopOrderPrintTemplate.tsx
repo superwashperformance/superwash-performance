@@ -266,8 +266,15 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
         </div>
 
         <div className="mt-8 flex flex-col items-center mb-8">
-          <div className="border-t border-black w-80 text-center pt-2 font-bold text-lg">
-            FIRMA CONFORME
+          {order.clientSignature ? (
+            <img src={order.clientSignature} alt="Firma del cliente" className="h-24 object-contain mb-2" />
+          ) : (
+            <div className="h-24"></div>
+          )}
+          <div className="border-t border-black w-80 text-center pt-2">
+            <div className="font-bold text-lg">FIRMA CONFORME</div>
+            <div className="text-sm font-semibold uppercase mt-1">{order.customerName}</div>
+            {order.customerDocumentId && <div className="text-xs uppercase">{order.customerDocumentId}</div>}
           </div>
         </div>
       </div>

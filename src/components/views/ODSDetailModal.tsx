@@ -395,11 +395,18 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                         <span className="font-bold text-slate-800 print:text-black mb-2 block uppercase text-[10px] tracking-wider">ESTADO DE RECEPCIÓN DEL VEHÍCULO (CHECKLIST):</span>
                         <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[10px] text-slate-700 print:text-black">
                           {order.checklist.map(i => (
-                            <div key={i.id} className="flex justify-between border-b border-slate-200/50 print:border-black/10 pb-1">
-                              <span>{i.label}</span>
-                              <span className={`font-bold uppercase ${i.condition === 'ok' ? 'text-slate-600 print:text-black' : 'text-slate-900 print:text-black'}`}>
-                                {i.condition === 'ok' ? 'Correcto' : i.condition}
-                              </span>
+                            <div key={i.id} className="flex flex-col border-b border-slate-200/50 print:border-black/10 pb-1">
+                              <div className="flex justify-between">
+                                <span>{i.label}</span>
+                                <span className={`font-bold uppercase ${i.condition === 'ok' ? 'text-slate-600 print:text-black' : 'text-slate-900 print:text-black'}`}>
+                                  {i.condition === 'ok' ? 'Correcto' : i.condition === 'damaged' ? 'Dañado' : i.condition === 'missing' ? 'No Posee' : 'Observación'}
+                                </span>
+                              </div>
+                              {i.notes && (
+                                <div className="text-[9px] italic text-slate-500 print:text-black/80 mt-0.5 pr-2">
+                                  * {i.notes}
+                                </div>
+                              )}
                             </div>
                           ))}
                         </div>

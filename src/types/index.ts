@@ -109,6 +109,8 @@ export interface ServiceOrder {
   customerId: string;
   customerName: string;
   customerPhone: string;
+  customerDocumentId?: string;
+  clientSignature?: string;
   vehicleId: string;
   vehiclePlate: string;
   vehicleBrandModel: string;
