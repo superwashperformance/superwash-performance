@@ -282,7 +282,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                               {onEditService && (
                                 <button
                                   onClick={() => startEditing(s)}
-                                  className="opacity-0 group-hover:opacity-100 print:hidden text-slate-400 hover:text-[#7A1B28] transition-opacity ml-2"
+                                  className="print:hidden text-slate-400 hover:text-[#7A1B28] transition-opacity ml-2"
                                 >
                                   <Pencil className="w-3.5 h-3.5" />
                                 </button>
@@ -441,7 +441,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                   {onDeletePhoto && (
                     <button 
                       onClick={(e) => { e.stopPropagation(); onDeletePhoto(order.id, p.id); }}
-                      className="absolute top-2 right-2 p-2 bg-red-500/90 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600 hover:text-white"
+                      className="absolute top-2 right-2 p-2 bg-red-500/90 text-white rounded-full transition-all hover:bg-red-600 hover:text-white"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -513,7 +513,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                               {onDeletePhoto && (
                                 <button 
                                   onClick={(e) => { e.stopPropagation(); onDeletePhoto(order.id, p.id); }}
-                                  className="absolute top-1 right-1 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600 shadow-sm"
+                                  className="absolute top-1 right-1 p-1.5 bg-red-500 text-white rounded-full transition-all hover:bg-red-600 shadow-sm"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>
