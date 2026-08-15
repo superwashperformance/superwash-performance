@@ -481,6 +481,27 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                 </div>
               ))}
             </div>
+            
+            {order.photos.filter(p => p.category === 'belonging').length > 0 && (
+              <div className="mt-6 p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <h4 className="font-display text-sm text-[#7A1B28] uppercase tracking-wider mb-4">Fotos de Pertenencias</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {order.photos.filter(p => p.category === 'belonging').map(p => (
+                    <div key={p.id} className="relative rounded-lg overflow-hidden border border-slate-200 aspect-square group cursor-pointer" onClick={() => setSelectedPhotoUrl(p.photoUrl)}>
+                      <img src={p.photoUrl} alt="Pertenencias" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                      {onDeletePhoto && (
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); onDeletePhoto(order.id, p.id); }}
+                          className="absolute top-1 right-1 p-1.5 bg-red-500 text-white rounded-full transition-all hover:bg-red-600 shadow-sm"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* TAB 4: DAMAGES PHOTOS */}
