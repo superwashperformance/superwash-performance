@@ -202,9 +202,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     <div className="flex flex-col gap-6 p-4 md:p-8 max-w-5xl mx-auto w-full">
       <div>
         <h2 className="font-display text-3xl text-slate-800 tracking-wide flex items-center gap-2">
-          CONFIGURACIÓN DEL SISTEMA <Settings className="w-6 h-6 text-[#7A1B28]" />
+          <Settings className="w-8 h-8 text-[#7A1B28]" /> CONFIGURACIONES
         </h2>
-        <p className="text-xs text-slate-500">Ajustes globales de sede, roles, técnicos, servicios y base de datos.</p>
+        <p className="text-sm text-slate-500 mt-1">Administra los datos de tu empresa y preferencias del sistema</p>
       </div>
 
       {/* Sección de Gestión de Contraseñas (Solo para Administrador y Dueño) */}
@@ -329,14 +329,14 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
 
       {/* Datos de Empresa */}
-      <div className="glass-card p-5 flex flex-col gap-3">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-3 text-purple-600">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col gap-4">
+        <div className="flex items-center justify-between mb-2 pb-3 border-b border-slate-100">
+          <div className="flex items-center gap-3 text-[#7A1B28]">
             <Building className="w-5 h-5" />
-            <h3 className="font-display text-xl text-slate-800">DATOS DE LA EMPRESA</h3>
+            <h3 className="font-display text-lg text-slate-800">DATOS DE LA EMPRESA</h3>
           </div>
           {!isEditingCompany ? (
-            <button onClick={() => { setTempCompanyData(companyData); setIsEditingCompany(true); }} className="text-xs flex items-center gap-1 text-[#7A1B28] hover:text-slate-900 transition-colors">
+            <button onClick={() => { setTempCompanyData(companyData); setIsEditingCompany(true); }} className="text-xs flex items-center gap-1.5 text-[#7A1B28] font-bold hover:bg-[#7A1B28]/5 px-3 py-1.5 rounded transition-colors">
               <Edit3 className="w-3.5 h-3.5" /> EDITAR
             </button>
           ) : (
@@ -398,14 +398,14 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
 
       {/* Sedes (Company Branches) */}
-      <div className="glass-card p-5 flex flex-col gap-3">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-3 text-emerald-600">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col gap-4">
+        <div className="flex items-center justify-between mb-2 pb-3 border-b border-slate-100">
+          <div className="flex items-center gap-3 text-[#7A1B28]">
             <Building className="w-5 h-5" />
-            <h3 className="font-display text-xl text-slate-800">SEDES</h3>
+            <h3 className="font-display text-lg text-slate-800">SEDES (SUCURSALES)</h3>
           </div>
           {!isAddingBranch ? (
-            <button onClick={() => setIsAddingBranch(true)} className="btn-primary text-xs flex items-center gap-1 py-1.5 px-3">
+            <button onClick={() => setIsAddingBranch(true)} className="bg-[#7A1B28] text-white text-xs flex items-center gap-1.5 py-2 px-4 rounded-full hover:bg-[#5a141d] hover:shadow-md transition-all font-bold">
               <Plus className="w-4 h-4" /> AÑADIR SEDE
             </button>
           ) : (
@@ -417,59 +417,80 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
         {/* Formulario Nueva/Editar Sede */}
         {(isAddingBranch || editingBranchId) && (
-          <div className="bg-slate-50 border border-slate-100 rounded-lg p-4 mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1">
-              <label className="text-[10px] text-slate-500 font-mono">NOMBRE DE LA SEDE *</label>
-              <input type="text" value={tempBranch.name || ''} onChange={e => setTempBranch({...tempBranch, name: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#7A1B28]" placeholder="Ej. Sede Las Mercedes" />
+          <div className="bg-slate-50 border border-slate-200 rounded-lg p-5 mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs text-slate-500 font-bold">NOMBRE DE LA SEDE *</label>
+              <input type="text" value={tempBranch.name || ''} onChange={e => setTempBranch({...tempBranch, name: e.target.value})} className="bg-white border border-slate-300 rounded px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#7A1B28]" placeholder="Ej. Principal" />
             </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-[10px] text-slate-500 font-mono">TELÉFONO *</label>
-              <input type="text" value={tempBranch.phone || ''} onChange={e => setTempBranch({...tempBranch, phone: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#7A1B28]" placeholder="Ej. 0412-1234567" />
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs text-slate-500 font-bold">TELÉFONO *</label>
+              <input type="text" value={tempBranch.phone || ''} onChange={e => setTempBranch({...tempBranch, phone: e.target.value})} className="bg-white border border-slate-300 rounded px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#7A1B28]" placeholder="Ej. 0412-1234567" />
             </div>
-            <div className="flex flex-col gap-1 md:col-span-2">
-              <label className="text-[10px] text-slate-500 font-mono">DIRECCIÓN *</label>
-              <input type="text" value={tempBranch.address || ''} onChange={e => setTempBranch({...tempBranch, address: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#7A1B28]" placeholder="Dirección completa" />
+            <div className="flex flex-col gap-1.5 md:col-span-2">
+              <label className="text-xs text-slate-500 font-bold">DIRECCIÓN *</label>
+              <input type="text" value={tempBranch.address || ''} onChange={e => setTempBranch({...tempBranch, address: e.target.value})} className="bg-white border border-slate-300 rounded px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#7A1B28]" placeholder="Dirección completa" />
             </div>
-            <div className="flex items-end justify-end md:col-span-2">
-              <button onClick={handleSaveBranch} className="btn-primary text-sm flex items-center gap-2 w-full md:w-auto justify-center">
+            <div className="flex items-end justify-end md:col-span-2 mt-2">
+              <button onClick={handleSaveBranch} className="bg-[#7A1B28] text-white text-sm flex items-center gap-2 py-2 px-6 rounded-lg hover:bg-[#5a141d] transition-colors font-bold w-full md:w-auto justify-center shadow-sm">
                 <Save className="w-4 h-4" /> GUARDAR SEDE
               </button>
             </div>
           </div>
         )}
 
-        {/* Listado de Sedes */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
-          {branches.map(branch => (
-            <div key={branch.id} className={`border rounded-lg p-4 flex flex-col justify-between transition-colors ${branch.is_active ? 'border-slate-200 bg-white hover:border-[#7A1B28]/30' : 'border-slate-100 bg-slate-50/50 opacity-70'}`}>
-              <div>
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-bold text-slate-900">{branch.name}</h4>
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${branch.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}`}>
-                    {branch.is_active ? 'ACTIVA' : 'INACTIVA'}
-                  </span>
-                </div>
-                <div className="text-xs text-slate-500 flex flex-col gap-1 mt-3">
-                  <p><span className="font-medium text-slate-700">Dirección:</span> {branch.address}</p>
-                  <p><span className="font-medium text-slate-700">Teléfono:</span> {branch.phone}</p>
-                </div>
-              </div>
-              <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-slate-100">
-                <button onClick={() => handleToggleBranchActive(branch)} className={`text-xs px-2 py-1 rounded ${branch.is_active ? 'text-amber-600 hover:bg-amber-50 border border-transparent hover:border-amber-200' : 'text-emerald-600 hover:bg-emerald-50 border border-transparent hover:border-emerald-200'} transition-colors font-medium`}>
-                  {branch.is_active ? 'DESACTIVAR' : 'ACTIVAR'}
-                </button>
-                <button onClick={() => { setEditingBranchId(branch.id); setTempBranch(branch); setIsAddingBranch(false); }} className="text-xs px-2 py-1 rounded text-[#7A1B28] hover:bg-[#7A1B28]/5 border border-transparent hover:border-[#7A1B28]/20 transition-colors flex items-center gap-1 font-medium">
-                  <Edit3 className="w-3 h-3" /> EDITAR
-                </button>
-              </div>
-            </div>
-          ))}
-          {branches.length === 0 && (
-            <div className="col-span-full py-8 text-center text-slate-400 text-sm border-2 border-dashed border-slate-100 rounded-lg">
-              No hay sedes configuradas. Añade una para comenzar.
-            </div>
-          )}
-        </div>
+        {/* Listado de Sedes en Formato Tabla */}
+        {branches.length > 0 ? (
+          <div className="overflow-x-auto border border-slate-200 rounded-lg mt-2">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200">
+                  <th className="px-4 py-3 text-xs font-bold text-slate-600">NOMBRE DE LA SEDE</th>
+                  <th className="px-4 py-3 text-xs font-bold text-slate-600">TELÉFONO</th>
+                  <th className="px-4 py-3 text-xs font-bold text-slate-600">DIRECCIÓN</th>
+                  <th className="px-4 py-3 text-xs font-bold text-slate-600 w-32">ACCIONES</th>
+                </tr>
+              </thead>
+              <tbody>
+                {branches.map((branch) => (
+                  <tr key={branch.id} className={`border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors ${!branch.is_active ? 'opacity-60 bg-slate-50/50' : ''}`}>
+                    <td className="px-4 py-3 text-sm font-bold text-slate-800">
+                      {branch.name}
+                      {!branch.is_active && (
+                        <span className="ml-2 text-[10px] bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full font-medium">INACTIVA</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-slate-600 font-mono">{branch.phone}</td>
+                    <td className="px-4 py-3 text-sm text-slate-600">{branch.address}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <button 
+                          onClick={() => { setEditingBranchId(branch.id); setTempBranch(branch); setIsAddingBranch(false); }} 
+                          className="p-1.5 text-[#7A1B28] hover:bg-[#7A1B28]/10 rounded transition-colors"
+                          title="Editar"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={() => handleToggleBranchActive(branch)} 
+                          className={`p-1.5 rounded transition-colors ${branch.is_active ? 'text-amber-500 hover:bg-amber-50' : 'text-emerald-500 hover:bg-emerald-50'}`}
+                          title={branch.is_active ? 'Desactivar Sede' : 'Activar Sede'}
+                        >
+                          {branch.is_active ? <EyeOff className="w-4 h-4" /> : <Check className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="col-span-full py-12 text-center text-slate-500 flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-200 rounded-lg mt-2 bg-slate-50">
+            <Building className="w-8 h-8 text-slate-300 mb-1" />
+            <p className="text-sm font-medium">Aún no tienes sedes configuradas.</p>
+            <p className="text-xs text-slate-400">Agrega tu primera sede para comenzar.</p>
+          </div>
+        )}
       </div>
 
       {/* Catálogo de Servicios */}

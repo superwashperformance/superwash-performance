@@ -85,6 +85,12 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
               <span className="w-20">TELÉFONO:</span>
               <span className="flex-1 pb-0.5 font-normal">{order.customerPhone}</span>
             </div>
+            {order.branchName && (
+              <div className="flex items-end mt-1 text-[#7A1B28]">
+                <span className="w-20">SEDE:</span>
+                <span className="flex-1 pb-0.5 font-bold">{order.branchName}</span>
+              </div>
+            )}
           </div>
         </div>
 

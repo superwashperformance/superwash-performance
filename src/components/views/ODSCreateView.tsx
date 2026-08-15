@@ -268,7 +268,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
       vehicleColor: color || 'Negro',
       vehicleYear: year || 2024,
       branchId: branchId || undefined,
-      branchName: branches.find(b => b.id === branchId)?.name || 'Sede Principal',
+      branchName: branchId ? (branches.find(b => b.id === branchId)?.name || undefined) : undefined,
       receptionAgent: receptionAgent || 'Agente Recepción',
       assignedTechnician: assignedTechnicianId
         ? technicians.find((t) => t.id === assignedTechnicianId)?.name
@@ -656,41 +656,29 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
           {/* Branch Selection */}
           <div className="flex flex-col gap-4 p-5 rounded-xl bg-slate-50 border border-slate-200 mt-6">
             <div className="flex items-center justify-between">
-              <span className="font-display text-lg text-emerald-400">3. SEDE ASIGNADA</span>
+              <span className="font-display text-lg text-[#7A1B28]">3. SEDE ASIGNADA (Opcional)</span>
             </div>
             <div>
-              <label className="text-xs text-slate-500 mb-1 block">Selecciona la Sede de la Orden *</label>
+              <label className="text-xs text-slate-500 mb-1 block">Selecciona de dónde proviene el vehículo</label>
               <select
-                value={branchId || (branches.length === 0 ? 'default' : '')}
+                value={branchId}
                 onChange={(e) => setBranchId(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#00E5FF] outline-none font-bold"
-                disabled={branches.length === 0}
-                required={branches.length > 0}
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none font-bold"
               >
-                {branches.length === 0 ? (
-                  <option value="default">Sede Principal (Predeterminada)</option>
-                ) : (
-                  <option value="" disabled>-- Selecciona una Sede --</option>
-                )}
+                <option value="">-- No especificar sede --</option>
                 {branches.filter(b => b.is_active).map(branch => (
                   <option key={branch.id} value={branch.id}>{branch.name}</option>
                 ))}
               </select>
-              {branches.length === 0 && <p className="text-xs text-slate-400 mt-1">Usando sede principal por defecto. Puedes añadir más sedes en Ajustes.</p>}
+              {branches.length === 0 && <p className="text-xs text-slate-400 mt-1">Aún no hay sedes configuradas. Puedes añadirlas en Ajustes.</p>}
             </div>
           </div>
           
-          <div className="flex justify-between items-center pt-4 border-t border-slate-200">
+          <div className="flex justify-between items-center pt-4 border-t border-slate-200 mt-4">
             <button onClick={onCancel} className="btn-nike-secondary text-sm">
               Cancelar
             </button>
-            <button onClick={() => {
-              if (!branchId && branches.length > 0) {
-                alert('Por favor selecciona una sede antes de continuar.');
-                return;
-              }
-              setStep(2);
-            }} className="btn-nike-primary text-sm">
+            <button onClick={() => setStep(2)} className="btn-nike-primary text-sm">
               Siguiente: Fotos Daños <ArrowRight className="w-4 h-4" />
             </button>
           </div>

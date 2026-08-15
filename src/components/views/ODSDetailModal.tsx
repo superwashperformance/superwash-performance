@@ -140,6 +140,9 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
               </div>
               <span className="text-xs text-slate-600 print:text-black font-medium">
                 {order.vehicleBrandModel} ({order.vehicleColor}) - {order.customerName}
+                {order.branchName && (
+                  <> | <span className="font-bold text-[#7A1B28] print:text-black">Sede: {order.branchName}</span></>
+                )}
               </span>
             </div>
           </div>
@@ -219,6 +222,7 @@ export const ODSDetailModal: React.FC<ODSDetailModalProps> = ({ order, onClose, 
                   <span className="font-display text-sm text-[#7A1B28] print:text-black">DATOS DEL VEHÍCULO</span>
                   <span className="text-slate-900 print:text-black font-bold">{order.vehicleBrandModel} ({order.vehicleYear})</span>
                   <span className="text-slate-600 print:text-black font-mono">Placa: {order.vehiclePlate} | Color: {order.vehicleColor}</span>
+                  {order.branchName && <span className="text-[#7A1B28] print:text-black font-mono font-bold mt-1">Sede: {order.branchName}</span>}
                 </div>
               </div>
 
