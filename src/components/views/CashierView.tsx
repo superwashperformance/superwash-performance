@@ -117,10 +117,11 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
          return;
       }
 
+      const methodForBackend = paymentMethod === 'binance' ? 'transferencia' : paymentMethod;
       const payments = [{
         account_id: targetAccount.id,
         amount: Number(paymentAmount),
-        method: paymentMethod
+        method: methodForBackend
       }];
 
       await treasuryService.processCollection(selectedCustomerId, Number(paymentAmount), payments);
