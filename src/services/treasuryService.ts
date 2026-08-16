@@ -164,7 +164,7 @@ export const treasuryService = {
   ): Promise<string> {
     const { data, error } = await supabase.rpc('rpc_process_collection', {
       p_customer_id: customerId,
-      p_amount: amount,
+      p_total: amount,
       p_payments: payments,
       p_idempotency_key: idempotencyKey,
     });
