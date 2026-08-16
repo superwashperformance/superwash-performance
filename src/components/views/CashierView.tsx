@@ -44,8 +44,8 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
     if (selectedOdsId && voucherType === 'venta') {
       const ods = orders.find(o => o.id === selectedOdsId);
       if (ods) {
-        setSelectedCustomerId(ods.customer_id);
-        setPaymentAmount(ods.total);
+        setSelectedCustomerId(ods.customerId);
+        setPaymentAmount(ods.totalAmount);
       }
     }
   }, [selectedOdsId, orders, voucherType]);
@@ -394,11 +394,11 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                     className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all"
                   >
                     <option value="">Venta Independiente (Ninguna ODS)</option>
-                    {orders.filter(o => o.status === 'completed' || o.status === 'in_progress' || o.status === 'pending').map(o => {
-                      const c = customers.find(x => x.id === o.customer_id);
+                    {orders.filter(o => o.status !== 'archived').map(o => {
+                      const c = customers.find(x => x.id === o.customerId);
                       return (
                         <option key={o.id} value={o.id}>
-                          ODS-{o.id.substring(0,8).toUpperCase()} - {c?.fullName || 'Desconocido'} - ${Number(o.total).toFixed(2)}
+                          {o.orderNumber} - {c?.fullName || 'Desconocido'} - ${Number(o.totalAmount).toFixed(2)}
                         </option>
                       );
                     })}
