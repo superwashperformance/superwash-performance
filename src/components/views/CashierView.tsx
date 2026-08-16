@@ -21,6 +21,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>('');
   const [paymentAmount, setPaymentAmount] = useState<number>('' as any);
   const [paymentMethod, setPaymentMethod] = useState<string>('efectivo');
+  const [paymentCondition, setPaymentCondition] = useState<string>('contado');
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Close Register State
@@ -271,6 +272,18 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                       {c.fullName} - {c.documentId}
                     </option>
                   ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs text-slate-500 mb-1 block font-bold">Condición de Pago</label>
+                <select
+                  value={paymentCondition}
+                  onChange={(e) => setPaymentCondition(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all"
+                >
+                  <option value="contado">Contado</option>
+                  <option value="cuenta_corriente">Cuenta Corriente</option>
                 </select>
               </div>
 
