@@ -335,7 +335,175 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
         </div>
       )}
 
-      {/* Movements Table */}
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column: Actions */}
+        <div className="flex flex-col gap-6 lg:col-span-1">
+          <div className="glass-card p-6 flex flex-col gap-4 relative overflow-hidden border-slate-200 rounded-2xl shadow-sm bg-white">
+            <h3 className="font-display text-xl text-slate-900 flex items-center gap-2 uppercase">
+              <HandCoins className="w-5 h-5 text-emerald-600" /> Nueva Operación
+            </h3>
+
+            {!session ? (
+              <div className="absolute inset-0 bg-white/95 backdrop-blur-sm z-10 flex flex-col items-center justify-center p-6 text-center">
+                <Lock className="w-12 h-12 text-slate-300 mb-4" />
+                <h4 className="text-slate-900 font-display text-xl mb-2">CAJA CERRADA</h4>
+                <p className="text-xs text-slate-500 mb-6">Debes abrir una sesión de caja para procesar comprobantes.</p>
+                
+                <button onClick={handleOpenRegister} disabled={isProcessing} className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3 rounded-lg transition-colors uppercase tracking-widest text-sm disabled:opacity-50">
+                  {isProcessing ? 'APERTURANDO...' : 'APERTURAR CAJA'}
+                </button>
+              </div>
+            ) : null}
+
+            <form onSubmit={handleSubmitPayment} className="flex flex-col gap-4">
+              
+              <div>
+                <label className="text-xs text-slate-500 mb-1 block font-bold uppercase">Tipo de Comprobante</label>
+                <select
+                  value={voucherType}
+                  onChange={(e) => {
+                     setVoucherType(e.target.value);
+                     if(e.target.value === 'nota_credito') setPaymentCondition('contado'); 
+                  }}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all"
+                >
+                  <option value="venta">Venta / Ingreso</option>
+                  <option value="nota_credito">Nota de Crédito / Devolución</option>
+                </select>
+              </div>
+
+              {voucherType === 'venta' ? (
+                <div className="bg-blue-50 border border-blue-200 rounded p-3 text-xs text-blue-700 font-mono flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <p>{paymentCondition === 'cuenta_corriente' ? 'Generará un CRÉDITO en la cuenta corriente del cliente. No afecta caja hoy.' : 'Generará un INGRESO a Tesorería y un ticket de venta al contado.'}</p>
+                </div>
+              ) : (
+                <div className="bg-rose-50 border border-rose-200 rounded p-3 text-xs text-rose-700 font-mono flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <p>Anulará un comprobante anterior y generará un EGRESO de dinero de la caja, o un reverso en cuenta corriente.</p>
+                </div>
+              )}
+
+              {voucherType === 'venta' && (
+                <div>
+                  <label className="text-[10px] text-slate-400 mb-1 block font-bold uppercase">Vincular a ODS (Opcional)</label>
+                  <select
+                    value={selectedOdsId}
+                    onChange={(e) => setSelectedOdsId(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all"
+                  >
+                    <option value="">Venta Independiente (Ninguna ODS)</option>
+                    {orders.filter(o => o.status === 'completed' || o.status === 'in_progress' || o.status === 'pending').map(o => {
+                      const c = customers.find(x => x.id === o.customer_id);
+                      return (
+                        <option key={o.id} value={o.id}>
+                          ODS-{o.id.substring(0,8).toUpperCase()} - {c?.fullName || 'Desconocido'} - ${Number(o.total).toFixed(2)}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+              )}
+
+              {voucherType === 'nota_credito' && (
+                <div>
+                  <label className="text-[10px] text-rose-400 mb-1 block font-bold uppercase">Seleccionar Factura a Anular</label>
+                  <select
+                    value={selectedOriginalDocId}
+                    onChange={(e) => setSelectedOriginalDocId(e.target.value)}
+                    className="w-full bg-rose-50 border border-rose-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none transition-all"
+                  >
+                    <option value="">Seleccione comprobante original...</option>
+                    {commercialDocs.map(doc => {
+                      const c = customers.find(x => x.id === doc.customer_id);
+                      return (
+                        <option key={doc.id} value={doc.id}>
+                          {doc.document_number || doc.id.substring(0,8)} - {c?.fullName || 'Desconocido'} - ${Number(doc.total).toFixed(2)}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+              )}
+
+              <div>
+                <label className="text-xs text-slate-500 mb-1 block font-bold">Cliente</label>
+                <select
+                  value={selectedCustomerId}
+                  onChange={(e) => setSelectedCustomerId(e.target.value)}
+                  disabled={!!selectedOdsId || !!selectedOriginalDocId}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all disabled:opacity-50"
+                >
+                  <option value="">Seleccione un cliente...</option>
+                  {customers.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.fullName} - {c.documentId}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs text-slate-500 mb-1 block font-bold">Condición de Pago</label>
+                <select
+                  value={paymentCondition}
+                  onChange={(e) => setPaymentCondition(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all"
+                >
+                  <option value="contado">Contado</option>
+                  <option value="cuenta_corriente">Cuenta Corriente</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs text-slate-500 mb-1 block font-bold">Monto ($)</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <DollarSign className="h-4 w-4 text-slate-400" />
+                  </div>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    value={paymentAmount}
+                    onChange={(e) => setPaymentAmount(e.target.value as any)}
+                    readOnly={!!selectedOdsId}
+                    className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all read-only:opacity-50"
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+
+              {paymentCondition === 'contado' && (
+                <div>
+                  <label className="text-xs text-slate-500 mb-1 block font-bold">Método de Pago</label>
+                  <select
+                    value={paymentMethod}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none mb-2 transition-all"
+                  >
+                    <option value="efectivo">Efectivo ($ USD)</option>
+                    <option value="zelle">Zelle</option>
+                    <option value="pago_movil">Pago Móvil</option>
+                    <option value="transferencia">Transferencia Bancaria</option>
+                    <option value="tarjeta">Punto de Venta / Tarjeta</option>
+                    <option value="binance">Binance</option>
+                  </select>
+                </div>
+              )}
+
+              <button type="submit" disabled={isProcessing} className={`w-full text-white font-bold text-sm py-3 rounded-lg transition-colors uppercase tracking-wider disabled:opacity-50 ${voucherType === 'venta' ? 'bg-[#7A1B28] hover:bg-[#5a141d]' : 'bg-rose-600 hover:bg-rose-700'}`}>
+                {isProcessing ? 'PROCESANDO...' : (voucherType === 'venta' ? 'REGISTRAR COBRANZA' : 'EMITIR NOTA CRÉDITO')}
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {/* Right Column */}
+        <div className="lg:col-span-2 flex flex-col gap-6">
+          {/* Movements Table */}
+
       <div className="glass-card flex flex-col border-slate-200 rounded-2xl shadow-sm bg-white overflow-hidden flex-1 min-h-[500px]">
         <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
           <h3 className="font-display text-xl text-slate-900 flex items-center gap-2">
