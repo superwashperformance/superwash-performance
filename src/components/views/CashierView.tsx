@@ -104,7 +104,9 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
     try {
       const accounts = await treasuryService.getTreasuryAccounts();
       let targetAccount = accounts[0];
-      if (paymentMethod === 'efectivo') {
+      if (paymentCondition === 'cuenta_corriente') {
+        targetAccount = accounts.find(a => a.name.toLowerCase().includes('cobrar') || a.type === 'other') || accounts[0];
+      } else if (paymentMethod === 'efectivo') {
         targetAccount = accounts.find(a => a.type === 'cash') || accounts[0];
       } else if (paymentMethod === 'binance') {
         targetAccount = accounts.find(a => a.type === 'digital_wallet') || accounts[0];
