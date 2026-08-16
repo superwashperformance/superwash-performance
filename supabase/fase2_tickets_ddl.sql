@@ -18,10 +18,10 @@ ALTER TABLE commercial_documents ADD COLUMN IF NOT EXISTS original_document_id U
 -- Genera Ticket B001, registra el ingreso directo a Caja (Treasury Movement) y NO toca Cuenta Corriente.
 CREATE OR REPLACE FUNCTION rpc_process_contado_sale(
     p_customer_id UUID,
-    p_order_id UUID,
     p_total NUMERIC,
     p_payments JSONB,
-    p_idempotency_key UUID
+    p_idempotency_key UUID,
+    p_order_id UUID DEFAULT NULL
 ) RETURNS UUID AS $$
 DECLARE
     v_user_id UUID;
@@ -89,9 +89,9 @@ $$ LANGUAGE plpgsql SET search_path = public SECURITY DEFINER;
 -- Genera Ticket CC002, registra la deuda (Débito) en Cuenta Corriente y NO toca Caja.
 CREATE OR REPLACE FUNCTION rpc_process_credit_sale(
     p_customer_id UUID,
-    p_order_id UUID,
     p_total NUMERIC,
-    p_idempotency_key UUID
+    p_idempotency_key UUID,
+    p_order_id UUID DEFAULT NULL
 ) RETURNS UUID AS $$
 DECLARE
     v_user_id UUID;
@@ -129,7 +129,8 @@ CREATE OR REPLACE FUNCTION rpc_process_collection_receipt(
     p_customer_id UUID,
     p_total NUMERIC,
     p_payments JSONB,
-    p_idempotency_key UUID
+    p_idempotency_key UUID,
+    p_order_id UUID DEFAULT NULL
 )
 RETURNS UUID AS $$
 DECLARE
@@ -205,7 +206,8 @@ $$ LANGUAGE plpgsql SET search_path = public SECURITY DEFINER;
 CREATE OR REPLACE FUNCTION rpc_create_credit_note(
     p_original_doc_id UUID,
     p_amount NUMERIC,
-    p_idempotency_key UUID
+    p_idempotency_key UUID,
+    p_order_id UUID DEFAULT NULL
 ) RETURNS UUID AS $$
 DECLARE
     v_user_id UUID;

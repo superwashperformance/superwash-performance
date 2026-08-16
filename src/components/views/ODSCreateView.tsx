@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { ServiceOrder, ChecklistItem, DamageMarker, PresupuestoServiceItem, Agent, ServiceItem, Customer, Vehicle, Branch, TreasuryAccount } from '../../types';
+import { ServiceOrder, ChecklistItem, DamageMarker, PresupuestoServiceItem, Agent, ServiceItem, Customer, Vehicle, Branch } from '../../types';
 import { storageService } from '../../services/storageService';
-import { treasuryService } from '../../services/treasuryService';
 import { SignatureCanvas } from '../common/SignatureCanvas';
 import {
   ClipboardCheck,
@@ -26,7 +25,7 @@ import {
 } from 'lucide-react';
 
 interface ODSCreateViewProps {
-  onSaveODS: (ods: ServiceOrder, paymentInfo: { condition: 'CONTADO' | 'CUENTA_CORRIENTE', method?: string, accountId?: string }) => void;
+  onSaveODS: (ods: ServiceOrder, paymentInfo: { condition: 'CONTADO' | 'CUENTA_CORRIENTE', method?: string }) => void;
   onCancel: () => void;
   technicians: Agent[];
   receptionAgents: Agent[];
@@ -140,15 +139,6 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
   // Step 6: Facturación / Payment Condition (Added for business rule)
   const [paymentCondition, setPaymentCondition] = useState<'CONTADO' | 'CUENTA_CORRIENTE'>('CONTADO');
   const [paymentMethod, setPaymentMethod] = useState<string>('transferencia');
-  const [paymentAccountId, setPaymentAccountId] = useState('');
-  const [accounts, setAccounts] = useState<TreasuryAccount[]>([]);
-
-  React.useEffect(() => {
-    treasuryService.getTreasuryAccounts().then(accs => {
-      setAccounts(accs);
-      if (accs.length > 0) setPaymentAccountId(accs[0].id);
-    }).catch(() => {});
-  }, []);
 
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -317,11 +307,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
       ],
     };
 
-    onSaveODS(newODS, { 
-      condition: paymentCondition, 
-      method: paymentCondition === 'CONTADO' ? paymentMethod : undefined,
-      accountId: paymentCondition === 'CONTADO' ? paymentAccountId : undefined
-    });
+    onSaveODS(newODS, { condition: paymentCondition, method: paymentCondition === 'CONTADO' ? paymentMethod : undefined });
   };
 
   return (
@@ -1081,19 +1067,6 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
                   <option value="zelle">Zelle / BOFA</option>
                   <option value="pago_movil">Pago Móvil</option>
                 </select>
-
-                <div className="flex flex-col gap-1 w-1/3">
-                  <label className="text-xs text-slate-500 font-bold uppercase">Cuenta de Ingreso</label>
-                  <select
-                    value={paymentAccountId}
-                    onChange={(e) => setPaymentAccountId(e.target.value)}
-                    className="bg-white border border-slate-300 rounded px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none"
-                  >
-                    {accounts.map(a => (
-                      <option key={a.id} value={a.id}>{a.name}</option>
-                    ))}
-                  </select>
-                </div>
               </div>
             )}
           </div>
