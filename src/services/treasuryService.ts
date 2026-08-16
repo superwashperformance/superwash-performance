@@ -157,7 +157,7 @@ export const treasuryService = {
    */
   async processContadoSale(
     customerId: string,
-    orderId: string,
+    orderId: string | null,
     amount: number,
     payments: { account_id: string; amount: number; method: string }[],
     idempotencyKey = generateIdempotencyKey()
@@ -182,7 +182,7 @@ export const treasuryService = {
    */
   async processCreditSale(
     customerId: string,
-    orderId: string,
+    orderId: string | null,
     amount: number,
     idempotencyKey = generateIdempotencyKey()
   ): Promise<string> {

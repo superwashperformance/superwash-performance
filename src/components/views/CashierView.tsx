@@ -1,3 +1,4 @@
+import { supabase } from '../../lib/supabase';
 import React, { useState, useEffect } from 'react';
 import { ServiceOrder, Customer, CashSession, TreasuryMovement } from '../../types';
 import { treasuryService } from '../../services/treasuryService';
@@ -16,6 +17,155 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
   const [isLoadingSession, setIsLoadingSession] = useState(true);
   
   const [showCloseModal, setShowCloseModal] = useState(false);
+
+  // Payment Form State
+  const [voucherType, setVoucherType] = useState<string>('venta'); // 'venta' | 'nota_credito'
+  const [selectedOdsId, setSelectedOdsId] = useState<string>('');
+  const [selectedOriginalDocId, setSelectedOriginalDocId] = useState<string>('');
+  
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string>('');
+  const [paymentAmount, setPaymentAmount] = useState<number>('' as any);
+  const [paymentMethod, setPaymentMethod] = useState<string>('efectivo');
+  const [paymentCondition, setPaymentCondition] = useState<string>('contado');
+
+  const [commercialDocs, setCommercialDocs] = useState<any[]>([]);
+
+  // Fetch docs for credit notes
+  useEffect(() => {
+    if (voucherType === 'nota_credito') {
+      supabase.from('commercial_documents').select('*').eq('status', 'completed').then(({data}) => {
+        if(data) setCommercialDocs(data);
+      });
+    }
+  }, [voucherType]);
+
+  // Handle ODS change
+  useEffect(() => {
+    if (selectedOdsId && voucherType === 'venta') {
+      const ods = orders.find(o => o.id === selectedOdsId);
+      if (ods) {
+        setSelectedCustomerId(ods.customer_id);
+        setPaymentAmount(ods.total);
+      }
+    }
+  }, [selectedOdsId, orders, voucherType]);
+
+  // Handle Original Doc change
+  useEffect(() => {
+    if (selectedOriginalDocId && voucherType === 'nota_credito') {
+      const doc = commercialDocs.find(d => d.id === selectedOriginalDocId);
+      if (doc) {
+        setSelectedCustomerId(doc.customer_id);
+        setPaymentAmount(doc.total); // Set max amount to refund
+      }
+    }
+  }, [selectedOriginalDocId, commercialDocs, voucherType]);
+
+  const handleSubmitPayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedCustomerId || paymentAmount <= 0) {
+      alert('Seleccione un cliente y un monto mayor a 0');
+      return;
+    }
+    
+    setIsProcessing(true);
+    try {
+      if (voucherType === 'nota_credito') {
+        if (!selectedOriginalDocId) {
+          alert('Debe seleccionar un comprobante original para anular');
+          setIsProcessing(false);
+          return;
+        }
+        
+        let refunds: any[] = [];
+        if (paymentCondition !== 'cuenta_corriente') {
+          // If refunding cash, we must specify the account and method
+          const methodMap: Record<string, string> = {
+            'efectivo': 'Caja USD',
+            'zelle': 'Banco Banesco',
+            'pago_movil': 'Banco Banesco',
+            'tarjeta': 'Banco Banesco',
+            'transferencia': 'Banco Banesco',
+            'binance': 'Binance'
+          };
+          const methodForBackend = paymentMethod === 'efectivo' ? 'cash' : paymentMethod;
+          
+          let accountId = '00000000-0000-0000-0000-000000000001'; // Default Caja USD
+          const { data: accounts } = await supabase.from('treasury_accounts').select('*');
+          if (accounts) {
+             const matched = accounts.find(a => a.name === methodMap[paymentMethod] || a.name === 'Caja Principal');
+             if (matched) accountId = matched.id;
+          }
+
+          refunds = [{
+            account_id: accountId,
+            amount: Number(paymentAmount),
+            method: methodForBackend
+          }];
+        }
+
+        await treasuryService.createCreditNote(
+          selectedOriginalDocId,
+          Number(paymentAmount),
+          refunds
+        );
+
+      } else {
+        // Venta (Ingreso)
+        if (paymentCondition === 'cuenta_corriente') {
+          await treasuryService.processCreditSale(
+            selectedCustomerId,
+            selectedOdsId || '',
+            Number(paymentAmount)
+          );
+        } else {
+          // Contado
+          const methodMap: Record<string, string> = {
+            'efectivo': 'Caja USD',
+            'zelle': 'Banco Banesco',
+            'pago_movil': 'Banco Banesco',
+            'tarjeta': 'Banco Banesco',
+            'transferencia': 'Banco Banesco',
+            'binance': 'Binance'
+          };
+          const methodForBackend = paymentMethod === 'efectivo' ? 'cash' : paymentMethod;
+          
+          let accountId = '00000000-0000-0000-0000-000000000001'; // Default Caja USD
+          const { data: accounts } = await supabase.from('treasury_accounts').select('*');
+          if (accounts) {
+             const matched = accounts.find(a => a.name === methodMap[paymentMethod] || a.name === 'Caja Principal');
+             if (matched) accountId = matched.id;
+          }
+
+          const payments = [{
+            account_id: accountId,
+            amount: Number(paymentAmount),
+            method: methodForBackend
+          }];
+
+          await treasuryService.processContadoSale(
+            selectedCustomerId,
+            selectedOdsId || '',
+            Number(paymentAmount),
+            payments
+          );
+        }
+      }
+      
+      // Success reset
+      setPaymentAmount('' as any);
+      setSelectedCustomerId('');
+      setSelectedOdsId('');
+      setSelectedOriginalDocId('');
+      await fetchSession();
+      alert('Operación registrada exitosamente');
+    } catch (err: any) {
+      alert('Error: ' + err.message);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Close Register State
@@ -255,6 +405,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
         )}
       </div>
 
+      </div></div>
       {/* Close Register Modal */}
       {showCloseModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
