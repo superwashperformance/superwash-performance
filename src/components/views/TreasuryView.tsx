@@ -120,9 +120,9 @@ export const TreasuryView: React.FC = () => {
             <div key={acc.id} className="glass-card p-5 flex flex-col gap-2 border-slate-200">
               <div className="flex justify-between items-start">
                 <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                  acc.is_cash_drawer ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
+                  acc.type === 'cash' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
                 }`}>
-                  {acc.is_cash_drawer ? 'caja' : 'banco'}
+                  {acc.type === 'cash' ? 'caja' : 'banco'}
                 </span>
                 <span className="text-slate-500 font-mono text-[10px]">{acc.currency}</span>
               </div>
