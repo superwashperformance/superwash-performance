@@ -65,9 +65,6 @@ export const treasuryService = {
     return data as string; // returns UUID of the session
   },
 
-  /**
-   * Closes the cash session.
-   */
   async closeCashSession(sessionId: string, declaredAmounts: Record<string, number>, idempotencyKey = generateIdempotencyKey()): Promise<boolean> {
     const { data, error } = await supabase.rpc('rpc_close_cash_session', {
       p_session_id: sessionId,
@@ -81,6 +78,74 @@ export const treasuryService = {
     }
 
     return data as boolean;
+  },
+
+  /**
+   * Fetch all movements for a specific session to show in the Cashier UI
+   */
+  async getSessionMovements(sessionId: string): Promise<(TreasuryMovement & { customerName?: string, userName?: string })[]> {
+    const { data: movements, error } = await supabase
+      .from('treasury_movements')
+      .select(`
+        *,
+        treasury_accounts (name)
+      `)
+      .eq('cash_session_id', sessionId)
+      .eq('status', 'valid')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    if (!movements || movements.length === 0) return [];
+
+    // Get collection IDs to fetch customer info
+    const collectionIds = movements
+      .filter(m => m.source_type === 'collection' && m.source_id)
+      .map(m => m.source_id);
+
+    let customersMap: Record<string, string> = {};
+    if (collectionIds.length > 0) {
+      const { data: collections } = await supabase
+        .from('collections')
+        .select(`
+          id,
+          customers (
+            id,
+            full_name,
+            document_id
+          )
+        `)
+        .in('id', collectionIds);
+        
+      if (collections) {
+        collections.forEach((c: any) => {
+          const cust = Array.isArray(c.customers) ? c.customers[0] : c.customers;
+          if (cust) {
+            customersMap[c.id] = cust.full_name || 'Cliente';
+          }
+        });
+      }
+    }
+
+    // Try to get user email (only works if we have permission to view profiles)
+    let usersMap: Record<string, string> = {};
+    const userIds = [...new Set(movements.map(m => m.created_by))];
+    if (userIds.length > 0) {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, email')
+        .in('id', userIds);
+      if (profiles) {
+        profiles.forEach(p => {
+          usersMap[p.id] = p.email || 'Cajero';
+        });
+      }
+    }
+
+    return movements.map(m => ({
+      ...m,
+      customerName: m.source_type === 'collection' && m.source_id ? customersMap[m.source_id] || 'Cliente' : '-',
+      userName: usersMap[m.created_by] || 'Usuario'
+    }));
   },
 
   // -------------------------------------------------------------------------
