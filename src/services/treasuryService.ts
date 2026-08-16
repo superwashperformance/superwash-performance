@@ -243,7 +243,7 @@ export const treasuryService = {
     const { data, error } = await supabase
       .from('treasury_accounts')
       .select('*')
-      .eq('active', true)
+      .eq('is_active', true)
       .order('name', { ascending: true });
 
     if (error) throw error;

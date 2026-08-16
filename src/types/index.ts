@@ -221,10 +221,10 @@ export type CashSessionStatus = 'open' | 'counting' | 'closed' | 'reconciled';
 export interface TreasuryAccount {
   id: string;
   name: string;
+  type: 'cash' | 'bank_account' | 'digital_wallet' | 'other';
   currency: string;
   balance: number;
-  is_cash_drawer: boolean;
-  active: boolean;
+  is_active: boolean;
 }
 
 export interface CashSession {

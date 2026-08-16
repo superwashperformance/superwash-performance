@@ -103,20 +103,27 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
     setIsProcessing(true);
     try {
       const accounts = await treasuryService.getTreasuryAccounts();
-      const cashAccount = accounts.find(a => a.is_cash_drawer) || accounts[0];
+      let targetAccount = accounts[0];
+      if (paymentMethod === 'efectivo') {
+        targetAccount = accounts.find(a => a.type === 'cash') || accounts[0];
+      } else if (paymentMethod === 'binance') {
+        targetAccount = accounts.find(a => a.type === 'digital_wallet') || accounts[0];
+      } else {
+        targetAccount = accounts.find(a => a.type === 'bank_account') || accounts[0];
+      }
       
-      if (!cashAccount) {
+      if (!targetAccount) {
          alert('No hay cuentas de tesorería configuradas.');
          return;
       }
 
-      await treasuryService.processCollection(selectedCustomerId, Number(paymentAmount), [
-        {
-          account_id: cashAccount.id,
-          amount: Number(paymentAmount),
-          method: paymentMethod
-        }
-      ]);
+      const payments = [{
+        account_id: targetAccount.id,
+        amount: Number(paymentAmount),
+        method: paymentMethod
+      }];
+
+      await treasuryService.processCollection(selectedCustomerId, Number(paymentAmount), payments);
       
       alert('Cobranza registrada exitosamente.');
       setPaymentAmount('' as any);
