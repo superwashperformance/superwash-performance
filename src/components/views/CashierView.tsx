@@ -125,7 +125,6 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
 
       await treasuryService.processCollection(selectedCustomerId, Number(paymentAmount), payments);
       
-      alert('Cobranza registrada exitosamente.');
       setPaymentAmount('' as any);
       setSelectedCustomerId('');
       await fetchSession(); // Refresh summary and movements
