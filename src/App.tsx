@@ -248,7 +248,7 @@ export function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const handleCreateODS = async (newODS: ServiceOrder, paymentInfo?: { condition: 'CONTADO' | 'CUENTA_CORRIENTE', method?: string }) => {
+  const handleCreateODS = async (newODS: ServiceOrder, paymentInfo?: { condition: 'CONTADO' | 'CUENTA_CORRIENTE', method?: string, accountId?: string }) => {
     try {
       // Optimistic update for better UX (optional) or wait for server
       const createdODS = await odsService.createODS(newODS);
@@ -260,7 +260,7 @@ export function App() {
             createdODS.customerId,
             createdODS.id,
             createdODS.totalAmount,
-            [{ account_id: 'default', amount: createdODS.totalAmount, method: paymentInfo.method }]
+            [{ account_id: paymentInfo.accountId || '', amount: createdODS.totalAmount, method: paymentInfo.method }]
           );
         } else if (paymentInfo.condition === 'CUENTA_CORRIENTE') {
           await treasuryService.processCreditSale(
