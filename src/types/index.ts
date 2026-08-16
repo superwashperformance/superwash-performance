@@ -214,7 +214,7 @@ export interface CompanyData {
 // Módulo Financiero (Fase 1 / Fase 2)
 // ---------------------------------------------------------------------------------
 
-export type PaymentMethodEnum = 'efectivo' | 'transferencia' | 'tarjeta' | 'zelle' | 'pago_movil';
+export type PaymentMethodEnum = 'efectivo' | 'transferencia' | 'tarjeta' | 'zelle' | 'pago_movil' | 'binance';
 export type MovementStatus = 'valid' | 'annulled';
 export type CashSessionStatus = 'open' | 'counting' | 'closed' | 'reconciled';
 

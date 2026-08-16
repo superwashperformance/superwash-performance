@@ -30,6 +30,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
   const [declaredPagoMovil, setDeclaredPagoMovil] = useState<number>('' as any);
   const [declaredTransfer, setDeclaredTransfer] = useState<number>('' as any);
   const [declaredCard, setDeclaredCard] = useState<number>('' as any);
+  const [declaredBinance, setDeclaredBinance] = useState<number>('' as any);
 
   useEffect(() => {
     fetchSession();
@@ -77,7 +78,8 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
         'zelle': Number(declaredZelle || 0),
         'pago_movil': Number(declaredPagoMovil || 0),
         'transferencia': Number(declaredTransfer || 0),
-        'tarjeta': Number(declaredCard || 0)
+        'tarjeta': Number(declaredCard || 0),
+        'binance': Number(declaredBinance || 0)
       };
       await treasuryService.closeCashSession(session.id, declared);
       await fetchSession();
@@ -214,6 +216,10 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
              <p className="text-[10px] text-slate-500 font-bold uppercase">Transferencia</p>
              <p className="text-sm font-mono font-bold">${getMethodTotal('transferencia').toFixed(2)}</p>
           </div>
+          <div className="glass-card p-3 border border-slate-200 rounded-xl bg-white flex flex-col justify-center">
+             <p className="text-[10px] text-slate-500 font-bold uppercase">Binance</p>
+             <p className="text-sm font-mono font-bold">${getMethodTotal('binance').toFixed(2)}</p>
+          </div>
         </div>
       )}
 
@@ -293,6 +299,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                   <option value="pago_movil">Pago Móvil (Bs)</option>
                   <option value="transferencia">Transferencia Bancaria</option>
                   <option value="tarjeta">Punto de Venta / Tarjeta</option>
+                  <option value="binance">Binance</option>
                 </select>
               </div>
 
@@ -435,6 +442,11 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                     <input type="number" step="0.01" min="0" value={declaredTransfer} onChange={(e) => setDeclaredTransfer(e.target.value as any)}
                       className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
                   </div>
+                  <div>
+                    <label className="text-xs text-slate-500 font-bold block mb-1">Binance</label>
+                    <input type="number" step="0.01" min="0" value={declaredBinance} onChange={(e) => setDeclaredBinance(e.target.value as any)}
+                      className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
+                  </div>
                 </div>
               </div>
 
@@ -452,7 +464,8 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                       Number(declaredZelle || 0) + 
                       Number(declaredPagoMovil || 0) + 
                       Number(declaredTransfer || 0) + 
-                      Number(declaredCard || 0)
+                      Number(declaredCard || 0) +
+                      Number(declaredBinance || 0)
                     ).toFixed(2)}
                   </span>
                 </div>
