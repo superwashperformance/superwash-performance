@@ -249,6 +249,7 @@ export interface TreasuryMovement {
   source_id?: string;
   status: MovementStatus;
   reversal_for_id?: string;
+    treasury_accounts?: { name: string };
   created_by: string;
   created_at: string;
 }
@@ -292,6 +293,7 @@ export interface CurrentAccountMovement {
   source_id?: string;
   status: MovementStatus;
   reversal_for_id?: string;
+    treasury_accounts?: { name: string };
   created_at: string;
 }
 
