@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ServiceOrder, Customer, CashSession, TreasuryMovement } from '../../types';
 import { treasuryService } from '../../services/treasuryService';
-import { DollarSign, Plus, Receipt, AlertTriangle, ArrowDownCircle, ArrowUpCircle, X, Check, Lock, RefreshCw, HandCoins } from 'lucide-react';
+import { DollarSign, AlertTriangle, ArrowUpCircle, X, Check, Lock, RefreshCw, HandCoins, Receipt } from 'lucide-react';
 
 interface CashierViewProps {
   orders: ServiceOrder[];
@@ -16,17 +16,11 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
   const [isLoadingSession, setIsLoadingSession] = useState(true);
   
   const [showCloseModal, setShowCloseModal] = useState(false);
-  
-  // Payment Form State
-  const [selectedCustomerId, setSelectedCustomerId] = useState<string>('');
-  const [paymentAmount, setPaymentAmount] = useState<number>('' as any);
-  const [paymentMethod, setPaymentMethod] = useState<string>('efectivo');
-  const [paymentCondition, setPaymentCondition] = useState<string>('contado');
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Close Register State
   const [declaredCashUSD, setDeclaredCashUSD] = useState<number>('' as any);
-  const [declaredCashBs, setDeclaredCashBs] = useState<number>('' as any); // Stored in DB as 'efectivo' but maybe we just sum them? For phase 1, we just provide the inputs. The backend expects a JSON.
+  const [declaredCashBs, setDeclaredCashBs] = useState<number>('' as any); 
   const [declaredZelle, setDeclaredZelle] = useState<number>('' as any);
   const [declaredPagoMovil, setDeclaredPagoMovil] = useState<number>('' as any);
   const [declaredTransfer, setDeclaredTransfer] = useState<number>('' as any);
@@ -75,7 +69,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
     try {
       const declared = {
         'efectivo': Number(declaredCashUSD || 0),
-        'efectivo_bs': Number(declaredCashBs || 0), // Not in enum, but can be passed in JSON
+        'efectivo_bs': Number(declaredCashBs || 0),
         'zelle': Number(declaredZelle || 0),
         'pago_movil': Number(declaredPagoMovil || 0),
         'transferencia': Number(declaredTransfer || 0),
@@ -88,53 +82,6 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
     } catch (err: any) {
       console.error(err);
       alert('Error al cerrar la caja: ' + (err.message || 'Error desconocido'));
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handleSubmitPayment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedCustomerId || paymentAmount <= 0) {
-      alert('Seleccione un cliente y un monto mayor a 0');
-      return;
-    }
-
-    setIsProcessing(true);
-    try {
-      const accounts = await treasuryService.getTreasuryAccounts();
-      let targetAccount = accounts[0];
-      if (paymentCondition === 'cuenta_corriente') {
-        targetAccount = accounts.find(a => a.name.toLowerCase().includes('cobrar') || a.type === 'other') || accounts[0];
-      } else if (paymentMethod === 'efectivo') {
-        targetAccount = accounts.find(a => a.type === 'cash') || accounts[0];
-      } else if (paymentMethod === 'binance') {
-        targetAccount = accounts.find(a => a.type === 'digital_wallet') || accounts[0];
-      } else {
-        targetAccount = accounts.find(a => a.type === 'bank_account') || accounts[0];
-      }
-      
-      if (!targetAccount) {
-         alert('No hay cuentas de tesorería configuradas.');
-         return;
-      }
-
-      const methodForBackend = paymentMethod === 'binance' ? 'transferencia' : paymentMethod;
-      const payments = [{
-        account_id: targetAccount.id,
-        amount: Number(paymentAmount),
-        method: methodForBackend
-      }];
-
-      await treasuryService.processCollection(selectedCustomerId, Number(paymentAmount), payments);
-      
-      setPaymentAmount('' as any);
-      setSelectedCustomerId('');
-      await fetchSession(); // Refresh summary and movements
-      
-    } catch (err: any) {
-      console.error('Error procesando cobranza:', err);
-      alert('Error al procesar el pago: ' + (err.message || 'Error desconocido'));
     } finally {
       setIsProcessing(false);
     }
@@ -165,10 +112,10 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="font-display text-3xl text-slate-900 tracking-wide flex items-center gap-2">
-            CAJA Y COBRANZA <DollarSign className="w-6 h-6 text-[#7A1B28]" />
+            SESIÓN DE CAJA <DollarSign className="w-6 h-6 text-[#7A1B28]" />
           </h2>
           <p className="text-sm text-slate-500">
-            Apertura/Cierre de sesión, cobros, y movimientos de tesorería.
+            Apertura/Cierre de sesión y visualización de movimientos monetarios de la jornada.
           </p>
         </div>
         {session ? (
@@ -186,9 +133,14 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
             </button>
           </div>
         ) : (
-          <span className="px-4 py-2 bg-slate-100 text-slate-500 font-bold rounded-lg uppercase tracking-wider text-sm border border-slate-300 flex items-center gap-2 w-max">
-            <Lock className="w-4 h-4" /> Caja Cerrada
-          </span>
+          <div className="flex items-center gap-4">
+            <span className="px-4 py-2 bg-slate-100 text-slate-500 font-bold rounded-lg uppercase tracking-wider text-sm border border-slate-300 flex items-center gap-2 w-max">
+              <Lock className="w-4 h-4" /> Caja Cerrada
+            </span>
+            <button onClick={handleOpenRegister} disabled={isProcessing} className="bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-2 px-6 rounded-lg transition-colors uppercase tracking-widest text-sm disabled:opacity-50">
+              {isProcessing ? 'APERTURANDO...' : 'APERTURAR CAJA'}
+            </button>
+          </div>
         )}
       </div>
 
@@ -233,179 +185,74 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Movements Table */}
+      <div className="glass-card flex flex-col border-slate-200 rounded-2xl shadow-sm bg-white overflow-hidden flex-1 min-h-[500px]">
+        <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+          <h3 className="font-display text-xl text-slate-900 flex items-center gap-2">
+            <Receipt className="w-5 h-5 text-[#7A1B28]" /> MOVIMIENTOS DE LA CAJA ACTIVA
+          </h3>
+          <button onClick={fetchSession} className="p-2 hover:bg-slate-200 rounded-full transition-colors" title="Refrescar">
+            <RefreshCw className="w-4 h-4 text-slate-500" />
+          </button>
+        </div>
         
-        {/* Left Column: Actions */}
-        <div className="flex flex-col gap-6 lg:col-span-1">
-          {/* Register Payment Form */}
-          <div className="glass-card p-6 flex flex-col gap-4 relative overflow-hidden border-slate-200 rounded-2xl shadow-sm bg-white">
-            <h3 className="font-display text-xl text-slate-900 flex items-center gap-2">
-              <HandCoins className="w-5 h-5 text-emerald-600" /> NUEVA COBRANZA
-            </h3>
-
-            {!session ? (
-              <div className="absolute inset-0 bg-white/95 backdrop-blur-sm z-10 flex flex-col items-center justify-center p-6 text-center">
-                <Lock className="w-12 h-12 text-slate-300 mb-4" />
-                <h4 className="text-slate-900 font-display text-xl mb-2">CAJA CERRADA</h4>
-                <p className="text-xs text-slate-500 mb-6">Debes abrir una sesión de caja para procesar cobranzas.</p>
-                
-                <form onSubmit={handleOpenRegister} className="w-full flex flex-col gap-3">
-                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs text-slate-600 mb-2">
-                    <p className="font-bold mb-1">Apertura (Fase 1)</p>
-                    El fondo inicial manual se incluirá en una fase posterior. La caja iniciará en cero.
-                  </div>
-                  <button type="submit" disabled={isProcessing} className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3 rounded-lg transition-colors uppercase tracking-widest text-sm disabled:opacity-50">
-                    {isProcessing ? 'APERTURANDO...' : 'APERTURAR CAJA'}
-                  </button>
-                </form>
-              </div>
-            ) : null}
-
-            <form onSubmit={handleSubmitPayment} className="flex flex-col gap-4">
-              
-              <div className="bg-blue-50 border border-blue-200 rounded p-3 text-xs text-blue-700 font-mono flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                <p>Generará un CRÉDITO en la cuenta corriente del cliente y un ingreso a Tesorería.</p>
-              </div>
-
-              <div>
-                <label className="text-xs text-slate-500 mb-1 block font-bold">Cliente</label>
-                <select
-                  value={selectedCustomerId}
-                  onChange={(e) => setSelectedCustomerId(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all"
-                >
-                  <option value="">Seleccione un cliente...</option>
-                  {customers.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.fullName} - {c.documentId}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="text-xs text-slate-500 mb-1 block font-bold">Condición de Pago</label>
-                <select
-                  value={paymentCondition}
-                  onChange={(e) => setPaymentCondition(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all"
-                >
-                  <option value="contado">Contado</option>
-                  <option value="cuenta_corriente">Cuenta Corriente</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="text-xs text-slate-500 mb-1 block font-bold">Monto a Cobrar ($)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0.01"
-                  value={paymentAmount}
-                  onChange={(e) => setPaymentAmount(e.target.value as any)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xl text-slate-900 font-mono font-bold focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all"
-                  placeholder="0.00"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs text-slate-500 mb-1 block font-bold">Método de Pago</label>
-                <select
-                  value={paymentMethod}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none mb-2 transition-all"
-                >
-                  <option value="efectivo">Efectivo ($ USD)</option>
-                  <option value="zelle">Zelle</option>
-                  <option value="pago_movil">Pago Móvil (Bs)</option>
-                  <option value="transferencia">Transferencia Bancaria</option>
-                  <option value="tarjeta">Punto de Venta / Tarjeta</option>
-                  <option value="binance">Binance</option>
-                </select>
-              </div>
-
-              <button type="submit" disabled={isProcessing} className="w-full bg-[#7A1B28] text-white font-bold text-sm py-3 rounded-lg hover:bg-[#5a141d] transition-colors uppercase tracking-wider disabled:opacity-50">
-                {isProcessing ? 'PROCESANDO...' : 'REGISTRAR COBRANZA'}
-              </button>
-            </form>
-          </div>
-
-          {/* Egresos (Placeholder) */}
-          <div className="glass-card p-6 flex flex-col gap-4 border-slate-200 rounded-2xl shadow-sm bg-slate-50 opacity-80">
-             <h3 className="font-display text-xl text-slate-700 flex items-center gap-2">
-               <ArrowUpCircle className="w-5 h-5 text-rose-500" /> REGISTRAR EGRESO
-             </h3>
-             <p className="text-xs text-slate-500">
-               El registro de gastos, vales y pagos a proveedores requiere actualizaciones en la base de datos (SQL).
-             </p>
-             <button disabled className="w-full bg-slate-200 text-slate-500 font-bold text-sm py-3 rounded-lg uppercase tracking-wider cursor-not-allowed border border-slate-300">
-               Próximamente (Fase 2)
-             </button>
-          </div>
-        </div>
-
-        {/* Right Column: Movements Table */}
-        <div className="lg:col-span-2 glass-card flex flex-col border-slate-200 rounded-2xl shadow-sm bg-white overflow-hidden h-[600px]">
-           <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-             <h3 className="font-display text-xl text-slate-900 flex items-center gap-2">
-               <Receipt className="w-5 h-5 text-[#7A1B28]" /> MOVIMIENTOS DE LA CAJA ACTIVA
-             </h3>
-             <button onClick={fetchSession} className="p-2 hover:bg-slate-200 rounded-full transition-colors" title="Refrescar">
-                <RefreshCw className="w-4 h-4 text-slate-500" />
-             </button>
+        {!session && (
+           <div className="p-12 text-center text-slate-400 font-display text-lg">
+              Abra una sesión de caja para visualizar los movimientos.
            </div>
-           
-           <div className="flex-1 overflow-auto p-0">
-             <table className="w-full text-sm text-left text-slate-700">
-               <thead className="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-100 font-display tracking-wider sticky top-0 z-10 shadow-sm">
-                 <tr>
-                   <th className="px-4 py-3">Hora</th>
-                   <th className="px-4 py-3">Tipo</th>
-                   <th className="px-4 py-3">Cliente / Origen</th>
-                   <th className="px-4 py-3">Método</th>
-                   <th className="px-4 py-3 text-right">Monto</th>
-                 </tr>
-               </thead>
-               <tbody className="divide-y divide-slate-100 font-mono text-xs">
-                 {movements.map((tx) => (
-                   <tr key={tx.id} className="hover:bg-slate-50 transition-colors group">
-                     <td className="px-4 py-3 text-slate-500">
-                       {new Date(tx.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                     </td>
-                     <td className="px-4 py-3">
-                       <span className={`px-2 py-1 rounded text-[10px] uppercase font-bold tracking-wider ${
-                         tx.type === 'income' || tx.type === 'internal_transfer_in' ? 'bg-emerald-100 text-emerald-700' :
-                         'bg-rose-100 text-rose-700'
-                       }`}>
-                         {tx.type.replace('internal_transfer_', 'Transfer ')}
-                       </span>
-                     </td>
-                     <td className="px-4 py-3">
-                       <div className="font-sans font-medium text-slate-900">{tx.customerName}</div>
-                       <div className="text-[10px] text-slate-400 capitalize">{tx.source_type.replace('_', ' ')}</div>
-                     </td>
-                     <td className="px-4 py-3 uppercase text-slate-500">
-                       {tx.payment_method.replace('_', ' ')}
-                     </td>
-                     <td className={`px-4 py-3 text-right font-bold text-sm ${
-                       tx.type === 'income' || tx.type === 'internal_transfer_in' ? 'text-emerald-600' : 'text-rose-600'
-                     }`}>
-                       {tx.type === 'income' || tx.type === 'internal_transfer_in' ? '+' : '-'}${Number(tx.amount).toFixed(2)}
-                     </td>
-                   </tr>
-                 ))}
-                 {movements.length === 0 && (
-                   <tr>
-                     <td colSpan={5} className="px-4 py-12 text-center text-slate-400 italic font-sans">
-                       No hay movimientos en esta sesión.
-                     </td>
-                   </tr>
-                 )}
-               </tbody>
-             </table>
-           </div>
-        </div>
+        )}
+
+        {session && (
+          <div className="flex-1 overflow-auto p-0">
+            <table className="w-full text-sm text-left text-slate-700">
+              <thead className="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-100 font-display tracking-wider sticky top-0 z-10 shadow-sm">
+                <tr>
+                  <th className="px-4 py-3">Hora</th>
+                  <th className="px-4 py-3">Tipo</th>
+                  <th className="px-4 py-3">Cliente / Origen</th>
+                  <th className="px-4 py-3">Método</th>
+                  <th className="px-4 py-3 text-right">Monto</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 font-mono text-xs">
+                {movements.map((tx) => (
+                  <tr key={tx.id} className="hover:bg-slate-50 transition-colors group">
+                    <td className="px-4 py-3 text-slate-500">
+                      {new Date(tx.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`px-2 py-1 rounded text-[10px] uppercase font-bold tracking-wider ${
+                        tx.type === 'income' || tx.type === 'internal_transfer_in' ? 'bg-emerald-100 text-emerald-700' :
+                        'bg-rose-100 text-rose-700'
+                      }`}>
+                        {tx.type.replace('internal_transfer_', 'Transfer ')}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="font-sans font-medium text-slate-900">{tx.customerName}</div>
+                      <div className="text-[10px] text-slate-400 capitalize">{tx.source_type.replace('_', ' ')}</div>
+                    </td>
+                    <td className="px-4 py-3 uppercase text-slate-500">
+                      {tx.payment_method.replace('_', ' ')}
+                    </td>
+                    <td className={`px-4 py-3 text-right font-bold text-sm ${
+                      tx.type === 'income' || tx.type === 'internal_transfer_in' ? 'text-emerald-600' : 'text-rose-600'
+                    }`}>
+                      {tx.type === 'income' || tx.type === 'internal_transfer_in' ? '+' : '-'}${Number(tx.amount).toFixed(2)}
+                    </td>
+                  </tr>
+                ))}
+                {movements.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-12 text-center text-slate-400 italic font-sans">
+                      No hay movimientos en esta sesión.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Close Register Modal */}

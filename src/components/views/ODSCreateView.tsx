@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 
 interface ODSCreateViewProps {
-  onSaveODS: (ods: ServiceOrder) => void;
+  onSaveODS: (ods: ServiceOrder, paymentInfo: { condition: 'CONTADO' | 'CUENTA_CORRIENTE', method?: string }) => void;
   onCancel: () => void;
   technicians: Agent[];
   receptionAgents: Agent[];
@@ -135,6 +135,10 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
 
   const [uploadCategory, setUploadCategory] = useState<'general' | 'damage' | 'damage_front' | 'damage_rear' | 'damage_left' | 'damage_right' | 'belonging'>('general');
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+
+  // Step 6: Facturación / Payment Condition (Added for business rule)
+  const [paymentCondition, setPaymentCondition] = useState<'CONTADO' | 'CUENTA_CORRIENTE'>('CONTADO');
+  const [paymentMethod, setPaymentMethod] = useState<string>('transferencia');
 
   const galleryInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -303,7 +307,7 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
       ],
     };
 
-    onSaveODS(newODS);
+    onSaveODS(newODS, { condition: paymentCondition, method: paymentCondition === 'CONTADO' ? paymentMethod : undefined });
   };
 
   return (
@@ -1023,7 +1027,51 @@ export const ODSCreateView: React.FC<ODSCreateViewProps> = ({
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-green-50 border border-green-200 flex items-center gap-4">
+          {/* Payment Condition Selection */}
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 mt-4 flex flex-col gap-4">
+            <span className="font-display text-lg text-slate-900">CONDICIÓN DE PAGO (Facturación)</span>
+            <div className="grid grid-cols-2 gap-4">
+              <button
+                onClick={() => setPaymentCondition('CONTADO')}
+                className={`p-3 rounded-lg border-2 transition-all font-bold ${
+                  paymentCondition === 'CONTADO'
+                    ? 'border-[#7A1B28] bg-red-50 text-[#7A1B28]'
+                    : 'border-slate-200 bg-white text-slate-500'
+                }`}
+              >
+                CONTADO
+              </button>
+              <button
+                onClick={() => setPaymentCondition('CUENTA_CORRIENTE')}
+                className={`p-3 rounded-lg border-2 transition-all font-bold ${
+                  paymentCondition === 'CUENTA_CORRIENTE'
+                    ? 'border-[#7A1B28] bg-red-50 text-[#7A1B28]'
+                    : 'border-slate-200 bg-white text-slate-500'
+                }`}
+              >
+                CUENTA CORRIENTE
+              </button>
+            </div>
+            
+            {paymentCondition === 'CONTADO' && (
+              <div className="mt-2 flex flex-col gap-2">
+                <label className="text-xs text-slate-500 font-bold uppercase">Método de Pago</label>
+                <select
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  className="bg-white border border-slate-300 rounded px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none"
+                >
+                  <option value="efectivo">Efectivo ($)</option>
+                  <option value="punto">Punto de Venta</option>
+                  <option value="transferencia">Transferencia Bancaria</option>
+                  <option value="zelle">Zelle / BOFA</option>
+                  <option value="pago_movil">Pago Móvil</option>
+                </select>
+              </div>
+            )}
+          </div>
+
+          <div className="p-4 rounded-xl bg-green-50 border border-green-200 flex items-center gap-4 mt-4">
             <CheckCircle className="w-8 h-8 text-green-600 shrink-0" />
             <div>
               <div className="font-display text-lg text-slate-900">LISTO PARA REGISTRAR EN EL TALLER</div>

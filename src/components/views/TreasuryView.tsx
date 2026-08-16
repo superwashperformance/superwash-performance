@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { treasuryService } from '../../services/treasuryService';
 import { TreasuryAccount, TreasuryMovement } from '../../types';
 import { CurrencyDisplay } from '../common/CurrencyDisplay';
-import { ShieldCheck, ArrowRightLeft, Landmark, List, Plus } from 'lucide-react';
+import { ShieldCheck, ArrowRightLeft, Landmark, List, Plus, X } from 'lucide-react';
 
 export const TreasuryView: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'accounts' | 'transfers' | 'mayor'>('accounts');
+  const [activeTab, setActiveTab] = useState<'accounts' | 'transfers' | 'mayor' | 'cc' | 'docs'>('accounts');
   
   const [accounts, setAccounts] = useState<TreasuryAccount[]>([]);
   const [movements, setMovements] = useState<TreasuryMovement[]>([]);
+  const [debtors, setDebtors] = useState<{ customer: any, debt: number, pendingInvoices: any[] }[]>([]);
+  const [documents, setDocuments] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -18,6 +20,20 @@ export const TreasuryView: React.FC = () => {
   const [transferAmount, setTransferAmount] = useState(0);
   const [transferMethod, setTransferMethod] = useState('transferencia');
 
+  // Collection Modal State
+  const [isColModalOpen, setIsColModalOpen] = useState(false);
+  const [colDocId, setColDocId] = useState('');
+  const [colDebt, setColDebt] = useState(0);
+  const [colAmount, setColAmount] = useState<number | ''>('');
+  const [colMethod, setColMethod] = useState('transferencia');
+  const [colAccountId, setColAccountId] = useState('');
+
+  // NC Modal State
+  const [isNCModalOpen, setIsNCModalOpen] = useState(false);
+  const [ncDoc, setNcDoc] = useState<any>(null);
+  const [ncAmount, setNcAmount] = useState<number | ''>('');
+  const [ncRefundAccountId, setNcRefundAccountId] = useState('');
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -25,16 +41,91 @@ export const TreasuryView: React.FC = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [accs, movs] = await Promise.all([
+      const [accs, movs, debts, docs] = await Promise.all([
         treasuryService.getTreasuryAccounts(),
-        treasuryService.getTreasuryMovements(100)
+        treasuryService.getTreasuryMovements(100),
+        treasuryService.getCustomersWithDebt(),
+        treasuryService.getCommercialDocuments()
       ]);
       setAccounts(accs);
       setMovements(movs);
+      setDebtors(debts);
+      setDocuments(docs);
+      
+      if (accs.length > 0) {
+        setColAccountId(accs[0].id);
+        setNcRefundAccountId(accs[0].id);
+      }
     } catch (err) {
       console.error('Error fetching treasury data:', err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const openCollectionModal = (docId: string, debt: number) => {
+    setColDocId(docId);
+    setColDebt(debt);
+    setColAmount(debt);
+    setIsColModalOpen(true);
+  };
+
+  const handleCollectionSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!colAmount || colAmount <= 0 || colAmount > colDebt) {
+      alert('Monto inválido.');
+      return;
+    }
+    if (!colAccountId) {
+      alert('Debe seleccionar una cuenta destino.');
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      await treasuryService.processCollectionReceipt(colDocId, Number(colAmount), [{ account_id: colAccountId, amount: Number(colAmount), method: colMethod }]);
+      alert('Cobranza registrada exitosamente.');
+      setIsColModalOpen(false);
+      await fetchData();
+    } catch (err: any) {
+      console.error(err);
+      alert('Error en cobranza: ' + (err.message || ''));
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const openNCModal = (doc: any) => {
+    setNcDoc(doc);
+    setNcAmount(doc.total_amount);
+    setIsNCModalOpen(true);
+  };
+
+  const handleNCSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!ncDoc) return;
+    if (!ncAmount || ncAmount <= 0 || ncAmount > ncDoc.total_amount) {
+      alert('Monto inválido.');
+      return;
+    }
+    
+    try {
+      setIsProcessing(true);
+      let refunds: any[] = [];
+      if (ncDoc.payment_condition === 'CONTADO' && ncRefundAccountId) {
+         // Si es contado, el sistema pide origen de fondos para devolver
+         refunds = [{ account_id: ncRefundAccountId, amount: Number(ncAmount), method: 'efectivo' }];
+      }
+
+      await treasuryService.createCreditNote(ncDoc.id, Number(ncAmount), refunds);
+      alert('Nota de Crédito generada exitosamente.');
+      setIsNCModalOpen(false);
+      await fetchData();
+    } catch (err: any) {
+      console.error(err);
+      alert('Error al generar nota de crédito: ' + (err.message || ''));
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -111,6 +202,18 @@ export const TreasuryView: React.FC = () => {
           className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'mayor' ? 'bg-[#7A1B28] text-white' : 'text-slate-500 hover:text-slate-900'}`}
         >
           <List className="w-4 h-4" /> Mayor (Movimientos)
+        </button>
+        <button 
+          onClick={() => setActiveTab('cc')}
+          className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'cc' ? 'bg-[#7A1B28] text-white' : 'text-slate-500 hover:text-slate-900'}`}
+        >
+          <Landmark className="w-4 h-4" /> Cuentas Corrientes
+        </button>
+        <button 
+          onClick={() => setActiveTab('docs')}
+          className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'docs' ? 'bg-[#7A1B28] text-white' : 'text-slate-500 hover:text-slate-900'}`}
+        >
+          <List className="w-4 h-4" /> Facturación y Tickets
         </button>
       </div>
 
@@ -227,7 +330,7 @@ export const TreasuryView: React.FC = () => {
                     {new Date(m.created_at || '').toLocaleString()}
                   </td>
                   <td className="p-4 font-bold text-slate-900">
-                    {m.treasury_account_id}
+                    {m.treasury_accounts?.name || m.treasury_account_id}
                   </td>
                   <td className="p-4">
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
@@ -256,6 +359,251 @@ export const TreasuryView: React.FC = () => {
         </div>
       )}
 
+      {activeTab === 'cc' && (
+        <div className="glass-card p-0 overflow-hidden animate-fade-in border-slate-200">
+          <table className="w-full text-left text-sm text-slate-700">
+            <thead className="bg-slate-100 font-display text-sm tracking-wider uppercase text-slate-600 border-b border-slate-200">
+              <tr>
+                <th className="p-4">CLIENTE</th>
+                <th className="p-4">DOCUMENTO (CC002)</th>
+                <th className="p-4 text-right">SALDO PENDIENTE</th>
+                <th className="p-4 text-center">ACCIONES</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-200">
+              {debtors.flatMap(d => d.pendingInvoices.map(inv => (
+                <tr key={inv.id} className="hover:bg-slate-50 transition-colors">
+                  <td className="p-4 font-bold text-slate-900">
+                    {d.customer?.fullName || 'Cliente'}
+                  </td>
+                  <td className="p-4 font-mono text-xs text-slate-500 flex flex-col">
+                    <span className="font-bold text-slate-700">{inv.document_number}</span>
+                    <span>Total Orig: ${inv.total_amount}</span>
+                  </td>
+                  <td className="p-4 text-right font-mono font-bold text-rose-700">
+                    <CurrencyDisplay amount={inv.balance} size="md" />
+                  </td>
+                  <td className="p-4 text-center">
+                    <button
+                      onClick={() => openCollectionModal(inv.id, inv.balance)}
+                      disabled={isProcessing}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold uppercase disabled:opacity-50"
+                    >
+                      Cobrar a Ticket
+                    </button>
+                  </td>
+                </tr>
+              )))}
+              {debtors.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="p-8 text-center text-slate-500">
+                    No hay tickets de cuenta corriente pendientes.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {activeTab === 'docs' && (
+        <div className="glass-card p-0 overflow-hidden animate-fade-in border-slate-200">
+          <table className="w-full text-left text-sm text-slate-700">
+            <thead className="bg-slate-100 font-display text-sm tracking-wider uppercase text-slate-600 border-b border-slate-200">
+              <tr>
+                <th className="p-4">FECHA</th>
+                <th className="p-4">DOCUMENTO</th>
+                <th className="p-4">TIPO</th>
+                <th className="p-4">CLIENTE</th>
+                <th className="p-4 text-right">MONTO / SALDO</th>
+                <th className="p-4 text-center">ACCIONES</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-200">
+              {documents.map(d => {
+                const balance = Number(d.total_amount) - Number(d.paid_amount || 0) - Number(d.annulled_amount || 0);
+                return (
+                  <tr key={d.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="p-4 font-mono text-xs text-slate-500">
+                      {new Date(d.created_at || '').toLocaleString()}
+                    </td>
+                    <td className="p-4 font-bold text-slate-900">
+                      {d.document_number}
+                    </td>
+                    <td className="p-4 flex flex-col items-start gap-1">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                        d.document_type === 'credit_note_internal' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-slate-50 text-slate-700 border border-slate-200'
+                      }`}>
+                        {d.document_type === 'invoice_internal' ? 'VENTA' : d.document_type === 'credit_note_internal' ? 'NC' : 'RECIBO'}
+                      </span>
+                      <span className="text-[10px] uppercase font-bold text-slate-500 bg-slate-100 px-1 rounded">{d.payment_condition}</span>
+                    </td>
+                    <td className="p-4 text-xs font-bold">{d.customers?.fullName || '-'}</td>
+                    <td className={`p-4 text-right font-mono flex flex-col items-end`}>
+                      <span className={`font-bold ${d.document_type === 'credit_note_internal' ? 'text-rose-700' : 'text-slate-900'}`}>
+                        {d.document_type === 'credit_note_internal' ? '-' : ''}${Math.abs(d.total_amount).toFixed(2)}
+                      </span>
+                      {d.document_type === 'invoice_internal' && (
+                        <span className="text-[10px] text-slate-500">
+                          Saldo: ${balance.toFixed(2)}
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-4 text-center">
+                      {d.document_type === 'invoice_internal' && balance > 0 && d.status === 'issued' && (
+                        <button
+                          onClick={() => openNCModal(d)}
+                          disabled={isProcessing}
+                          className="bg-rose-100 text-rose-700 hover:bg-rose-200 px-3 py-1.5 rounded-lg text-xs font-bold uppercase disabled:opacity-50"
+                        >
+                          Anular/NC
+                        </button>
+                      )}
+                      {d.status === 'annulled' && (
+                        <span className="text-[10px] uppercase font-bold text-slate-400">Anulado</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+              {documents.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="p-8 text-center text-slate-500">
+                    No hay documentos comerciales registrados.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* MODAL COBRANZA (REC004) */}
+      {isColModalOpen && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="bg-slate-50 border-b border-slate-200 p-4 flex justify-between items-center">
+              <h3 className="font-display font-bold text-lg text-slate-900">Registrar Cobranza</h3>
+              <button onClick={() => setIsColModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={handleCollectionSubmit} className="p-6 flex flex-col gap-4">
+              <div className="bg-emerald-50 text-emerald-800 p-3 rounded-lg border border-emerald-100 flex justify-between items-center">
+                <span className="text-sm font-bold">Deuda Pendiente:</span>
+                <span className="font-mono font-bold text-lg">${colDebt.toFixed(2)}</span>
+              </div>
+              
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Monto a Cobrar ($)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  max={colDebt}
+                  value={colAmount}
+                  onChange={e => setColAmount(e.target.value ? Number(e.target.value) : '')}
+                  className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 text-lg font-mono font-bold text-slate-900 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Método de Pago</label>
+                <select
+                  value={colMethod}
+                  onChange={e => setColMethod(e.target.value)}
+                  className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 text-sm font-bold text-slate-700 focus:border-emerald-500 outline-none"
+                >
+                  <option value="efectivo">Efectivo</option>
+                  <option value="punto">Punto de Venta</option>
+                  <option value="transferencia">Transferencia</option>
+                  <option value="pago_movil">Pago Móvil</option>
+                  <option value="zelle">Zelle</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Cuenta Destino</label>
+                <select
+                  value={colAccountId}
+                  onChange={e => setColAccountId(e.target.value)}
+                  className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 text-sm font-bold text-slate-700 focus:border-emerald-500 outline-none"
+                  required
+                >
+                  {accounts.map(a => (
+                    <option key={a.id} value={a.id}>{a.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <button type="submit" disabled={isProcessing} className="btn-primary bg-emerald-600 hover:bg-emerald-700 border-none text-white py-3 mt-2 shadow-lg shadow-emerald-600/20 disabled:opacity-50">
+                {isProcessing ? 'PROCESANDO...' : 'EMITIR RECIBO'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL NOTA DE CRÉDITO (NC003) */}
+      {isNCModalOpen && ncDoc && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="bg-slate-50 border-b border-slate-200 p-4 flex justify-between items-center">
+              <h3 className="font-display font-bold text-lg text-slate-900">Emitir Nota de Crédito</h3>
+              <button onClick={() => setIsNCModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={handleNCSubmit} className="p-6 flex flex-col gap-4">
+              <div className="bg-rose-50 text-rose-800 p-3 rounded-lg border border-rose-100 flex justify-between items-center">
+                <span className="text-sm font-bold">Monto Máx. Permitido:</span>
+                <span className="font-mono font-bold text-lg">${(Number(ncDoc.total_amount) - Number(ncDoc.paid_amount || 0) - Number(ncDoc.annulled_amount || 0)).toFixed(2)}</span>
+              </div>
+              
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Monto a Anular/Reembolsar ($)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  max={(Number(ncDoc.total_amount) - Number(ncDoc.paid_amount || 0) - Number(ncDoc.annulled_amount || 0))}
+                  value={ncAmount}
+                  onChange={e => setNcAmount(e.target.value ? Number(e.target.value) : '')}
+                  className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 text-lg font-mono font-bold text-slate-900 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 outline-none"
+                  required
+                />
+              </div>
+
+              {ncDoc.payment_condition === 'CONTADO' && (
+                <div>
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Cuenta Origen (Para Reembolso)</label>
+                  <p className="text-[10px] text-slate-500 mb-2">Este ticket es de CONTADO, se debe extraer dinero de una caja/banco para devolver al cliente.</p>
+                  <select
+                    value={ncRefundAccountId}
+                    onChange={e => setNcRefundAccountId(e.target.value)}
+                    className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 text-sm font-bold text-slate-700 focus:border-rose-500 outline-none"
+                    required
+                  >
+                    {accounts.map(a => (
+                      <option key={a.id} value={a.id}>{a.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              {ncDoc.payment_condition === 'CUENTA_CORRIENTE' && (
+                <div className="bg-slate-100 p-3 rounded-lg border border-slate-200">
+                  <p className="text-xs text-slate-600">Este ticket es de CC. La Nota de Crédito solo disminuirá el saldo de la deuda del cliente. No se extrae dinero de caja.</p>
+                </div>
+              )}
+
+              <button type="submit" disabled={isProcessing} className="btn-primary bg-rose-600 hover:bg-rose-700 border-none text-white py-3 mt-2 shadow-lg shadow-rose-600/20 disabled:opacity-50">
+                {isProcessing ? 'PROCESANDO...' : 'EMITIR NOTA DE CRÉDITO'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -257,8 +257,22 @@ export interface Collection {
   id: string;
   customer_id: string;
   total_amount: number;
+  receipt_number?: string; // e.g. REC004-001
   status: MovementStatus;
   created_by: string;
+  created_at: string;
+}
+
+export interface CommercialDocument {
+  id: string;
+  order_id?: string;
+  customer_id: string;
+  document_type: 'invoice_internal' | 'credit_note_internal' | 'debit_note_internal';
+  total_amount: number;
+  status: 'issued' | 'annulled';
+  document_number?: string; // e.g. B001-001, CC002-001, NC003-001
+  payment_condition?: 'CONTADO' | 'CUENTA_CORRIENTE';
+  original_document_id?: string;
   created_at: string;
 }
 

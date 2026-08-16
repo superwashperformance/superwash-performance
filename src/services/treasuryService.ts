@@ -153,28 +153,100 @@ export const treasuryService = {
   // -------------------------------------------------------------------------
 
   /**
-   * Processes a collection (payment) from a customer.
-   * This credits their Current Account and registers Treasury Movements.
+   * Processes a CONTADO sale (B001). Registers money in Cash. No debt.
    */
-  async processCollection(
+  async processContadoSale(
     customerId: string,
+    orderId: string,
     amount: number,
     payments: { account_id: string; amount: number; method: string }[],
     idempotencyKey = generateIdempotencyKey()
   ): Promise<string> {
-    const { data, error } = await supabase.rpc('rpc_process_collection', {
+    const { data, error } = await supabase.rpc('rpc_process_contado_sale', {
       p_customer_id: customerId,
+      p_order_id: orderId,
       p_total: amount,
       p_payments: payments,
       p_idempotency_key: idempotencyKey,
     });
 
     if (error) {
-      console.error('Error processing collection:', error);
+      console.error('Error processing contado sale:', error);
+      throw error;
+    }
+    return data as string;
+  },
+
+  /**
+   * Processes a CUENTA CORRIENTE sale (CC002). Registers debt. No Cash.
+   */
+  async processCreditSale(
+    customerId: string,
+    orderId: string,
+    amount: number,
+    idempotencyKey = generateIdempotencyKey()
+  ): Promise<string> {
+    const { data, error } = await supabase.rpc('rpc_process_credit_sale', {
+      p_customer_id: customerId,
+      p_order_id: orderId,
+      p_total: amount,
+      p_idempotency_key: idempotencyKey,
+    });
+
+    if (error) {
+      console.error('Error processing credit sale:', error);
+      throw error;
+    }
+    return data as string;
+  },
+
+  /**
+   * Processes a collection (payment) from a customer for a debt (REC004).
+   * This credits their Current Account and registers Treasury Movements.
+   */
+  async processCollectionReceipt(
+    documentId: string,
+    amount: number,
+    payments: { account_id: string; amount: number; method: string }[],
+    idempotencyKey = generateIdempotencyKey()
+  ): Promise<string> {
+    const { data, error } = await supabase.rpc('rpc_process_collection_receipt', {
+      p_document_id: documentId,
+      p_total: amount,
+      p_payments: payments,
+      p_idempotency_key: idempotencyKey,
+    });
+
+    if (error) {
+      console.error('Error processing collection receipt:', error);
       throw error;
     }
 
     return data as string; // Returns collection UUID
+  },
+
+  /**
+   * Creates a credit note (NC003) to reverse/adjust a document.
+   */
+  async createCreditNote(
+    originalDocId: string,
+    amount: number,
+    refunds: { account_id: string; amount: number; method: string }[] = [],
+    idempotencyKey = generateIdempotencyKey()
+  ): Promise<string> {
+    const { data, error } = await supabase.rpc('rpc_create_credit_note', {
+      p_original_doc_id: originalDocId,
+      p_amount: amount,
+      p_refunds: refunds,
+      p_idempotency_key: idempotencyKey,
+    });
+
+    if (error) {
+      console.error('Error creating credit note:', error);
+      throw error;
+    }
+
+    return data as string;
   },
 
   /**
@@ -230,6 +302,67 @@ export const treasuryService = {
       
     if (error) throw error;
     return data as CurrentAccountMovement[];
+  },
+
+  /**
+   * Obtiene la lista de clientes que tienen saldo deudor (deuda > 0)
+   * basado en la nueva estructura de commercial_documents.
+   */
+  async getCustomersWithDebt(): Promise<{ customer: any, debt: number, pendingInvoices: any[] }[]> {
+    const { data: docs, error: docsError } = await supabase
+      .from('commercial_documents')
+      .select('*, customers(*)')
+      .eq('payment_condition', 'CUENTA_CORRIENTE');
+      
+    if (docsError) throw docsError;
+    
+    const customersMap: Record<string, { customer: any, debt: number, pendingInvoices: any[] }> = {};
+    
+    for (const doc of docs) {
+      const balance = Number(doc.total_amount) - Number(doc.paid_amount || 0) - Number(doc.annulled_amount || 0);
+      if (balance > 0) {
+        const custId = doc.customer_id;
+        if (!customersMap[custId]) {
+          const c = Array.isArray(doc.customers) ? doc.customers[0] : doc.customers;
+          customersMap[custId] = { customer: c, debt: 0, pendingInvoices: [] };
+        }
+        customersMap[custId].debt += balance;
+        customersMap[custId].pendingInvoices.push({
+          ...doc,
+          balance
+        });
+      }
+    }
+    
+    return Object.values(customersMap);
+  },
+
+  /**
+   * Obtiene todos los documentos comerciales (Facturas, Tickets, Notas de Crédito)
+   */
+  async getCommercialDocuments(): Promise<any[]> {
+    const { data, error } = await supabase
+      .from('commercial_documents')
+      .select('*, customers(fullName, documentId)')
+      .order('created_at', { ascending: false });
+      
+    if (error) throw error;
+    return data;
+  },
+
+  /**
+   * Obtiene los pagos realizados sobre un documento (para sugerir reembolsos en NC)
+   */
+  async getDocumentPayments(docId: string): Promise<any[]> {
+    const { data, error } = await supabase
+      .from('treasury_movements')
+      .select('*, treasury_accounts(name)')
+      .eq('source_type', 'commercial_document')
+      .eq('source_id', docId)
+      .eq('type', 'income');
+      
+    if (error) throw error;
+    return data;
   },
 
   // -------------------------------------------------------------------------
