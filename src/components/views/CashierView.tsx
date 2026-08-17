@@ -117,7 +117,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
         if (paymentCondition === 'cuenta_corriente') {
           await treasuryService.processCreditSale(
             selectedCustomerId,
-            selectedOdsId || '',
+            selectedOdsId || null,
             Number(paymentAmount)
           );
         } else {
@@ -147,7 +147,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
 
           await treasuryService.processContadoSale(
             selectedCustomerId,
-            selectedOdsId || '',
+            selectedOdsId || null,
             Number(paymentAmount),
             payments
           );
