@@ -319,7 +319,7 @@ export const treasuryService = {
     const customersMap: Record<string, { customer: any, debt: number, pendingInvoices: any[] }> = {};
     
     for (const doc of docs) {
-      const balance = Number(doc.total_amount) - Number(doc.paid_amount || 0) - Number(doc.annulled_amount || 0);
+      const balance = Number(doc.total || doc.total_amount || 0) - Number(doc.paid_amount || 0) - Number(doc.annulled_amount || 0);
       if (balance > 0) {
         const custId = doc.customer_id;
         if (!customersMap[custId]) {

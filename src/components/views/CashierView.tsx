@@ -30,14 +30,16 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
 
   const [commercialDocs, setCommercialDocs] = useState<any[]>([]);
 
-  // Fetch docs for credit notes
+  // Fetch ALL completed docs for NCs and to filter billed ODS
+  const fetchDocs = () => {
+    supabase.from('commercial_documents').select('*').eq('status', 'completed').then(({data}) => {
+      if(data) setCommercialDocs(data);
+    });
+  };
+
   useEffect(() => {
-    if (voucherType === 'nota_credito') {
-      supabase.from('commercial_documents').select('*').eq('status', 'completed').then(({data}) => {
-        if(data) setCommercialDocs(data);
-      });
-    }
-  }, [voucherType]);
+    fetchDocs();
+  }, []);
 
   // Handle ODS change
   useEffect(() => {
@@ -158,6 +160,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
       setSelectedOdsId('');
       setSelectedOriginalDocId('');
       await fetchSession();
+      fetchDocs();
     } catch (err: any) {
       alert('Error: ' + err.message);
     } finally {
@@ -393,7 +396,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                     className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all"
                   >
                     <option value="">Venta Independiente (Ninguna ODS)</option>
-                    {orders.filter(o => o.status !== 'archived').map(o => {
+                    {orders.filter(o => o.status !== 'archived' && !commercialDocs.some(d => d.order_id === o.id)).map(o => {
                       const c = customers.find(x => x.id === o.customerId);
                       return (
                         <option key={o.id} value={o.id}>
