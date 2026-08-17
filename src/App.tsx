@@ -248,34 +248,16 @@ export function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const handleCreateODS = async (newODS: ServiceOrder, paymentInfo?: { condition: 'CONTADO' | 'CUENTA_CORRIENTE', method?: string }) => {
+  const handleCreateODS = async (newODS: ServiceOrder) => {
     try {
       // Optimistic update for better UX (optional) or wait for server
       const createdODS = await odsService.createODS(newODS);
-      
-      // Facturación y Tickets: Crear documento comercial asociado a la ODS
-      if (paymentInfo) {
-        if (paymentInfo.condition === 'CONTADO' && paymentInfo.method) {
-          await treasuryService.processContadoSale(
-            createdODS.customerId,
-            createdODS.id,
-            createdODS.totalAmount,
-            [{ account_id: 'default', amount: createdODS.totalAmount, method: paymentInfo.method }]
-          );
-        } else if (paymentInfo.condition === 'CUENTA_CORRIENTE') {
-          await treasuryService.processCreditSale(
-            createdODS.customerId,
-            createdODS.id,
-            createdODS.totalAmount
-          );
-        }
-      }
 
       setOrders([createdODS, ...orders]);
       setActiveTab('ods');
     } catch (error) {
       console.error('Error al guardar la ODS:', error);
-      alert('Hubo un error al guardar la ODS y/o registrar el pago en caja. Revisa la consola.');
+      alert('Hubo un error al guardar la ODS. Revisa la consola.');
     }
   };
 
@@ -699,7 +681,7 @@ export function App() {
 
           {(activeTab as any) === 'ods_new' && (
             <ODSCreateView
-              onSaveODS={(ods, paymentInfo) => handleCreateODS(ods, paymentInfo)}
+              onSaveODS={(ods) => handleCreateODS(ods)}
               onCancel={() => setActiveTab('ods')}
               technicians={technicians}
               receptionAgents={receptionAgents}
