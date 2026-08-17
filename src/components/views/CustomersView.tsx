@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Customer, Vehicle } from '../../types';
-import { Users, Phone, Mail, MapPin, Plus, Search, Edit3, X, CheckCircle, UserCheck, Car, Trash2 } from 'lucide-react';
+import { Users, Phone, Mail, MapPin, Plus, Search, Edit3, X, CheckCircle, UserCheck, Car, Trash2, AlertTriangle } from 'lucide-react';
 
 interface CustomersViewProps {
   customers: Customer[];
@@ -22,6 +22,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+  const [customerToDelete, setCustomerToDelete] = useState<string | null>(null);
 
   // Vehicle Modal State
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
@@ -234,11 +235,7 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                         <Edit3 className="w-3.5 h-3.5" />
                       </button>
                       <button
-                        onClick={() => {
-                          if (window.confirm('¿Está seguro de que desea eliminar este cliente y sus vehículos asociados? Esta acción no se puede deshacer.')) {
-                            onDeleteCustomer(cust.id);
-                          }
-                        }}
+                        onClick={() => setCustomerToDelete(cust.id)}
                         className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 rounded-lg transition-colors border border-red-200"
                         title="Eliminar Cliente"
                       >
@@ -566,6 +563,40 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Delete Confirmation Modal */}
+      {customerToDelete && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-scale-in">
+            <div className="p-6 text-center">
+              <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertTriangle className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-display text-slate-900 mb-2">¿Eliminar Cliente?</h3>
+              <p className="text-sm text-slate-500 font-mono">Esta acción eliminará al cliente y todos sus vehículos asociados de forma permanente.</p>
+              
+              <div className="flex gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setCustomerToDelete(null)}
+                  className="flex-1 bg-white border border-slate-300 text-slate-700 py-2.5 rounded-lg text-xs font-bold hover:bg-slate-50 transition-colors uppercase tracking-wider"
+                >
+                  CANCELAR
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onDeleteCustomer(customerToDelete);
+                    setCustomerToDelete(null);
+                  }}
+                  className="flex-1 bg-rose-600 text-white py-2.5 rounded-lg text-xs font-bold hover:bg-rose-700 transition-colors uppercase tracking-wider shadow-lg shadow-rose-600/20"
+                >
+                  ELIMINAR
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
