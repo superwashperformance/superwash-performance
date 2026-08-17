@@ -461,15 +461,25 @@ export const treasuryService = {
   /**
    * Fetch Treasury movements for reporting.
    */
-  async getTreasuryMovements(limit = 100): Promise<TreasuryMovement[]> {
-    const { data, error } = await supabase
+  async getTreasuryMovements(limit = 100, filters?: { startDate?: string, endDate?: string, accountId?: string }): Promise<TreasuryMovement[]> {
+    let query = supabase
       .from('treasury_movements')
       .select(`
         *,
         treasury_accounts (name)
-      `)
-      .order('created_at', { ascending: false })
-      .limit(limit);
+      `);
+
+    if (filters?.startDate) {
+      query = query.gte('created_at', filters.startDate + 'T00:00:00.000Z');
+    }
+    if (filters?.endDate) {
+      query = query.lte('created_at', filters.endDate + 'T23:59:59.999Z');
+    }
+    if (filters?.accountId) {
+      query = query.eq('treasury_account_id', filters.accountId);
+    }
+
+    const { data, error } = await query.order('created_at', { ascending: false }).limit(limit);
 
     if (error) throw error;
     return data || [];
