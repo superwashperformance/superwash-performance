@@ -58,7 +58,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
       const doc = commercialDocs.find(d => d.id === selectedOriginalDocId);
       if (doc) {
         setSelectedCustomerId(doc.customer_id);
-        setPaymentAmount(doc.total); // Set max amount to refund
+        setPaymentAmount(doc.total_amount || doc.total); // Set max amount to refund
       }
     }
   }, [selectedOriginalDocId, commercialDocs, voucherType]);
@@ -427,7 +427,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                       const c = customers.find(x => x.id === doc.customer_id);
                       return (
                         <option key={doc.id} value={doc.id}>
-                          {doc.document_number || doc.id.substring(0,8)} - {c?.fullName || 'Desconocido'} - ${Number(doc.total).toFixed(2)}
+                          {doc.document_number || doc.id.substring(0,8)} - {c?.fullName || 'Desconocido'} - ${Number(doc.total_amount || 0).toFixed(2)}
                         </option>
                       );
                     })}
