@@ -102,6 +102,10 @@ export const treasuryService = {
       .filter(m => m.source_type === 'collection' && m.source_id)
       .map(m => m.source_id);
 
+    const docIds = movements
+      .filter(m => m.source_type === 'commercial_document' && m.source_id)
+      .map(m => m.source_id);
+
     let customersMap: Record<string, string> = {};
     if (collectionIds.length > 0) {
       const { data: collections } = await supabase
@@ -126,6 +130,29 @@ export const treasuryService = {
       }
     }
 
+    if (docIds.length > 0) {
+      const { data: docs } = await supabase
+        .from('commercial_documents')
+        .select(`
+          id,
+          customers (
+            id,
+            full_name,
+            document_id
+          )
+        `)
+        .in('id', docIds);
+        
+      if (docs) {
+        docs.forEach((d: any) => {
+          const cust = Array.isArray(d.customers) ? d.customers[0] : d.customers;
+          if (cust) {
+            customersMap[d.id] = cust.full_name || 'Cliente';
+          }
+        });
+      }
+    }
+
     // Try to get user email (only works if we have permission to view profiles)
     let usersMap: Record<string, string> = {};
     const userIds = [...new Set(movements.map(m => m.created_by))];
@@ -143,7 +170,7 @@ export const treasuryService = {
 
     return movements.map(m => ({
       ...m,
-      customerName: m.source_type === 'collection' && m.source_id ? customersMap[m.source_id] || 'Cliente' : '-',
+      customerName: (m.source_type === 'collection' || m.source_type === 'commercial_document') && m.source_id ? customersMap[m.source_id] || 'Cliente' : '-',
       userName: usersMap[m.created_by] || 'Usuario'
     }));
   },

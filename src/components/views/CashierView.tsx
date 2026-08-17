@@ -90,19 +90,23 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
             'transferencia': 'Banco Banesco',
             'binance': 'Binance'
           };
-          const methodForBackend = paymentMethod === 'efectivo' ? 'cash' : paymentMethod;
           
-          let accountId = '00000000-0000-0000-0000-000000000001'; // Default Caja USD
+          let accountId = '';
           const { data: accounts } = await supabase.from('treasury_accounts').select('*');
           if (accounts) {
              const matched = accounts.find(a => a.name === methodMap[paymentMethod] || a.name === 'Caja Principal');
              if (matched) accountId = matched.id;
           }
+          if (!accountId) {
+            alert(`No se encontró una cuenta de Tesorería válida para el método: ${paymentMethod}`);
+            setIsProcessing(false);
+            return;
+          }
 
           refunds = [{
             account_id: accountId,
             amount: Number(paymentAmount),
-            method: methodForBackend
+            method: paymentMethod
           }];
         }
 
@@ -130,19 +134,23 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
             'transferencia': 'Banco Banesco',
             'binance': 'Binance'
           };
-          const methodForBackend = paymentMethod === 'efectivo' ? 'cash' : paymentMethod;
           
-          let accountId = '00000000-0000-0000-0000-000000000001'; // Default Caja USD
+          let accountId = '';
           const { data: accounts } = await supabase.from('treasury_accounts').select('*');
           if (accounts) {
              const matched = accounts.find(a => a.name === methodMap[paymentMethod] || a.name === 'Caja Principal');
              if (matched) accountId = matched.id;
           }
+          if (!accountId) {
+            alert(`No se encontró una cuenta de Tesorería válida para el método: ${paymentMethod}`);
+            setIsProcessing(false);
+            return;
+          }
 
           const payments = [{
             account_id: accountId,
             amount: Number(paymentAmount),
-            method: methodForBackend
+            method: paymentMethod
           }];
 
           await treasuryService.processContadoSale(
@@ -171,12 +179,11 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Close Register State
-  const [declaredCashUSD, setDeclaredCashUSD] = useState<number>('' as any);
-  const [declaredCashBs, setDeclaredCashBs] = useState<number>('' as any); 
+  const [declaredEfectivo, setDeclaredEfectivo] = useState<number>('' as any);
   const [declaredZelle, setDeclaredZelle] = useState<number>('' as any);
   const [declaredPagoMovil, setDeclaredPagoMovil] = useState<number>('' as any);
-  const [declaredTransfer, setDeclaredTransfer] = useState<number>('' as any);
-  const [declaredCard, setDeclaredCard] = useState<number>('' as any);
+  const [declaredTransferencia, setDeclaredTransferencia] = useState<number>('' as any);
+  const [declaredTarjeta, setDeclaredTarjeta] = useState<number>('' as any);
   const [declaredBinance, setDeclaredBinance] = useState<number>('' as any);
 
   useEffect(() => {
@@ -220,12 +227,11 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
     setIsProcessing(true);
     try {
       const declared = {
-        'efectivo': Number(declaredCashUSD || 0),
-        'efectivo_bs': Number(declaredCashBs || 0),
+        'efectivo': Number(declaredEfectivo || 0),
         'zelle': Number(declaredZelle || 0),
         'pago_movil': Number(declaredPagoMovil || 0),
-        'transferencia': Number(declaredTransfer || 0),
-        'tarjeta': Number(declaredCard || 0),
+        'transferencia': Number(declaredTransferencia || 0),
+        'tarjeta': Number(declaredTarjeta || 0),
         'binance': Number(declaredBinance || 0)
       };
       await treasuryService.closeCashSession(session.id, declared);
@@ -599,13 +605,14 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                   
                   <div>
                     <label className="text-xs text-slate-500 font-bold block mb-1">Efectivo ($ USD)</label>
-                    <input type="number" step="0.01" min="0" value={declaredCashUSD} onChange={(e) => setDeclaredCashUSD(e.target.value as any)}
-                      className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
-                  </div>
-                  <div>
-                    <label className="text-xs text-slate-500 font-bold block mb-1">Efectivo (Bs)</label>
-                    <input type="number" step="0.01" min="0" value={declaredCashBs} onChange={(e) => setDeclaredCashBs(e.target.value as any)}
-                      className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
+                    <div className="flex items-center gap-2">
+                       <input type="number" step="0.01" min="0" value={declaredEfectivo} onChange={(e) => setDeclaredEfectivo(e.target.value as any)}
+                         className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
+                       <div className="text-xs font-mono w-24 flex flex-col items-end">
+                         <span className="text-slate-400">Esp:</span>
+                         <span className={getMethodTotal('efectivo') < 0 ? 'text-rose-500 font-bold' : 'text-slate-900 font-bold'}>${getMethodTotal('efectivo').toFixed(2)}</span>
+                       </div>
+                    </div>
                   </div>
                 </div>
 
@@ -614,28 +621,58 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                   
                   <div>
                     <label className="text-xs text-slate-500 font-bold block mb-1">Zelle</label>
-                    <input type="number" step="0.01" min="0" value={declaredZelle} onChange={(e) => setDeclaredZelle(e.target.value as any)}
-                      className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
+                    <div className="flex items-center gap-2">
+                      <input type="number" step="0.01" min="0" value={declaredZelle} onChange={(e) => setDeclaredZelle(e.target.value as any)}
+                        className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
+                      <div className="text-xs font-mono w-24 flex flex-col items-end">
+                        <span className="text-slate-400">Esp:</span>
+                        <span className={getMethodTotal('zelle') < 0 ? 'text-rose-500 font-bold' : 'text-slate-900 font-bold'}>${getMethodTotal('zelle').toFixed(2)}</span>
+                      </div>
+                    </div>
                   </div>
                   <div>
                     <label className="text-xs text-slate-500 font-bold block mb-1">Pago Móvil</label>
-                    <input type="number" step="0.01" min="0" value={declaredPagoMovil} onChange={(e) => setDeclaredPagoMovil(e.target.value as any)}
-                      className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
+                    <div className="flex items-center gap-2">
+                      <input type="number" step="0.01" min="0" value={declaredPagoMovil} onChange={(e) => setDeclaredPagoMovil(e.target.value as any)}
+                        className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
+                      <div className="text-xs font-mono w-24 flex flex-col items-end">
+                        <span className="text-slate-400">Esp:</span>
+                        <span className={getMethodTotal('pago_movil') < 0 ? 'text-rose-500 font-bold' : 'text-slate-900 font-bold'}>${getMethodTotal('pago_movil').toFixed(2)}</span>
+                      </div>
+                    </div>
                   </div>
                   <div>
                     <label className="text-xs text-slate-500 font-bold block mb-1">Punto / Tarjeta</label>
-                    <input type="number" step="0.01" min="0" value={declaredCard} onChange={(e) => setDeclaredCard(e.target.value as any)}
-                      className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
+                    <div className="flex items-center gap-2">
+                      <input type="number" step="0.01" min="0" value={declaredTarjeta} onChange={(e) => setDeclaredTarjeta(e.target.value as any)}
+                        className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
+                      <div className="text-xs font-mono w-24 flex flex-col items-end">
+                        <span className="text-slate-400">Esp:</span>
+                        <span className={getMethodTotal('tarjeta') < 0 ? 'text-rose-500 font-bold' : 'text-slate-900 font-bold'}>${getMethodTotal('tarjeta').toFixed(2)}</span>
+                      </div>
+                    </div>
                   </div>
                   <div>
                     <label className="text-xs text-slate-500 font-bold block mb-1">Transferencia</label>
-                    <input type="number" step="0.01" min="0" value={declaredTransfer} onChange={(e) => setDeclaredTransfer(e.target.value as any)}
-                      className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
+                    <div className="flex items-center gap-2">
+                      <input type="number" step="0.01" min="0" value={declaredTransferencia} onChange={(e) => setDeclaredTransferencia(e.target.value as any)}
+                        className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
+                      <div className="text-xs font-mono w-24 flex flex-col items-end">
+                        <span className="text-slate-400">Esp:</span>
+                        <span className={getMethodTotal('transferencia') < 0 ? 'text-rose-500 font-bold' : 'text-slate-900 font-bold'}>${getMethodTotal('transferencia').toFixed(2)}</span>
+                      </div>
+                    </div>
                   </div>
                   <div>
                     <label className="text-xs text-slate-500 font-bold block mb-1">Binance</label>
-                    <input type="number" step="0.01" min="0" value={declaredBinance} onChange={(e) => setDeclaredBinance(e.target.value as any)}
-                      className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
+                    <div className="flex items-center gap-2">
+                      <input type="number" step="0.01" min="0" value={declaredBinance} onChange={(e) => setDeclaredBinance(e.target.value as any)}
+                        className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
+                      <div className="text-xs font-mono w-24 flex flex-col items-end">
+                        <span className="text-slate-400">Esp:</span>
+                        <span className={getMethodTotal('binance') < 0 ? 'text-rose-500 font-bold' : 'text-slate-900 font-bold'}>${getMethodTotal('binance').toFixed(2)}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -649,18 +686,23 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                   <span>Total Declarado:</span>
                   <span className="font-mono">
                     ${(
-                      Number(declaredCashUSD || 0) + 
-                      Number(declaredCashBs || 0) + 
+                      Number(declaredEfectivo || 0) + 
                       Number(declaredZelle || 0) + 
                       Number(declaredPagoMovil || 0) + 
-                      Number(declaredTransfer || 0) + 
-                      Number(declaredCard || 0) +
+                      Number(declaredTransferencia || 0) + 
+                      Number(declaredTarjeta || 0) +
                       Number(declaredBinance || 0)
                     ).toFixed(2)}
                   </span>
                 </div>
+                <div className="flex justify-between items-center text-sm font-bold mb-2">
+                  <span>Diferencia Total:</span>
+                  <span className={`font-mono ${(Number(declaredEfectivo || 0) + Number(declaredZelle || 0) + Number(declaredPagoMovil || 0) + Number(declaredTransferencia || 0) + Number(declaredTarjeta || 0) + Number(declaredBinance || 0)) - currentBalance < 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                    ${((Number(declaredEfectivo || 0) + Number(declaredZelle || 0) + Number(declaredPagoMovil || 0) + Number(declaredTransferencia || 0) + Number(declaredTarjeta || 0) + Number(declaredBinance || 0)) - currentBalance).toFixed(2)}
+                  </span>
+                </div>
                 <p className="text-xs text-slate-500 border-t border-slate-200 pt-2 mt-2">
-                  El sistema calculará las diferencias por cada método de pago automáticamente y quedarán registradas en la auditoría de caja.
+                  Las diferencias se calcularán y registrarán automáticamente por método de pago.
                 </p>
               </div>
 
