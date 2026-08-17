@@ -154,8 +154,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <span className="text-[10px] font-mono uppercase tracking-wider">POR COBRAR</span>
             <AlertTriangle className="w-4 h-4 text-amber-500" />
           </div>
-          <div className="font-display text-amber-600">
-            <CurrencyDisplay amount={totalAccountsReceivable} size="2xl" />
+          <div className="font-display text-amber-600 truncate">
+            <CurrencyDisplay amount={totalAccountsReceivable} size="xl" />
           </div>
           <span className="text-[10px] text-slate-500 mt-1 font-mono">Cuentas pendientes</span>
         </div>
@@ -166,8 +166,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <span className="text-[10px] font-mono uppercase tracking-wider">INGRESOS</span>
             <TrendingUp className="w-4 h-4 text-green-500" />
           </div>
-          <div className="font-display text-green-600">
-            <CurrencyDisplay amount={totalRevenue} size="2xl" />
+          <div className="font-display text-green-600 truncate">
+            <CurrencyDisplay amount={totalRevenue} size="xl" />
           </div>
           <span className="text-[10px] text-slate-500 mt-1 font-mono">Cobrado en caja</span>
         </div>
