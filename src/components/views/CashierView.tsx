@@ -381,12 +381,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                 </select>
               </div>
 
-              {voucherType === 'venta' ? (
-                <div className="bg-blue-50 border border-blue-200 rounded p-3 text-xs text-blue-700 font-mono flex items-start gap-2">
-                  <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                  <p>{paymentCondition === 'cuenta_corriente' ? 'Generará un CRÉDITO en la cuenta corriente del cliente. No afecta caja hoy.' : 'Generará un INGRESO a Tesorería y un ticket de venta al contado.'}</p>
-                </div>
-              ) : (
+              {voucherType === 'nota_credito' && (
                 <div className="bg-rose-50 border border-rose-200 rounded p-3 text-xs text-rose-700 font-mono flex items-start gap-2">
                   <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                   <p>Anulará un comprobante anterior y generará un EGRESO de dinero de la caja, o un reverso en cuenta corriente.</p>
