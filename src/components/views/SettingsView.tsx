@@ -200,30 +200,6 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         <p className="text-sm text-slate-500 mt-1">Administra los datos de tu empresa y preferencias del sistema</p>
       </div>
 
-      {/* Sección de Gestión de Contraseñas (Solo para Administrador y Dueño) */}
-      {(userRole === 'admin' || userRole === 'owner') && (
-        <div className="glass-card p-5 flex flex-col gap-4 border-[#7A1B28]/20 shadow-2xl">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <div className="flex items-center gap-3 text-[#7A1B28]">
-              <Key className="w-5 h-5" />
-              <div>
-                <h3 className="font-display text-xl text-slate-900">GESTIÓN DE CREDENCIALES Y CONTRASEÑAS</h3>
-                <p className="text-[11px] text-slate-500 font-mono">Panel exclusivo para Administrador (CEO) y Dueño (Director)</p>
-              </div>
-            </div>
-            <span className="text-[10px] font-mono text-[#7A1B28] bg-[#7A1B28]/5 border border-[#7A1B28]/20 px-3 py-1 rounded-full flex items-center gap-1.5 font-bold">
-              <ShieldCheck className="w-3.5 h-3.5" /> SUPABASE AUTH
-            </span>
-          </div>
-
-          <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center text-center">
-            <p className="text-sm font-mono text-slate-600">
-              La gestión de credenciales y contraseñas ahora está delegada a <strong>Supabase Auth</strong>. Por favor, utiliza el panel de administración de Supabase para añadir o modificar usuarios.
-            </p>
-          </div>
-        </div>
-      )}
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Técnicos Asignados */}
         <div className="glass-card p-5 flex flex-col gap-3">
