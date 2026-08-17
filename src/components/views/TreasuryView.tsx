@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { treasuryService } from '../../services/treasuryService';
-import { TreasuryAccount, TreasuryMovement } from '../../types';
+import { TreasuryAccount, TreasuryMovement, CashSession } from '../../types';
 import { CurrencyDisplay } from '../common/CurrencyDisplay';
 import { ShieldCheck, ArrowRightLeft, Landmark, List, Plus, X } from 'lucide-react';
 
 export const TreasuryView: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'accounts' | 'transfers' | 'mayor' | 'cc' | 'docs'>('accounts');
+  const [activeTab, setActiveTab] = useState<'accounts' | 'transfers' | 'mayor' | 'cc' | 'docs' | 'cajas'>('accounts');
   
   const [accounts, setAccounts] = useState<TreasuryAccount[]>([]);
   const [movements, setMovements] = useState<TreasuryMovement[]>([]);
+  const [cashSessions, setCashSessions] = useState<CashSession[]>([]);
   const [debtors, setDebtors] = useState<{ customer: any, debt: number, pendingInvoices: any[] }[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -41,16 +42,18 @@ export const TreasuryView: React.FC = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [accs, movs, debts, docs] = await Promise.all([
+      const [accs, movs, debts, docs, sessions] = await Promise.all([
         treasuryService.getTreasuryAccounts(),
         treasuryService.getTreasuryMovements(100),
         treasuryService.getCustomersWithDebt(),
-        treasuryService.getCommercialDocuments()
+        treasuryService.getCommercialDocuments(),
+        treasuryService.getAllCashSessions(50)
       ]);
       setAccounts(accs);
       setMovements(movs);
       setDebtors(debts);
       setDocuments(docs);
+      setCashSessions(sessions);
       
       if (accs.length > 0) {
         setColAccountId(accs[0].id);
@@ -207,7 +210,13 @@ export const TreasuryView: React.FC = () => {
           onClick={() => setActiveTab('cc')}
           className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'cc' ? 'bg-[#7A1B28] text-white' : 'text-slate-500 hover:text-slate-900'}`}
         >
-          <Landmark className="w-4 h-4" /> Cuentas Corrientes
+          <List className="w-4 h-4" /> Cuentas Corrientes
+        </button>
+        <button 
+          onClick={() => setActiveTab('cajas')}
+          className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'cajas' ? 'bg-[#7A1B28] text-white' : 'text-slate-500 hover:text-slate-900'}`}
+        >
+          <List className="w-4 h-4" /> Historial de Cajas
         </button>
         <button 
           onClick={() => setActiveTab('docs')}
@@ -470,6 +479,62 @@ export const TreasuryView: React.FC = () => {
                 <tr>
                   <td colSpan={6} className="p-8 text-center text-slate-500">
                     No hay documentos comerciales registrados.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Tab: Cajas (Cash Sessions) */}
+      {activeTab === 'cajas' && (
+        <div className="glass-card p-0 overflow-hidden animate-fade-in border-slate-200">
+          <table className="w-full text-left text-sm text-slate-700">
+            <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider">
+              <tr>
+                <th className="p-4 border-b border-slate-200">Apertura</th>
+                <th className="p-4 border-b border-slate-200">Cierre</th>
+                <th className="p-4 border-b border-slate-200">Estado</th>
+                <th className="p-4 border-b border-slate-200 text-right">Faltantes/Sobrantes</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {cashSessions.map(session => {
+                const hasDiffs = session.differences && Object.values(session.differences).some(d => d !== 0);
+                return (
+                <tr key={session.id} className="hover:bg-slate-50/50 transition-colors">
+                  <td className="p-4 font-mono">{new Date(session.opened_at).toLocaleString('es-VE')}</td>
+                  <td className="p-4 font-mono">{session.closed_at ? new Date(session.closed_at).toLocaleString('es-VE') : '-'}</td>
+                  <td className="p-4">
+                    {session.status === 'open' && <span className="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded font-bold">ABIERTA</span>}
+                    {session.status === 'counting' && <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded font-bold">EN ARQUEO</span>}
+                    {session.status === 'closed' && <span className="bg-slate-100 text-slate-800 text-xs px-2 py-1 rounded font-bold">CERRADA</span>}
+                    {session.status === 'archived' && <span className="bg-slate-200 text-slate-500 text-xs px-2 py-1 rounded font-bold">ARCHIVADA</span>}
+                  </td>
+                  <td className="p-4 text-right">
+                    {session.status === 'closed' || session.status === 'archived' ? (
+                      hasDiffs ? (
+                        <div className="flex flex-col items-end gap-1 text-xs">
+                          {Object.entries(session.differences || {}).filter(([k,v]) => v !== 0).map(([k,v]) => (
+                            <span key={k} className={v > 0 ? "text-emerald-600 font-bold" : "text-rose-600 font-bold"}>
+                              {k}: {v > 0 ? '+' : ''}{v.toFixed(2)}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-emerald-600 font-bold text-xs">OK (Sin dif)</span>
+                      )
+                    ) : (
+                      <span className="text-slate-400 text-xs">-</span>
+                    )}
+                  </td>
+                </tr>
+              )})}
+              {cashSessions.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="p-8 text-center text-slate-500 font-mono">
+                    No hay sesiones de caja registradas.
                   </td>
                 </tr>
               )}

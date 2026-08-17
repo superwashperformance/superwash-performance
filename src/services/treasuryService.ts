@@ -422,5 +422,16 @@ export const treasuryService = {
 
     if (error) throw error;
     return data as any;
+  },
+
+  async getAllCashSessions(limit = 50): Promise<CashSession[]> {
+    const { data, error } = await supabase
+      .from('cash_sessions')
+      .select('*')
+      .order('opened_at', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return data as CashSession[];
   }
 };
