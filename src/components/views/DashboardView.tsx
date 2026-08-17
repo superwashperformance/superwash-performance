@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ServiceOrder, UserRole } from '../../types';
 import { CurrencyDisplay } from '../common/CurrencyDisplay';
 import { MascotTurbo } from '../common/MascotTurbo';
+import { treasuryService } from '../../services/treasuryService';
 import {
   BarChart3,
   Clock,
@@ -22,7 +23,7 @@ import {
 
 interface DashboardViewProps {
   orders: ServiceOrder[];
-  transactions: any[]; // CashTransaction array
+  transactions: any[]; // Deprecated CashTransaction array
   onNewODS: () => void;
   onSelectOrder: (order: ServiceOrder) => void;
   onNavigateTab: (tab: any) => void;
@@ -37,19 +38,35 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onNavigateTab,
   currentRole,
 }) => {
+  const [totalRevenue, setTotalRevenue] = useState(0);
+  const [totalAccountsReceivable, setTotalAccountsReceivable] = useState(0);
+
+  useEffect(() => {
+    const fetchKPIs = async () => {
+      try {
+        // Fetch CC Debt
+        const debtData = await treasuryService.getCustomersWithDebt();
+        const totalDebt = debtData.reduce((acc, c) => acc + c.debt, 0);
+        setTotalAccountsReceivable(totalDebt);
+
+        // Fetch Total Revenue (All Incomes)
+        const movements = await treasuryService.getTreasuryMovements(1000);
+        const revenue = movements
+          .filter(m => m.type === 'income')
+          .reduce((acc, m) => acc + Number(m.amount), 0);
+        setTotalRevenue(revenue);
+      } catch (err) {
+        console.error('Failed to fetch dashboard KPIs', err);
+      }
+    };
+    fetchKPIs();
+  }, []);
+
   // Compute KPIs
   const totalEntered = orders.length;
   const inProgressCount = orders.filter((o) => o.status === 'in_progress' || o.status === 'diagnosis').length;
   const completedCount = orders.filter((o) => o.status === 'quality_control' || o.status === 'completed').length;
   const deliveredCount = orders.filter((o) => o.status === 'delivered').length;
-
-  const totalRevenue = transactions
-    .filter(t => t.type === 'payment' && (t.paymentCondition === 'contado' || t.paymentCondition === 'abono_cuenta'))
-    .reduce((sum, t) => sum + t.amount, 0);
-  
-  const totalBilledCC = transactions.filter(t => t.paymentCondition === 'cuenta_corriente').reduce((sum, t) => sum + t.amount, 0);
-  const totalPaidCC = transactions.filter(t => t.paymentCondition === 'abono_cuenta').reduce((sum, t) => sum + t.amount, 0);
-  const totalAccountsReceivable = totalBilledCC - totalPaidCC;
 
   const statusLabels: Record<string, { label: string; color: string }> = {
     received: { label: 'Recibido', color: 'bg-cyan-100 text-cyan-700 border-cyan-200' },
