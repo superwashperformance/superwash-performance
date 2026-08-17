@@ -83,11 +83,11 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
         if (paymentCondition !== 'cuenta_corriente') {
           // If refunding cash, we must specify the account and method
           const methodMap: Record<string, string> = {
-            'efectivo': 'Caja USD',
-            'zelle': 'Banco Banesco',
-            'pago_movil': 'Banco Banesco',
-            'tarjeta': 'Banco Banesco',
-            'transferencia': 'Banco Banesco',
+            'efectivo': 'Caja Fuerte Principal',
+            'zelle': 'Zelle (Correo Principal)',
+            'pago_movil': 'Banesco Pago Movil',
+            'tarjeta': 'Banesco Panama',
+            'transferencia': 'Banesco Panama',
             'binance': 'Binance'
           };
           
@@ -127,11 +127,11 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
         } else {
           // Contado
           const methodMap: Record<string, string> = {
-            'efectivo': 'Caja USD',
-            'zelle': 'Banco Banesco',
-            'pago_movil': 'Banco Banesco',
-            'tarjeta': 'Banco Banesco',
-            'transferencia': 'Banco Banesco',
+            'efectivo': 'Caja Fuerte Principal',
+            'zelle': 'Zelle (Correo Principal)',
+            'pago_movil': 'Banesco Pago Movil',
+            'tarjeta': 'Banesco Panama',
+            'transferencia': 'Banesco Panama',
             'binance': 'Binance'
           };
           

@@ -370,7 +370,7 @@ export const treasuryService = {
   async getCommercialDocuments(): Promise<any[]> {
     const { data, error } = await supabase
       .from('commercial_documents')
-      .select('*, customers(fullName, documentId)')
+      .select('*, customers(full_name, document_id)')
       .order('created_at', { ascending: false });
       
     if (error) throw error;

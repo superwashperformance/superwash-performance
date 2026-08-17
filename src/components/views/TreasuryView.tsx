@@ -303,7 +303,7 @@ export const TreasuryView: React.FC = () => {
               {debtors.flatMap(d => d.pendingInvoices.map(inv => (
                 <tr key={inv.id} className="hover:bg-slate-50 transition-colors">
                   <td className="p-4 font-bold text-slate-900">
-                    {d.customer?.fullName || 'Cliente'}
+                    {d.customer?.full_name || d.customer?.fullName || 'Cliente'}
                   </td>
                   <td className="p-4 font-mono text-xs text-slate-500 flex flex-col">
                     <span className="font-bold text-slate-700">{inv.document_number}</span>
