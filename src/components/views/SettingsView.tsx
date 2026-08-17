@@ -53,6 +53,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   // Managing Branches State
   const [isAddingBranch, setIsAddingBranch] = useState(false);
   const [editingBranchId, setEditingBranchId] = useState<string | null>(null);
+  const [branchToDelete, setBranchToDelete] = useState<string | null>(null);
   const [tempBranch, setTempBranch] = useState<Partial<Branch>>({});
 
   const handleAddTechnician = async (e: React.FormEvent) => {
@@ -185,6 +186,17 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       setTempBranch({});
     } catch (e: any) {
       alert('Error guardando sede: ' + e.message);
+    }
+  };
+
+  const handleDeleteBranch = async () => {
+    if (!branchToDelete) return;
+    try {
+      await branchService.deleteBranch(branchToDelete);
+      setBranches(branches.filter(b => b.id !== branchToDelete));
+      setBranchToDelete(null);
+    } catch (e: any) {
+      alert('Error eliminando sede: ' + e.message);
     }
   };
 
@@ -373,15 +385,17 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             <Building className="w-5 h-5" />
             <h3 className="font-display text-lg text-slate-800">SEDES (SUCURSALES)</h3>
           </div>
-          {!isAddingBranch ? (
-            <button onClick={() => setIsAddingBranch(true)} className="bg-[#7A1B28] text-white text-xs flex items-center gap-1.5 py-2 px-4 rounded-full hover:bg-[#5a141d] hover:shadow-md transition-all font-bold">
-              <Plus className="w-4 h-4" /> AÑADIR SEDE
-            </button>
-          ) : (
-            <button onClick={() => { setIsAddingBranch(false); setTempBranch({}); }} className="text-xs flex items-center gap-1 text-slate-500 hover:text-slate-900 transition-colors">
-              <XIcon className="w-3.5 h-3.5" /> CANCELAR
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {!isAddingBranch && !editingBranchId ? (
+              <button onClick={() => { setIsAddingBranch(true); setTempBranch({}); }} className="bg-[#7A1B28] text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-[#5a141d] transition-colors flex items-center gap-1.5 shadow-sm">
+                <Plus className="w-4 h-4" /> AÑADIR SEDE
+              </button>
+            ) : (
+              <button onClick={() => { setIsAddingBranch(false); setEditingBranchId(null); setTempBranch({}); }} className="text-xs flex items-center gap-1 text-slate-500 hover:text-slate-900 transition-colors">
+                <XIcon className="w-3.5 h-3.5" /> CANCELAR
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Formulario Nueva/Editar Sede */}
@@ -436,6 +450,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                         >
                           <Edit3 className="w-4 h-4" />
                         </button>
+                        <button
+                          onClick={() => setBranchToDelete(branch.id)}
+                          className="p-1.5 text-rose-600 hover:bg-rose-50 rounded transition-colors"
+                          title="Eliminar Sede"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -448,6 +469,38 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             <Building className="w-8 h-8 text-slate-300 mb-1" />
             <p className="text-sm font-medium">Aún no tienes sedes configuradas.</p>
             <p className="text-xs text-slate-400">Agrega tu primera sede para comenzar.</p>
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal for Branch */}
+        {branchToDelete && (
+          <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-scale-in">
+              <div className="p-6 text-center">
+                <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <AlertTriangle className="w-8 h-8" />
+                </div>
+                <h3 className="text-xl font-display text-slate-900 mb-2">¿Eliminar Sede?</h3>
+                <p className="text-sm text-slate-500 font-mono">Esta acción eliminará permanentemente la sede seleccionada.</p>
+                
+                <div className="flex gap-3 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => setBranchToDelete(null)}
+                    className="flex-1 bg-white border border-slate-300 text-slate-700 py-2.5 rounded-lg text-xs font-bold hover:bg-slate-50 transition-colors uppercase tracking-wider"
+                  >
+                    CANCELAR
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDeleteBranch}
+                    className="flex-1 bg-rose-600 text-white py-2.5 rounded-lg text-xs font-bold hover:bg-rose-700 transition-colors uppercase tracking-wider shadow-lg shadow-rose-600/20"
+                  >
+                    ELIMINAR
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>

@@ -37,5 +37,9 @@ export const branchService = {
     const { data, error } = await supabase.from('branches').update(updatePayload).eq('id', id).select().single();
     if (error) throw error;
     return data;
+  },
+  async deleteBranch(id: string): Promise<void> {
+    const { error } = await supabase.from('branches').delete().eq('id', id);
+    if (error) throw error;
   }
 };
