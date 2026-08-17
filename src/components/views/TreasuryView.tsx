@@ -5,7 +5,7 @@ import { CurrencyDisplay } from '../common/CurrencyDisplay';
 import { ShieldCheck, ArrowRightLeft, Landmark, List, Plus, X } from 'lucide-react';
 
 export const TreasuryView: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'accounts' | 'transfers' | 'mayor' | 'cc' | 'docs' | 'cajas'>('accounts');
+  const [activeTab, setActiveTab] = useState<'accounts' | 'mayor' | 'cc' | 'cajas'>('accounts');
   
   const [accounts, setAccounts] = useState<TreasuryAccount[]>([]);
   const [movements, setMovements] = useState<TreasuryMovement[]>([]);
@@ -195,12 +195,6 @@ export const TreasuryView: React.FC = () => {
           <Landmark className="w-4 h-4" /> Cuentas
         </button>
         <button 
-          onClick={() => setActiveTab('transfers')}
-          className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'transfers' ? 'bg-[#7A1B28] text-white' : 'text-slate-500 hover:text-slate-900'}`}
-        >
-          <ArrowRightLeft className="w-4 h-4" /> Transferencias Internas
-        </button>
-        <button 
           onClick={() => setActiveTab('mayor')}
           className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'mayor' ? 'bg-[#7A1B28] text-white' : 'text-slate-500 hover:text-slate-900'}`}
         >
@@ -217,12 +211,6 @@ export const TreasuryView: React.FC = () => {
           className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'cajas' ? 'bg-[#7A1B28] text-white' : 'text-slate-500 hover:text-slate-900'}`}
         >
           <List className="w-4 h-4" /> Historial de Cajas
-        </button>
-        <button 
-          onClick={() => setActiveTab('docs')}
-          className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'docs' ? 'bg-[#7A1B28] text-white' : 'text-slate-500 hover:text-slate-900'}`}
-        >
-          <List className="w-4 h-4" /> Facturación y Tickets
         </button>
       </div>
 
@@ -249,74 +237,6 @@ export const TreasuryView: React.FC = () => {
               </div>
             </div>
           ))}
-        </div>
-      )}
-
-      {activeTab === 'transfers' && (
-        <div className="glass-card p-6 max-w-2xl animate-fade-in border-slate-200">
-          <h3 className="font-display text-xl text-slate-900 flex items-center gap-2 mb-4">
-            <ArrowRightLeft className="w-5 h-5 text-[#7A1B28]" /> NUEVA TRANSFERENCIA INTERNA
-          </h3>
-          <form onSubmit={handleTransfer} className="flex flex-col gap-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs text-slate-500 mb-1 block">Cuenta Origen</label>
-                <select
-                  value={fromAccount}
-                  onChange={(e) => setFromAccount(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none"
-                >
-                  <option value="">Seleccione origen...</option>
-                  {accounts.map(a => (
-                    <option key={a.id} value={a.id}>{a.name} (Saldo: ${a.balance})</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="text-xs text-slate-500 mb-1 block">Cuenta Destino</label>
-                <select
-                  value={toAccount}
-                  onChange={(e) => setToAccount(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none"
-                >
-                  <option value="">Seleccione destino...</option>
-                  {accounts.map(a => (
-                    <option key={a.id} value={a.id}>{a.name}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs text-slate-500 mb-1 block">Monto a Transferir ($)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0.01"
-                  value={transferAmount}
-                  onChange={(e) => setTransferAmount(Number(e.target.value))}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-lg text-slate-900 font-mono font-bold focus:border-[#7A1B28] outline-none"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-slate-500 mb-1 block">Medio</label>
-                <select
-                  value={transferMethod}
-                  onChange={(e) => setTransferMethod(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none"
-                >
-                  <option value="transferencia">Transferencia / Depósito</option>
-                  <option value="efectivo">Efectivo (Físico)</option>
-                  <option value="zelle">Zelle</option>
-                </select>
-              </div>
-            </div>
-
-            <button type="submit" disabled={isProcessing} className="btn-primary text-sm py-3 mt-2 justify-center disabled:opacity-50">
-              {isProcessing ? 'TRANSFIRIENDO...' : 'EJECUTAR TRANSFERENCIA'}
-            </button>
-          </form>
         </div>
       )}
 
@@ -407,78 +327,6 @@ export const TreasuryView: React.FC = () => {
                 <tr>
                   <td colSpan={4} className="p-8 text-center text-slate-500">
                     No hay tickets de cuenta corriente pendientes.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {activeTab === 'docs' && (
-        <div className="glass-card p-0 overflow-hidden animate-fade-in border-slate-200">
-          <table className="w-full text-left text-sm text-slate-700">
-            <thead className="bg-slate-100 font-display text-sm tracking-wider uppercase text-slate-600 border-b border-slate-200">
-              <tr>
-                <th className="p-4">FECHA</th>
-                <th className="p-4">DOCUMENTO</th>
-                <th className="p-4">TIPO</th>
-                <th className="p-4">CLIENTE</th>
-                <th className="p-4 text-right">MONTO / SALDO</th>
-                <th className="p-4 text-center">ACCIONES</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200">
-              {documents.map(d => {
-                const balance = Number(d.total_amount) - Number(d.paid_amount || 0) - Number(d.annulled_amount || 0);
-                return (
-                  <tr key={d.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="p-4 font-mono text-xs text-slate-500">
-                      {new Date(d.created_at || '').toLocaleString()}
-                    </td>
-                    <td className="p-4 font-bold text-slate-900">
-                      {d.document_number}
-                    </td>
-                    <td className="p-4 flex flex-col items-start gap-1">
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                        d.document_type === 'credit_note_internal' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-slate-50 text-slate-700 border border-slate-200'
-                      }`}>
-                        {d.document_type === 'invoice_internal' ? 'VENTA' : d.document_type === 'credit_note_internal' ? 'NC' : 'RECIBO'}
-                      </span>
-                      <span className="text-[10px] uppercase font-bold text-slate-500 bg-slate-100 px-1 rounded">{d.payment_condition}</span>
-                    </td>
-                    <td className="p-4 text-xs font-bold">{d.customers?.fullName || '-'}</td>
-                    <td className={`p-4 text-right font-mono flex flex-col items-end`}>
-                      <span className={`font-bold ${d.document_type === 'credit_note_internal' ? 'text-rose-700' : 'text-slate-900'}`}>
-                        {d.document_type === 'credit_note_internal' ? '-' : ''}${Math.abs(d.total_amount).toFixed(2)}
-                      </span>
-                      {d.document_type === 'invoice_internal' && (
-                        <span className="text-[10px] text-slate-500">
-                          Saldo: ${balance.toFixed(2)}
-                        </span>
-                      )}
-                    </td>
-                    <td className="p-4 text-center">
-                      {d.document_type === 'invoice_internal' && balance > 0 && d.status === 'issued' && (
-                        <button
-                          onClick={() => openNCModal(d)}
-                          disabled={isProcessing}
-                          className="bg-rose-100 text-rose-700 hover:bg-rose-200 px-3 py-1.5 rounded-lg text-xs font-bold uppercase disabled:opacity-50"
-                        >
-                          Anular/NC
-                        </button>
-                      )}
-                      {d.status === 'annulled' && (
-                        <span className="text-[10px] uppercase font-bold text-slate-400">Anulado</span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-              {documents.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="p-8 text-center text-slate-500">
-                    No hay documentos comerciales registrados.
                   </td>
                 </tr>
               )}
