@@ -366,7 +366,7 @@ export const TreasuryView: React.FC = () => {
                         <div className="flex flex-col items-end gap-1 text-xs">
                           {Object.entries(session.differences || {}).filter(([k,v]) => v !== 0).map(([k,v]) => (
                             <span key={k} className={v > 0 ? "text-emerald-600 font-bold" : "text-rose-600 font-bold"}>
-                              {k}: {v > 0 ? '+' : ''}{v.toFixed(2)}
+                              {k}: {v > 0 ? '+' : ''}{Number(v).toFixed(2)}
                             </span>
                           ))}
                         </div>

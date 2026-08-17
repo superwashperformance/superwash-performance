@@ -14,7 +14,8 @@ export const CurrencyDisplay: React.FC<CurrencyDisplayProps> = ({
   className = ''
 }) => {
   // Format the amount to ensure 2 decimal places
-  const formatted = amount.toFixed(2);
+  const numAmount = typeof amount === 'number' ? amount : Number(amount) || 0;
+  const formatted = numAmount.toFixed(2);
   const [integerPart, decimalPart] = formatted.split('.');
 
   const symbol = currency === 'USD' ? '$' : 'Bs';
