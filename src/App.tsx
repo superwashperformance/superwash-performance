@@ -578,6 +578,8 @@ export function App() {
     const success = await customerService.deleteCustomer(id);
     if (success) {
       setCustomers(customers.filter(c => c.id !== id));
+    } else {
+      alert("No se pudo eliminar el cliente. Es posible que tenga operaciones (Órdenes de Servicio, Pagos o Facturas) asociadas que impiden su eliminación.");
     }
   };
 
