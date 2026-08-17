@@ -407,7 +407,7 @@ export const treasuryService = {
       .order('name', { ascending: true });
 
     if (error) throw error;
-    return data as TreasuryAccount[];
+    return data || [];
   },
 
   /**
@@ -448,7 +448,7 @@ export const treasuryService = {
       .limit(limit);
 
     if (error) throw error;
-    return data as any;
+    return data || [];
   },
 
   async getAllCashSessions(limit = 50): Promise<CashSession[]> {
@@ -459,6 +459,6 @@ export const treasuryService = {
       .limit(limit);
 
     if (error) throw error;
-    return data as CashSession[];
+    return data || [];
   }
 };

@@ -49,13 +49,13 @@ export const TreasuryView: React.FC = () => {
         treasuryService.getCommercialDocuments(),
         treasuryService.getAllCashSessions(50)
       ]);
-      setAccounts(accs);
-      setMovements(movs);
-      setDebtors(debts);
-      setDocuments(docs);
-      setCashSessions(sessions);
+      setAccounts(accs || []);
+      setMovements(movs || []);
+      setDebtors(debts || []);
+      setDocuments(docs || []);
+      setCashSessions(sessions || []);
       
-      if (accs.length > 0) {
+      if (accs && accs.length > 0) {
         setColAccountId(accs[0].id);
         setNcRefundAccountId(accs[0].id);
       }
