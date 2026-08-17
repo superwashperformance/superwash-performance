@@ -358,10 +358,10 @@ export const TreasuryView: React.FC = () => {
                     {session.status === 'open' && <span className="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded font-bold">ABIERTA</span>}
                     {session.status === 'counting' && <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded font-bold">EN ARQUEO</span>}
                     {session.status === 'closed' && <span className="bg-slate-100 text-slate-800 text-xs px-2 py-1 rounded font-bold">CERRADA</span>}
-                    {session.status === 'archived' && <span className="bg-slate-200 text-slate-500 text-xs px-2 py-1 rounded font-bold">ARCHIVADA</span>}
+                    {session.status === 'reconciled' && <span className="bg-slate-200 text-slate-500 text-xs px-2 py-1 rounded font-bold">CONCILIADA</span>}
                   </td>
                   <td className="p-4 text-right">
-                    {session.status === 'closed' || session.status === 'archived' ? (
+                    {session.status === 'closed' || session.status === 'reconciled' ? (
                       hasDiffs ? (
                         <div className="flex flex-col items-end gap-1 text-xs">
                           {Object.entries(session.differences || {}).filter(([k,v]) => v !== 0).map(([k,v]) => (
