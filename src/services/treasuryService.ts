@@ -396,18 +396,42 @@ export const treasuryService = {
   // TESORERÍA (Manager)
   // -------------------------------------------------------------------------
 
-  /**
-   * Gets all treasury accounts (Cajas and Bancos)
-   */
   async getTreasuryAccounts(): Promise<TreasuryAccount[]> {
-    const { data, error } = await supabase
+    const { data: accounts, error: accError } = await supabase
       .from('treasury_accounts')
       .select('*')
       .eq('is_active', true)
       .order('name', { ascending: true });
 
-    if (error) throw error;
-    return data || [];
+    if (accError) throw accError;
+    if (!accounts) return [];
+
+    // Fetch movements to calculate real-time balance
+    const { data: movements, error: movError } = await supabase
+      .from('treasury_movements')
+      .select('treasury_account_id, type, amount')
+      .eq('status', 'valid');
+
+    if (movError) throw movError;
+
+    const balances: Record<string, number> = {};
+    if (movements) {
+      movements.forEach((m: any) => {
+        const amt = Number(m.amount) || 0;
+        if (!balances[m.treasury_account_id]) balances[m.treasury_account_id] = 0;
+        
+        if (m.type === 'income' || m.type === 'internal_transfer_in') {
+          balances[m.treasury_account_id] += amt;
+        } else if (m.type === 'expense' || m.type === 'internal_transfer_out') {
+          balances[m.treasury_account_id] -= amt;
+        }
+      });
+    }
+
+    return accounts.map((acc: any) => ({
+      ...acc,
+      balance: balances[acc.id] || 0
+    })) as TreasuryAccount[];
   },
 
   /**

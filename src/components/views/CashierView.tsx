@@ -32,7 +32,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
 
   // Fetch ALL completed docs for NCs and to filter billed ODS
   const fetchDocs = () => {
-    supabase.from('commercial_documents').select('*').eq('status', 'completed').then(({data}) => {
+    supabase.from('commercial_documents').select('*').eq('status', 'issued').then(({data}) => {
       if(data) setCommercialDocs(data);
     });
   };
