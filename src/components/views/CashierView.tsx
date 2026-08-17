@@ -158,7 +158,6 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
       setSelectedOdsId('');
       setSelectedOriginalDocId('');
       await fetchSession();
-      alert('Operación registrada exitosamente');
     } catch (err: any) {
       alert('Error: ' + err.message);
     } finally {
