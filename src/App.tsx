@@ -594,10 +594,10 @@ export function App() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--color-bg-primary)] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-10 h-10 border-4 border-slate-200 border-t-[#7A1B28] rounded-full animate-spin" />
-          <p className="text-slate-500 font-mono text-xs tracking-widest uppercase">Restaurando sesión...</p>
+          <div className="w-10 h-10 border-4 border-[var(--color-border-primary)] border-t-[#7A1B28] rounded-full animate-spin" />
+          <p className="text-[var(--color-text-muted)] font-mono text-xs tracking-widest uppercase">Restaurando sesión...</p>
         </div>
       </div>
     );
@@ -632,7 +632,7 @@ export function App() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans antialiased selection:bg-[#00E5FF] selection:text-black">
+    <div className="min-h-screen bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] flex flex-col font-sans antialiased selection:bg-[#00E5FF] selection:text-black">
       {/* Header */}
       <div className="print:hidden">
         <Header
@@ -660,7 +660,7 @@ export function App() {
         <Sidebar activeTab={activeTab} onTabChange={setActiveTab} currentRole={currentRole} />
 
         {/* Dynamic View Area */}
-        <main className="flex-1 overflow-y-auto bg-slate-50">
+        <main className="flex-1 overflow-y-auto bg-[var(--color-bg-primary)]">
           {activeTab === 'dashboard' && (
             <DashboardView
               orders={orders}
@@ -777,24 +777,24 @@ export function App() {
       {isSearchOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-start justify-center pt-20 p-4">
           <div className="glass-card w-full max-w-xl p-4 flex flex-col gap-3">
-            <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
-              <Search className="w-5 h-5 text-slate-400" />
+            <div className="flex items-center gap-2 border-b border-[var(--color-border-subtle)] pb-3">
+              <Search className="w-5 h-5 text-[var(--color-text-muted)]" />
               <input
                 type="text"
                 placeholder="Escribe número de ODS, Placa, Cliente o Modelo..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoFocus
-                className="flex-1 bg-transparent text-sm text-slate-900 focus:outline-none font-mono placeholder:text-slate-400"
+                className="flex-1 bg-transparent text-sm text-[var(--color-text-primary)] focus:outline-none font-mono placeholder:text-[var(--color-text-muted)]"
               />
-              <button onClick={() => setIsSearchOpen(false)} className="text-slate-400 hover:text-slate-800 transition-colors">
+              <button onClick={() => setIsSearchOpen(false)} className="text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="max-h-80 overflow-y-auto flex flex-col gap-2">
               {filteredSearchResults.length === 0 ? (
-                <div className="text-center text-xs text-slate-500 py-6 font-mono">
+                <div className="text-center text-xs text-[var(--color-text-muted)] py-6 font-mono">
                   No se encontraron resultados para "{searchQuery}"
                 </div>
               ) : (
@@ -805,18 +805,18 @@ export function App() {
                       setSelectedOrder(order);
                       setIsSearchOpen(false);
                     }}
-                    className="p-3 rounded-xl bg-slate-50 border border-slate-200 hover:border-[#7A1B28]/30 cursor-pointer flex items-center justify-between transition-colors"
+                    className="p-3 rounded-xl bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] hover:border-[#7A1B28]/30 cursor-pointer flex items-center justify-between transition-colors"
                   >
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-mono font-bold text-xs text-[#7A1B28]">{order.orderNumber}</span>
-                        <span className="font-bold text-slate-800 text-xs">{order.vehicleBrandModel}</span>
+                        <span className="font-bold text-[var(--color-text-primary)] text-xs">{order.vehicleBrandModel}</span>
                       </div>
-                      <span className="text-[10px] text-slate-500 font-mono">
+                      <span className="text-[10px] text-[var(--color-text-muted)] font-mono">
                         Placa: {order.vehiclePlate} | Cliente: {order.customerName}
                       </span>
                     </div>
-                    <span className="font-mono text-xs font-bold text-slate-800">${order.totalAmount}</span>
+                    <span className="font-mono text-xs font-bold text-[var(--color-text-primary)]">${order.totalAmount}</span>
                   </div>
                 ))
               )}

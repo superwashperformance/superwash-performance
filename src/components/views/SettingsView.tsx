@@ -206,10 +206,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8 max-w-5xl mx-auto w-full">
       <div>
-        <h2 className="font-display text-3xl text-slate-800 tracking-wide flex items-center gap-2">
+        <h2 className="font-display text-3xl text-[var(--color-text-primary)] tracking-wide flex items-center gap-2">
           <Settings className="w-8 h-8 text-[#7A1B28]" /> CONFIGURACIONES
         </h2>
-        <p className="text-sm text-slate-500 mt-1">Administra los datos de tu empresa y preferencias del sistema</p>
+        <p className="text-sm text-[var(--color-text-muted)] mt-1">Administra los datos de tu empresa y preferencias del sistema</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -218,21 +218,21 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 text-emerald-600">
               <Users className="w-5 h-5" />
-              <h3 className="font-display text-xl text-slate-800">TÉCNICOS</h3>
+              <h3 className="font-display text-xl text-[var(--color-text-primary)]">TÉCNICOS</h3>
             </div>
             <span className="text-[10px] font-mono text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">{technicians.length} ACTIVOS</span>
           </div>
           
           <div className="flex flex-col gap-2 mt-2 max-h-48 overflow-y-auto pr-2">
             {technicians.map(tech => (
-              <div key={tech.id} className="flex items-center justify-between bg-slate-50 border border-slate-200 p-2 rounded-lg">
+              <div key={tech.id} className="flex items-center justify-between bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] p-2 rounded-lg">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded bg-[#7A1B28]/10 text-[#7A1B28] flex items-center justify-center font-display text-xs font-bold">
                     {tech.avatar}
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-slate-900">{tech.name}</p>
-                    <p className="text-[10px] text-slate-500">{tech.role}</p>
+                    <p className="text-xs font-bold text-[var(--color-text-primary)]">{tech.name}</p>
+                    <p className="text-[10px] text-[var(--color-text-muted)]">{tech.role}</p>
                   </div>
                 </div>
                 <button 
@@ -246,13 +246,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             ))}
           </div>
 
-          <form onSubmit={handleAddTechnician} className="mt-3 flex flex-col gap-2 pt-3 border-t border-slate-200">
+          <form onSubmit={handleAddTechnician} className="mt-3 flex flex-col gap-2 pt-3 border-t border-[var(--color-border-primary)]">
             <input 
               type="text" 
               placeholder="Nombre del Técnico" 
               value={newTechName} 
               onChange={e => setNewTechName(e.target.value)}
-              className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-[#7A1B28]"
+              className="bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] rounded px-3 py-1.5 text-xs text-[var(--color-text-primary)] outline-none focus:border-[#7A1B28]"
             />
             <div className="flex gap-2">
               <input 
@@ -260,7 +260,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 placeholder="Especialidad (ej. Pintura)" 
                 value={newTechRole} 
                 onChange={e => setNewTechRole(e.target.value)}
-                className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-[#7A1B28] flex-1"
+                className="bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] rounded px-3 py-1.5 text-xs text-[var(--color-text-primary)] outline-none focus:border-[#7A1B28] flex-1"
               />
               <button type="submit" className="bg-[#7A1B28]/10 text-[#7A1B28] px-3 py-1.5 rounded flex items-center gap-1 hover:bg-[#7A1B28] hover:text-white transition-colors">
                 <UserPlus className="w-4 h-4" />
@@ -274,15 +274,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 text-amber-500">
               <Shield className="w-5 h-5" />
-              <h3 className="font-display text-xl text-slate-800">AGENTES DE RECEPCIÓN</h3>
+              <h3 className="font-display text-xl text-[var(--color-text-primary)]">AGENTES DE RECEPCIÓN</h3>
             </div>
             <span className="text-[10px] font-mono text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">{receptionAgents.length} ACTIVOS</span>
           </div>
 
           <div className="flex flex-col gap-2 mt-2 max-h-48 overflow-y-auto pr-2">
             {receptionAgents.map(agent => (
-              <div key={agent.id} className="flex items-center justify-between bg-slate-50 border border-slate-200 p-2 rounded-lg">
-                <p className="text-xs font-bold text-slate-900 ml-2">{agent.name}</p>
+              <div key={agent.id} className="flex items-center justify-between bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] p-2 rounded-lg">
+                <p className="text-xs font-bold text-[var(--color-text-primary)] ml-2">{agent.name}</p>
                 <button 
                   onClick={() => handleDeleteReceptionAgent(agent.id)}
                   className="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors"
@@ -294,13 +294,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             ))}
           </div>
 
-          <form onSubmit={handleAddAgent} className="mt-auto flex gap-2 pt-3 border-t border-slate-200">
+          <form onSubmit={handleAddAgent} className="mt-auto flex gap-2 pt-3 border-t border-[var(--color-border-primary)]">
             <input 
               type="text" 
               placeholder="Nombre del Agente" 
               value={newAgentName} 
               onChange={e => setNewAgentName(e.target.value)}
-              className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-[#7A1B28] flex-1"
+              className="bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] rounded px-3 py-1.5 text-xs text-[var(--color-text-primary)] outline-none focus:border-[#7A1B28] flex-1"
             />
             <button type="submit" className="bg-amber-100 text-amber-600 border border-amber-200 px-3 py-1.5 rounded flex items-center gap-1 hover:bg-amber-500 hover:text-white transition-colors">
               <UserPlus className="w-4 h-4" />
@@ -310,11 +310,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
 
       {/* Datos de Empresa */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col gap-4">
-        <div className="flex items-center justify-between mb-2 pb-3 border-b border-slate-100">
+      <div className="bg-[var(--color-bg-surface)] rounded-xl shadow-sm border border-[var(--color-border-primary)] p-6 flex flex-col gap-4">
+        <div className="flex items-center justify-between mb-2 pb-3 border-b border-[var(--color-border-subtle)]">
           <div className="flex items-center gap-3 text-[#7A1B28]">
             <Building className="w-5 h-5" />
-            <h3 className="font-display text-lg text-slate-800">DATOS DE LA EMPRESA</h3>
+            <h3 className="font-display text-lg text-[var(--color-text-primary)]">DATOS DE LA EMPRESA</h3>
           </div>
           {!isEditingCompany ? (
             <button onClick={() => { setTempCompanyData(companyData); setIsEditingCompany(true); }} className="text-xs flex items-center gap-1.5 text-[#7A1B28] font-bold hover:bg-[#7A1B28]/5 px-3 py-1.5 rounded transition-colors">
@@ -322,7 +322,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             </button>
           ) : (
             <div className="flex gap-2">
-              <button onClick={handleCancelCompany} className="text-xs flex items-center gap-1 text-slate-500 hover:text-slate-900 transition-colors">
+              <button onClick={handleCancelCompany} className="text-xs flex items-center gap-1 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors">
                 <XIcon className="w-3.5 h-3.5" /> CANCELAR
               </button>
               <button onClick={handleSaveCompany} className="text-xs flex items-center gap-1 text-emerald-600 hover:text-emerald-700 transition-colors font-bold">
@@ -334,44 +334,44 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex flex-col gap-1">
-            <label className="text-[10px] text-slate-500 font-mono">NOMBRE DE LA EMPRESA</label>
+            <label className="text-[10px] text-[var(--color-text-muted)] font-mono">NOMBRE DE LA EMPRESA</label>
             {isEditingCompany ? (
-              <input type="text" value={tempCompanyData.name} onChange={e => setTempCompanyData({...tempCompanyData, name: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-[#7A1B28]" />
+              <input type="text" value={tempCompanyData.name} onChange={e => setTempCompanyData({...tempCompanyData, name: e.target.value})} className="bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] rounded px-3 py-1.5 text-xs text-[var(--color-text-primary)] outline-none focus:border-[#7A1B28]" />
             ) : (
-              <p className="text-sm text-slate-900 font-bold">{companyData.name}</p>
+              <p className="text-sm text-[var(--color-text-primary)] font-bold">{companyData.name}</p>
             )}
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-[10px] text-slate-500 font-mono">RIF / NIT</label>
+            <label className="text-[10px] text-[var(--color-text-muted)] font-mono">RIF / NIT</label>
             {isEditingCompany ? (
-              <input type="text" value={tempCompanyData.documentId} onChange={e => setTempCompanyData({...tempCompanyData, documentId: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-[#7A1B28]" />
+              <input type="text" value={tempCompanyData.documentId} onChange={e => setTempCompanyData({...tempCompanyData, documentId: e.target.value})} className="bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] rounded px-3 py-1.5 text-xs text-[var(--color-text-primary)] outline-none focus:border-[#7A1B28]" />
             ) : (
-              <p className="text-sm text-slate-900 font-mono">{companyData.documentId}</p>
+              <p className="text-sm text-[var(--color-text-primary)] font-mono">{companyData.documentId}</p>
             )}
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-[10px] text-slate-500 font-mono">DIRECCIÓN</label>
+            <label className="text-[10px] text-[var(--color-text-muted)] font-mono">DIRECCIÓN</label>
             {isEditingCompany ? (
-              <input type="text" value={tempCompanyData.address} onChange={e => setTempCompanyData({...tempCompanyData, address: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-[#7A1B28]" />
+              <input type="text" value={tempCompanyData.address} onChange={e => setTempCompanyData({...tempCompanyData, address: e.target.value})} className="bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] rounded px-3 py-1.5 text-xs text-[var(--color-text-primary)] outline-none focus:border-[#7A1B28]" />
             ) : (
-              <p className="text-sm text-slate-700">{companyData.address}</p>
+              <p className="text-sm text-[var(--color-text-secondary)]">{companyData.address}</p>
             )}
           </div>
           <div className="flex gap-4">
             <div className="flex flex-col gap-1 flex-1">
-              <label className="text-[10px] text-slate-500 font-mono">TELÉFONO</label>
+              <label className="text-[10px] text-[var(--color-text-muted)] font-mono">TELÉFONO</label>
               {isEditingCompany ? (
-                <input type="text" value={tempCompanyData.phone} onChange={e => setTempCompanyData({...tempCompanyData, phone: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-[#7A1B28]" />
+                <input type="text" value={tempCompanyData.phone} onChange={e => setTempCompanyData({...tempCompanyData, phone: e.target.value})} className="bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] rounded px-3 py-1.5 text-xs text-[var(--color-text-primary)] outline-none focus:border-[#7A1B28]" />
               ) : (
-                <p className="text-sm text-slate-700 font-mono">{companyData.phone}</p>
+                <p className="text-sm text-[var(--color-text-secondary)] font-mono">{companyData.phone}</p>
               )}
             </div>
             <div className="flex flex-col gap-1 flex-1">
-              <label className="text-[10px] text-slate-500 font-mono">EMAIL</label>
+              <label className="text-[10px] text-[var(--color-text-muted)] font-mono">EMAIL</label>
               {isEditingCompany ? (
-                <input type="email" value={tempCompanyData.email} onChange={e => setTempCompanyData({...tempCompanyData, email: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-[#7A1B28]" />
+                <input type="email" value={tempCompanyData.email} onChange={e => setTempCompanyData({...tempCompanyData, email: e.target.value})} className="bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] rounded px-3 py-1.5 text-xs text-[var(--color-text-primary)] outline-none focus:border-[#7A1B28]" />
               ) : (
-                <p className="text-sm text-slate-700 font-mono">{companyData.email}</p>
+                <p className="text-sm text-[var(--color-text-secondary)] font-mono">{companyData.email}</p>
               )}
             </div>
           </div>
@@ -379,11 +379,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
       </div>
 
       {/* Sedes (Company Branches) */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col gap-4">
-        <div className="flex items-center justify-between mb-2 pb-3 border-b border-slate-100">
+      <div className="bg-[var(--color-bg-surface)] rounded-xl shadow-sm border border-[var(--color-border-primary)] p-6 flex flex-col gap-4">
+        <div className="flex items-center justify-between mb-2 pb-3 border-b border-[var(--color-border-subtle)]">
           <div className="flex items-center gap-3 text-[#7A1B28]">
             <Building className="w-5 h-5" />
-            <h3 className="font-display text-lg text-slate-800">SEDES (SUCURSALES)</h3>
+            <h3 className="font-display text-lg text-[var(--color-text-primary)]">SEDES (SUCURSALES)</h3>
           </div>
           <div className="flex items-center gap-2">
             {!isAddingBranch && !editingBranchId ? (
@@ -391,7 +391,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 <Plus className="w-4 h-4" /> AÑADIR SEDE
               </button>
             ) : (
-              <button onClick={() => { setIsAddingBranch(false); setEditingBranchId(null); setTempBranch({}); }} className="text-xs flex items-center gap-1 text-slate-500 hover:text-slate-900 transition-colors">
+              <button onClick={() => { setIsAddingBranch(false); setEditingBranchId(null); setTempBranch({}); }} className="text-xs flex items-center gap-1 text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors">
                 <XIcon className="w-3.5 h-3.5" /> CANCELAR
               </button>
             )}
@@ -400,18 +400,18 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
         {/* Formulario Nueva/Editar Sede */}
         {(isAddingBranch || editingBranchId) && (
-          <div className="bg-slate-50 border border-slate-200 rounded-lg p-5 mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg p-5 mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs text-slate-500 font-bold">NOMBRE DE LA SEDE *</label>
-              <input type="text" value={tempBranch.name || ''} onChange={e => setTempBranch({...tempBranch, name: e.target.value})} className="bg-white border border-slate-300 rounded px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#7A1B28]" placeholder="Ej. Principal" />
+              <label className="text-xs text-[var(--color-text-muted)] font-bold">NOMBRE DE LA SEDE *</label>
+              <input type="text" value={tempBranch.name || ''} onChange={e => setTempBranch({...tempBranch, name: e.target.value})} className="bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] rounded px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[#7A1B28]" placeholder="Ej. Principal" />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs text-slate-500 font-bold">TELÉFONO *</label>
-              <input type="text" value={tempBranch.phone || ''} onChange={e => setTempBranch({...tempBranch, phone: e.target.value})} className="bg-white border border-slate-300 rounded px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#7A1B28]" placeholder="Ej. 0412-1234567" />
+              <label className="text-xs text-[var(--color-text-muted)] font-bold">TELÉFONO *</label>
+              <input type="text" value={tempBranch.phone || ''} onChange={e => setTempBranch({...tempBranch, phone: e.target.value})} className="bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] rounded px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[#7A1B28]" placeholder="Ej. 0412-1234567" />
             </div>
             <div className="flex flex-col gap-1.5 md:col-span-2">
-              <label className="text-xs text-slate-500 font-bold">DIRECCIÓN *</label>
-              <input type="text" value={tempBranch.address || ''} onChange={e => setTempBranch({...tempBranch, address: e.target.value})} className="bg-white border border-slate-300 rounded px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#7A1B28]" placeholder="Dirección completa" />
+              <label className="text-xs text-[var(--color-text-muted)] font-bold">DIRECCIÓN *</label>
+              <input type="text" value={tempBranch.address || ''} onChange={e => setTempBranch({...tempBranch, address: e.target.value})} className="bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] rounded px-3 py-2 text-sm text-[var(--color-text-primary)] outline-none focus:border-[#7A1B28]" placeholder="Dirección completa" />
             </div>
             <div className="flex items-end justify-end md:col-span-2 mt-2">
               <button onClick={handleSaveBranch} className="bg-[#7A1B28] text-white text-sm flex items-center gap-2 py-2 px-6 rounded-lg hover:bg-[#5a141d] transition-colors font-bold w-full md:w-auto justify-center shadow-sm">
@@ -423,24 +423,24 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
         {/* Listado de Sedes en Formato Tabla */}
         {branches.length > 0 ? (
-          <div className="overflow-x-auto border border-slate-200 rounded-lg mt-2">
+          <div className="overflow-x-auto border border-[var(--color-border-primary)] rounded-lg mt-2">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200">
-                  <th className="px-4 py-3 text-xs font-bold text-slate-600">NOMBRE DE LA SEDE</th>
-                  <th className="px-4 py-3 text-xs font-bold text-slate-600">TELÉFONO</th>
-                  <th className="px-4 py-3 text-xs font-bold text-slate-600">DIRECCIÓN</th>
-                  <th className="px-4 py-3 text-xs font-bold text-slate-600 w-32">ACCIONES</th>
+                <tr className="bg-[var(--color-bg-primary)] border-b border-[var(--color-border-primary)]">
+                  <th className="px-4 py-3 text-xs font-bold text-[var(--color-text-secondary)]">NOMBRE DE LA SEDE</th>
+                  <th className="px-4 py-3 text-xs font-bold text-[var(--color-text-secondary)]">TELÉFONO</th>
+                  <th className="px-4 py-3 text-xs font-bold text-[var(--color-text-secondary)]">DIRECCIÓN</th>
+                  <th className="px-4 py-3 text-xs font-bold text-[var(--color-text-secondary)] w-32">ACCIONES</th>
                 </tr>
               </thead>
               <tbody>
                 {branches.map((branch) => (
-                  <tr key={branch.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors">
-                    <td className="px-4 py-3 text-sm font-bold text-slate-800">
+                  <tr key={branch.id} className="border-b border-[var(--color-border-subtle)] last:border-0 hover:bg-[var(--color-bg-primary)] transition-colors">
+                    <td className="px-4 py-3 text-sm font-bold text-[var(--color-text-primary)]">
                       {branch.name}
                     </td>
-                    <td className="px-4 py-3 text-sm text-slate-600 font-mono">{branch.phone}</td>
-                    <td className="px-4 py-3 text-sm text-slate-600">{branch.address}</td>
+                    <td className="px-4 py-3 text-sm text-[var(--color-text-secondary)] font-mono">{branch.phone}</td>
+                    <td className="px-4 py-3 text-sm text-[var(--color-text-secondary)]">{branch.address}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <button 
@@ -465,29 +465,29 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             </table>
           </div>
         ) : (
-          <div className="col-span-full py-12 text-center text-slate-500 flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-200 rounded-lg mt-2 bg-slate-50">
+          <div className="col-span-full py-12 text-center text-[var(--color-text-muted)] flex flex-col items-center justify-center gap-2 border-2 border-dashed border-[var(--color-border-primary)] rounded-lg mt-2 bg-[var(--color-bg-primary)]">
             <Building className="w-8 h-8 text-slate-300 mb-1" />
             <p className="text-sm font-medium">Aún no tienes sedes configuradas.</p>
-            <p className="text-xs text-slate-400">Agrega tu primera sede para comenzar.</p>
+            <p className="text-xs text-[var(--color-text-muted)]">Agrega tu primera sede para comenzar.</p>
           </div>
         )}
 
         {/* Delete Confirmation Modal for Branch */}
         {branchToDelete && (
           <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-            <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-scale-in">
+            <div className="bg-[var(--color-bg-surface)] rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-scale-in">
               <div className="p-6 text-center">
                 <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <AlertTriangle className="w-8 h-8" />
                 </div>
-                <h3 className="text-xl font-display text-slate-900 mb-2">¿Eliminar Sede?</h3>
-                <p className="text-sm text-slate-500 font-mono">Esta acción eliminará permanentemente la sede seleccionada.</p>
+                <h3 className="text-xl font-display text-[var(--color-text-primary)] mb-2">¿Eliminar Sede?</h3>
+                <p className="text-sm text-[var(--color-text-muted)] font-mono">Esta acción eliminará permanentemente la sede seleccionada.</p>
                 
                 <div className="flex gap-3 mt-6">
                   <button
                     type="button"
                     onClick={() => setBranchToDelete(null)}
-                    className="flex-1 bg-white border border-slate-300 text-slate-700 py-2.5 rounded-lg text-xs font-bold hover:bg-slate-50 transition-colors uppercase tracking-wider"
+                    className="flex-1 bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] text-[var(--color-text-secondary)] py-2.5 rounded-lg text-xs font-bold hover:bg-[var(--color-bg-primary)] transition-colors uppercase tracking-wider"
                   >
                     CANCELAR
                   </button>
@@ -510,7 +510,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-3 text-[#7A1B28]">
             <Wrench className="w-5 h-5" />
-            <h3 className="font-display text-xl text-slate-800">CATÁLOGO DE SERVICIOS</h3>
+            <h3 className="font-display text-xl text-[var(--color-text-primary)]">CATÁLOGO DE SERVICIOS</h3>
           </div>
           <div className="flex gap-2">
             <button 
@@ -539,16 +539,16 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
         {/* Import from Inventory Form */}
         {isImportingFromInventory && (
-          <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl flex flex-col gap-3 mb-4 shadow-sm">
-            <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+          <div className="bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] p-4 rounded-xl flex flex-col gap-3 mb-4 shadow-sm">
+            <h4 className="text-sm font-bold text-[var(--color-text-primary)] flex items-center gap-2">
               <Package className="w-4 h-4 text-[#7A1B28]" /> Seleccionar Insumo del Inventario
             </h4>
-            <p className="text-xs text-slate-500">Selecciona un producto. El precio de venta empezará en 0 para que lo configures.</p>
+            <p className="text-xs text-[var(--color-text-muted)]">Selecciona un producto. El precio de venta empezará en 0 para que lo configures.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
               <div className="flex flex-col gap-1 md:col-span-2">
-                <label className="text-[10px] text-slate-500 font-mono">INSUMO</label>
+                <label className="text-[10px] text-[var(--color-text-muted)] font-mono">INSUMO</label>
                 <select 
-                  className="bg-white border border-slate-200 rounded px-3 py-2 text-xs text-slate-900 outline-none focus:border-[#7A1B28]"
+                  className="bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] rounded px-3 py-2 text-xs text-[var(--color-text-primary)] outline-none focus:border-[#7A1B28]"
                   onChange={(e) => {
                     const selectedItem = inventory.find(i => i.id === e.target.value);
                     if (selectedItem) {
@@ -574,7 +574,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               </div>
             </div>
             <div className="flex justify-end mt-2">
-              <button onClick={() => setIsImportingFromInventory(false)} className="text-xs bg-slate-200 text-slate-700 px-3 py-1.5 rounded hover:bg-slate-300 transition-colors font-bold">
+              <button onClick={() => setIsImportingFromInventory(false)} className="text-xs bg-slate-200 text-[var(--color-text-secondary)] px-3 py-1.5 rounded hover:bg-slate-300 transition-colors font-bold">
                 CANCELAR
               </button>
             </div>
@@ -583,19 +583,19 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
         {/* Add / Edit Form */}
         {(isAddingService || editingServiceId) && (
-          <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl flex flex-col gap-3 mb-4 shadow-sm">
+          <div className="bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] p-4 rounded-xl flex flex-col gap-3 mb-4 shadow-sm">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-slate-500 font-mono">NOMBRE DEL SERVICIO</label>
-                <input type="text" value={tempService.name || ''} onChange={e => setTempService({...tempService, name: e.target.value})} className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-[#7A1B28]" placeholder="Ej. Detailing VIP" />
+                <label className="text-[10px] text-[var(--color-text-muted)] font-mono">NOMBRE DEL SERVICIO</label>
+                <input type="text" value={tempService.name || ''} onChange={e => setTempService({...tempService, name: e.target.value})} className="bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] rounded px-3 py-1.5 text-xs text-[var(--color-text-primary)] outline-none focus:border-[#7A1B28]" placeholder="Ej. Detailing VIP" />
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-slate-500 font-mono">PRECIO ($)</label>
-                <input type="number" value={tempService.price || 0} onChange={e => setTempService({...tempService, price: Number(e.target.value)})} className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-[#7A1B28]" />
+                <label className="text-[10px] text-[var(--color-text-muted)] font-mono">PRECIO ($)</label>
+                <input type="number" value={tempService.price || 0} onChange={e => setTempService({...tempService, price: Number(e.target.value)})} className="bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] rounded px-3 py-1.5 text-xs text-[var(--color-text-primary)] outline-none focus:border-[#7A1B28]" />
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-slate-500 font-mono">CATEGORÍA</label>
-                <select value={tempService.category || 'Detailing'} onChange={e => setTempService({...tempService, category: e.target.value as any})} className="bg-white border border-slate-200 rounded px-3 py-1.5 text-xs text-slate-900 outline-none focus:border-[#7A1B28]">
+                <label className="text-[10px] text-[var(--color-text-muted)] font-mono">CATEGORÍA</label>
+                <select value={tempService.category || 'Detailing'} onChange={e => setTempService({...tempService, category: e.target.value as any})} className="bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] rounded px-3 py-1.5 text-xs text-[var(--color-text-primary)] outline-none focus:border-[#7A1B28]">
                   <option value="Detailing">Detailing</option>
                   <option value="Pulitura">Pulitura</option>
                   <option value="Pintura">Pintura</option>
@@ -608,7 +608,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               </div>
             </div>
             <div className="flex justify-end gap-2 mt-2">
-              <button onClick={() => { setIsAddingService(false); setEditingServiceId(null); }} className="text-xs bg-slate-200 text-slate-700 px-3 py-1.5 rounded hover:bg-slate-300 transition-colors font-bold">
+              <button onClick={() => { setIsAddingService(false); setEditingServiceId(null); }} className="text-xs bg-slate-200 text-[var(--color-text-secondary)] px-3 py-1.5 rounded hover:bg-slate-300 transition-colors font-bold">
                 CANCELAR
               </button>
               <button onClick={handleSaveService} className="text-xs bg-[#7A1B28] text-white px-4 py-1.5 rounded hover:bg-[#5a141d] transition-colors font-bold">
@@ -621,15 +621,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         {/* Services List */}
         <div className="flex flex-col gap-2 max-h-96 overflow-y-auto pr-2">
           {servicesCatalog.map(service => (
-            <div key={service.id} className="flex items-center justify-between bg-slate-50 border border-slate-200 p-3 rounded-lg hover:border-[#7A1B28]/30 transition-colors">
+            <div key={service.id} className="flex items-center justify-between bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] p-3 rounded-lg hover:border-[#7A1B28]/30 transition-colors">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-[#7A1B28]/10 text-[#7A1B28] flex items-center justify-center font-display text-sm font-bold">
                   ${service.price}
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-slate-900">{service.name}</p>
-                  <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono mt-0.5">
-                    <span className="bg-slate-100 px-1.5 py-0.5 rounded text-slate-700">{service.category}</span>
+                  <p className="text-sm font-bold text-[var(--color-text-primary)]">{service.name}</p>
+                  <div className="flex items-center gap-2 text-[10px] text-[var(--color-text-muted)] font-mono mt-0.5">
+                    <span className="bg-slate-100 px-1.5 py-0.5 rounded text-[var(--color-text-secondary)]">{service.category}</span>
                   </div>
                 </div>
               </div>

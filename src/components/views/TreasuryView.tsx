@@ -199,53 +199,53 @@ export const TreasuryView: React.FC = () => {
   const totalBalance = accounts.reduce((acc, a) => acc + a.balance, 0);
 
   if (isLoading) {
-    return <div className="p-8 text-slate-900 font-mono">Cargando tesorería...</div>;
+    return <div className="p-8 text-[var(--color-text-primary)] font-mono">Cargando tesorería...</div>;
   }
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8 max-w-7xl mx-auto w-full relative">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-display text-3xl text-slate-900 tracking-wide flex items-center gap-2">
+          <h2 className="font-display text-3xl text-[var(--color-text-primary)] tracking-wide flex items-center gap-2">
             TESORERÍA Y MAYOR <ShieldCheck className="w-6 h-6 text-[#7A1B28]" />
           </h2>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-[var(--color-text-muted)]">
             Control central de liquidez, cuentas bancarias y transferencias internas.
           </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="glass-card p-5 border-slate-200 col-span-1 md:col-span-3 lg:col-span-1 shadow-sm">
-          <span className="text-[10px] font-mono text-slate-500 uppercase">LIQUIDEZ TOTAL</span>
+        <div className="glass-card p-5 border-[var(--color-border-primary)] col-span-1 md:col-span-3 lg:col-span-1 shadow-sm">
+          <span className="text-[10px] font-mono text-[var(--color-text-muted)] uppercase">LIQUIDEZ TOTAL</span>
           <div className="font-display text-4xl text-[#7A1B28] font-mono">
             <CurrencyDisplay amount={totalBalance} size="lg" />
           </div>
         </div>
       </div>
 
-      <div className="flex gap-2 border-b border-slate-200 pb-2">
+      <div className="flex gap-2 border-b border-[var(--color-border-primary)] pb-2">
         <button 
           onClick={() => setActiveTab('accounts')}
-          className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'accounts' ? 'bg-[#7A1B28] text-white' : 'text-slate-500 hover:text-slate-900'}`}
+          className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'accounts' ? 'bg-[#7A1B28] text-white' : 'text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]'}`}
         >
           <Landmark className="w-4 h-4" /> Cuentas
         </button>
         <button 
           onClick={() => setActiveTab('mayor')}
-          className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'mayor' ? 'bg-[#7A1B28] text-white' : 'text-slate-500 hover:text-slate-900'}`}
+          className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'mayor' ? 'bg-[#7A1B28] text-white' : 'text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]'}`}
         >
           <List className="w-4 h-4" /> Mayor (Movimientos)
         </button>
         <button 
           onClick={() => setActiveTab('cc')}
-          className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'cc' ? 'bg-[#7A1B28] text-white' : 'text-slate-500 hover:text-slate-900'}`}
+          className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'cc' ? 'bg-[#7A1B28] text-white' : 'text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]'}`}
         >
           <List className="w-4 h-4" /> Cuentas Corrientes
         </button>
         <button 
           onClick={() => setActiveTab('cajas')}
-          className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'cajas' ? 'bg-[#7A1B28] text-white' : 'text-slate-500 hover:text-slate-900'}`}
+          className={`px-4 py-2 text-sm font-bold tracking-wider uppercase flex items-center gap-2 rounded-t-lg transition-colors ${activeTab === 'cajas' ? 'bg-[#7A1B28] text-white' : 'text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]'}`}
         >
           <List className="w-4 h-4" /> Historial de Cajas
         </button>
@@ -254,20 +254,20 @@ export const TreasuryView: React.FC = () => {
       {activeTab === 'accounts' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-fade-in">
           {accounts.map(acc => (
-            <div key={acc.id} className="glass-card p-5 flex flex-col gap-2 border-slate-200">
+            <div key={acc.id} className="glass-card p-5 flex flex-col gap-2 border-[var(--color-border-primary)]">
               <div className="flex justify-between items-start">
                 <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
                   acc.type === 'cash' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-indigo-50 text-indigo-700 border border-indigo-200'
                 }`}>
                   {acc.type === 'cash' ? 'caja' : 'banco'}
                 </span>
-                <span className="text-slate-500 font-mono text-[10px]">{acc.currency}</span>
+                <span className="text-[var(--color-text-muted)] font-mono text-[10px]">{acc.currency}</span>
               </div>
-              <h4 className="text-slate-900 font-display text-xl">{acc.name}</h4>
-              <p className="text-slate-500 text-xs font-mono">Sin descripción</p>
+              <h4 className="text-[var(--color-text-primary)] font-display text-xl">{acc.name}</h4>
+              <p className="text-[var(--color-text-muted)] text-xs font-mono">Sin descripción</p>
               
-              <div className="mt-4 pt-4 border-t border-slate-200">
-                <span className="text-[10px] text-slate-500 uppercase">Saldo Actual</span>
+              <div className="mt-4 pt-4 border-t border-[var(--color-border-primary)]">
+                <span className="text-[10px] text-[var(--color-text-muted)] uppercase">Saldo Actual</span>
                 <div className="text-2xl font-mono text-emerald-700">
                   <CurrencyDisplay amount={acc.balance} size="md" />
                 </div>
@@ -279,18 +279,18 @@ export const TreasuryView: React.FC = () => {
 
       {activeTab === 'mayor' && (
         <div className="flex flex-col gap-4 animate-fade-in">
-          <div className="glass-card p-4 border-slate-200 flex flex-col md:flex-row items-end gap-4 bg-slate-50">
+          <div className="glass-card p-4 border-[var(--color-border-primary)] flex flex-col md:flex-row items-end gap-4 bg-[var(--color-bg-primary)]">
             <div className="w-full md:w-auto">
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Desde Fecha</label>
-              <input type="date" value={mayorStartDate} onChange={e => setMayorStartDate(e.target.value)} className="w-full border-2 border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-700 focus:border-[#7A1B28] outline-none" />
+              <label className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider block mb-1">Desde Fecha</label>
+              <input type="date" value={mayorStartDate} onChange={e => setMayorStartDate(e.target.value)} className="w-full border-2 border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-secondary)] focus:border-[#7A1B28] outline-none" />
             </div>
             <div className="w-full md:w-auto">
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Hasta Fecha</label>
-              <input type="date" value={mayorEndDate} onChange={e => setMayorEndDate(e.target.value)} className="w-full border-2 border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-700 focus:border-[#7A1B28] outline-none" />
+              <label className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider block mb-1">Hasta Fecha</label>
+              <input type="date" value={mayorEndDate} onChange={e => setMayorEndDate(e.target.value)} className="w-full border-2 border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-secondary)] focus:border-[#7A1B28] outline-none" />
             </div>
             <div className="w-full md:w-1/3">
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Cuenta</label>
-              <select value={mayorAccountId} onChange={e => setMayorAccountId(e.target.value)} className="w-full border-2 border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-700 font-bold focus:border-[#7A1B28] outline-none">
+              <label className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider block mb-1">Cuenta</label>
+              <select value={mayorAccountId} onChange={e => setMayorAccountId(e.target.value)} className="w-full border-2 border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-secondary)] font-bold focus:border-[#7A1B28] outline-none">
                 <option value="">-- TODAS LAS CUENTAS --</option>
                 {accounts.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
               </select>
@@ -300,9 +300,9 @@ export const TreasuryView: React.FC = () => {
             </button>
           </div>
 
-          <div className="glass-card p-0 overflow-hidden border-slate-200">
-            <table className="w-full text-left text-sm text-slate-700">
-              <thead className="bg-slate-100 font-display text-sm tracking-wider uppercase text-slate-600 border-b border-slate-200">
+          <div className="glass-card p-0 overflow-hidden border-[var(--color-border-primary)]">
+            <table className="w-full text-left text-sm text-[var(--color-text-secondary)]">
+              <thead className="bg-slate-100 font-display text-sm tracking-wider uppercase text-[var(--color-text-secondary)] border-b border-[var(--color-border-primary)]">
                 <tr>
                   <th className="p-4">FECHA</th>
                   <th className="p-4">CUENTA</th>
@@ -315,14 +315,14 @@ export const TreasuryView: React.FC = () => {
                 {movements.map(m => {
                   const isIncome = m.type === 'income' || m.type === 'internal_transfer_in';
                   return (
-                    <tr key={m.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="p-4 font-mono text-xs text-slate-500">
+                    <tr key={m.id} className="hover:bg-[var(--color-bg-primary)] transition-colors">
+                      <td className="p-4 font-mono text-xs text-[var(--color-text-muted)]">
                         {new Date(m.created_at || '').toLocaleString()}
                       </td>
-                      <td className="p-4 font-bold text-slate-900">
+                      <td className="p-4 font-bold text-[var(--color-text-primary)]">
                         {m.treasury_accounts?.name || m.treasury_account_id}
                       </td>
-                      <td className="p-4 text-xs font-mono uppercase text-slate-500">
+                      <td className="p-4 text-xs font-mono uppercase text-[var(--color-text-muted)]">
                         {m.payment_method?.replace('_', ' ') || ''} - {m.source_type}
                       </td>
                       <td className={`p-4 text-right font-mono font-bold ${isIncome ? 'text-emerald-700' : 'text-slate-300'}`}>
@@ -336,7 +336,7 @@ export const TreasuryView: React.FC = () => {
                 })}
                 {movements.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="p-8 text-center text-slate-500">
+                    <td colSpan={5} className="p-8 text-center text-[var(--color-text-muted)]">
                       No hay movimientos registrados para estos filtros.
                     </td>
                   </tr>
@@ -349,12 +349,12 @@ export const TreasuryView: React.FC = () => {
 
       {activeTab === 'cc' && (
         <div className="flex flex-col gap-4 animate-fade-in">
-          <div className="glass-card p-4 border-slate-200 flex flex-col sm:flex-row items-center gap-4">
-            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Seleccionar Cliente:</label>
+          <div className="glass-card p-4 border-[var(--color-border-primary)] flex flex-col sm:flex-row items-center gap-4">
+            <label className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider whitespace-nowrap">Seleccionar Cliente:</label>
             <select 
               value={selectedCustomerId}
               onChange={e => setSelectedCustomerId(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-sm text-slate-900 font-bold focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none"
+              className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg px-4 py-2 text-sm text-[var(--color-text-primary)] font-bold focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none"
             >
               <option value="">-- Todos los deudores --</option>
               {customers.map(c => (
@@ -364,9 +364,9 @@ export const TreasuryView: React.FC = () => {
           </div>
 
           {!selectedCustomerId ? (
-            <div className="glass-card p-0 overflow-hidden border-slate-200">
-              <table className="w-full text-left text-sm text-slate-700">
-                <thead className="bg-slate-100 font-display text-sm tracking-wider uppercase text-slate-600 border-b border-slate-200">
+            <div className="glass-card p-0 overflow-hidden border-[var(--color-border-primary)]">
+              <table className="w-full text-left text-sm text-[var(--color-text-secondary)]">
+                <thead className="bg-slate-100 font-display text-sm tracking-wider uppercase text-[var(--color-text-secondary)] border-b border-[var(--color-border-primary)]">
                   <tr>
                     <th className="p-4">CLIENTE</th>
                     <th className="p-4">DOCUMENTO PENDIENTE</th>
@@ -376,12 +376,12 @@ export const TreasuryView: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-200">
                   {debtors.flatMap(d => d.pendingInvoices.map(inv => (
-                    <tr key={inv.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="p-4 font-bold text-slate-900">
+                    <tr key={inv.id} className="hover:bg-[var(--color-bg-primary)] transition-colors">
+                      <td className="p-4 font-bold text-[var(--color-text-primary)]">
                         {d.customer?.full_name || d.customer?.fullName || 'Cliente'}
                       </td>
-                      <td className="p-4 font-mono text-xs text-slate-500 flex flex-col">
-                        <span className="font-bold text-slate-700">{inv.document_number}</span>
+                      <td className="p-4 font-mono text-xs text-[var(--color-text-muted)] flex flex-col">
+                        <span className="font-bold text-[var(--color-text-secondary)]">{inv.document_number}</span>
                         <span>Total Orig: ${inv.total_amount}</span>
                       </td>
                       <td className="p-4 text-right font-mono font-bold text-rose-700">
@@ -400,7 +400,7 @@ export const TreasuryView: React.FC = () => {
                   )))}
                   {debtors.length === 0 && (
                     <tr>
-                      <td colSpan={4} className="p-8 text-center text-slate-500">
+                      <td colSpan={4} className="p-8 text-center text-[var(--color-text-muted)]">
                         No hay tickets de cuenta corriente pendientes.
                       </td>
                     </tr>
@@ -411,26 +411,26 @@ export const TreasuryView: React.FC = () => {
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {/* Panel 1: Pending Invoices for selected customer */}
-              <div className="glass-card p-0 overflow-hidden border-slate-200">
-                <div className="bg-slate-50 p-4 border-b border-slate-200 flex items-center justify-between">
-                   <h3 className="font-bold text-slate-800 text-sm flex items-center gap-2">
+              <div className="glass-card p-0 overflow-hidden border-[var(--color-border-primary)]">
+                <div className="bg-[var(--color-bg-primary)] p-4 border-b border-[var(--color-border-primary)] flex items-center justify-between">
+                   <h3 className="font-bold text-[var(--color-text-primary)] text-sm flex items-center gap-2">
                      <List className="w-4 h-4 text-[#7A1B28]" />
                      Tickets Pendientes de Pago
                    </h3>
                 </div>
-                <table className="w-full text-left text-sm text-slate-700">
+                <table className="w-full text-left text-sm text-[var(--color-text-secondary)]">
                   <tbody className="divide-y divide-slate-200">
                     {(() => {
                       const customerDebts = debtors.find(d => d.customer?.id === selectedCustomerId || d.customer?.customer_id === selectedCustomerId);
                       if (!customerDebts || customerDebts.pendingInvoices.length === 0) {
                         return (
-                          <tr><td colSpan={3} className="p-6 text-center text-slate-500">No tiene tickets pendientes de pago.</td></tr>
+                          <tr><td colSpan={3} className="p-6 text-center text-[var(--color-text-muted)]">No tiene tickets pendientes de pago.</td></tr>
                         );
                       }
                       return customerDebts.pendingInvoices.map(inv => (
-                        <tr key={inv.id} className="hover:bg-slate-50 transition-colors">
-                          <td className="p-4 font-mono text-xs text-slate-500 flex flex-col">
-                            <span className="font-bold text-slate-700">{inv.document_number}</span>
+                        <tr key={inv.id} className="hover:bg-[var(--color-bg-primary)] transition-colors">
+                          <td className="p-4 font-mono text-xs text-[var(--color-text-muted)] flex flex-col">
+                            <span className="font-bold text-[var(--color-text-secondary)]">{inv.document_number}</span>
                             <span>Orig: ${inv.total_amount}</span>
                           </td>
                           <td className="p-4 text-right font-mono font-bold text-rose-700">
@@ -453,19 +453,19 @@ export const TreasuryView: React.FC = () => {
               </div>
 
               {/* Panel 2: Ledger (Movements) */}
-              <div className="glass-card p-0 overflow-hidden border-slate-200">
-                <div className="bg-slate-50 p-4 border-b border-slate-200 flex justify-between items-center">
-                   <h3 className="font-bold text-slate-800 text-sm flex items-center gap-2">
+              <div className="glass-card p-0 overflow-hidden border-[var(--color-border-primary)]">
+                <div className="bg-[var(--color-bg-primary)] p-4 border-b border-[var(--color-border-primary)] flex justify-between items-center">
+                   <h3 className="font-bold text-[var(--color-text-primary)] text-sm flex items-center gap-2">
                      <Landmark className="w-4 h-4 text-[#7A1B28]" />
                      Historial de Cuenta (Mayor)
                    </h3>
-                   <div className="text-[10px] font-mono text-slate-500 bg-white px-2 py-1 rounded border border-slate-200">
+                   <div className="text-[10px] font-mono text-[var(--color-text-muted)] bg-[var(--color-bg-surface)] px-2 py-1 rounded border border-[var(--color-border-primary)]">
                      Saldo a Favor / Deuda Actual
                    </div>
                 </div>
                 <div className="max-h-[400px] overflow-y-auto">
-                  <table className="w-full text-left text-xs text-slate-700">
-                    <thead className="bg-slate-100 font-display text-[10px] tracking-wider uppercase text-slate-600 border-b border-slate-200 sticky top-0">
+                  <table className="w-full text-left text-xs text-[var(--color-text-secondary)]">
+                    <thead className="bg-slate-100 font-display text-[10px] tracking-wider uppercase text-[var(--color-text-secondary)] border-b border-[var(--color-border-primary)] sticky top-0">
                       <tr>
                         <th className="p-3">FECHA</th>
                         <th className="p-3">REFERENCIA</th>
@@ -474,14 +474,14 @@ export const TreasuryView: React.FC = () => {
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {ccMovements.map(m => (
-                        <tr key={m.id} className="hover:bg-slate-50 transition-colors">
-                          <td className="p-3 font-mono text-slate-500">{new Date(m.created_at || '').toLocaleDateString('es-VE')}</td>
+                        <tr key={m.id} className="hover:bg-[var(--color-bg-primary)] transition-colors">
+                          <td className="p-3 font-mono text-[var(--color-text-muted)]">{new Date(m.created_at || '').toLocaleDateString('es-VE')}</td>
                           <td className="p-3">
                             <div className="flex flex-col">
-                               <span className={`font-bold ${m.type === 'debit' ? 'text-slate-700' : 'text-emerald-700'}`}>
+                               <span className={`font-bold ${m.type === 'debit' ? 'text-[var(--color-text-secondary)]' : 'text-emerald-700'}`}>
                                  {m.type === 'debit' ? 'TICKET A CC (Deuda)' : 'PAGO/NC (Abono)'}
                                </span>
-                               <span className="text-[10px] uppercase text-slate-400">{m.source_type}</span>
+                               <span className="text-[10px] uppercase text-[var(--color-text-muted)]">{m.source_type}</span>
                             </div>
                           </td>
                           <td className={`p-3 text-right font-mono font-bold text-sm ${m.type === 'debit' ? 'text-rose-600' : 'text-emerald-600'}`}>
@@ -490,7 +490,7 @@ export const TreasuryView: React.FC = () => {
                         </tr>
                       ))}
                       {ccMovements.length === 0 && (
-                        <tr><td colSpan={3} className="p-6 text-center text-slate-500">Sin movimientos registrados.</td></tr>
+                        <tr><td colSpan={3} className="p-6 text-center text-[var(--color-text-muted)]">Sin movimientos registrados.</td></tr>
                       )}
                     </tbody>
                   </table>
@@ -503,28 +503,28 @@ export const TreasuryView: React.FC = () => {
 
       {/* Tab: Cajas (Cash Sessions) */}
       {activeTab === 'cajas' && (
-        <div className="glass-card p-0 overflow-hidden animate-fade-in border-slate-200">
-          <table className="w-full text-left text-sm text-slate-700">
-            <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider">
+        <div className="glass-card p-0 overflow-hidden animate-fade-in border-[var(--color-border-primary)]">
+          <table className="w-full text-left text-sm text-[var(--color-text-secondary)]">
+            <thead className="bg-[var(--color-bg-primary)] text-[var(--color-text-muted)] font-bold uppercase tracking-wider">
               <tr>
-                <th className="p-4 border-b border-slate-200">Apertura</th>
-                <th className="p-4 border-b border-slate-200">Cierre</th>
-                <th className="p-4 border-b border-slate-200">Estado</th>
-                <th className="p-4 border-b border-slate-200 text-right">Faltantes/Sobrantes</th>
+                <th className="p-4 border-b border-[var(--color-border-primary)]">Apertura</th>
+                <th className="p-4 border-b border-[var(--color-border-primary)]">Cierre</th>
+                <th className="p-4 border-b border-[var(--color-border-primary)]">Estado</th>
+                <th className="p-4 border-b border-[var(--color-border-primary)] text-right">Faltantes/Sobrantes</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {cashSessions.map(session => {
                 const hasDiffs = session.differences && Object.values(session.differences).some(d => d !== 0);
                 return (
-                <tr key={session.id} className="hover:bg-slate-50/50 transition-colors">
+                <tr key={session.id} className="hover:bg-[var(--color-bg-primary)]/50 transition-colors">
                   <td className="p-4 font-mono">{new Date(session.opened_at).toLocaleString('es-VE')}</td>
                   <td className="p-4 font-mono">{session.closed_at ? new Date(session.closed_at).toLocaleString('es-VE') : '-'}</td>
                   <td className="p-4">
                     {session.status === 'open' && <span className="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded font-bold">ABIERTA</span>}
                     {session.status === 'counting' && <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded font-bold">EN ARQUEO</span>}
-                    {session.status === 'closed' && <span className="bg-slate-100 text-slate-800 text-xs px-2 py-1 rounded font-bold">CERRADA</span>}
-                    {session.status === 'reconciled' && <span className="bg-slate-200 text-slate-500 text-xs px-2 py-1 rounded font-bold">CONCILIADA</span>}
+                    {session.status === 'closed' && <span className="bg-slate-100 text-[var(--color-text-primary)] text-xs px-2 py-1 rounded font-bold">CERRADA</span>}
+                    {session.status === 'reconciled' && <span className="bg-slate-200 text-[var(--color-text-muted)] text-xs px-2 py-1 rounded font-bold">CONCILIADA</span>}
                   </td>
                   <td className="p-4 text-right">
                     {session.status === 'closed' || session.status === 'reconciled' ? (
@@ -540,14 +540,14 @@ export const TreasuryView: React.FC = () => {
                         <span className="text-emerald-600 font-bold text-xs">OK (Sin dif)</span>
                       )
                     ) : (
-                      <span className="text-slate-400 text-xs">-</span>
+                      <span className="text-[var(--color-text-muted)] text-xs">-</span>
                     )}
                   </td>
                 </tr>
               )})}
               {cashSessions.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="p-8 text-center text-slate-500 font-mono">
+                  <td colSpan={4} className="p-8 text-center text-[var(--color-text-muted)] font-mono">
                     No hay sesiones de caja registradas.
                   </td>
                 </tr>
@@ -560,10 +560,10 @@ export const TreasuryView: React.FC = () => {
       {/* MODAL COBRANZA (REC004) */}
       {isColModalOpen && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
-            <div className="bg-slate-50 border-b border-slate-200 p-4 flex justify-between items-center">
-              <h3 className="font-display font-bold text-lg text-slate-900">Registrar Cobranza</h3>
-              <button onClick={() => setIsColModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+          <div className="bg-[var(--color-bg-surface)] rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="bg-[var(--color-bg-primary)] border-b border-[var(--color-border-primary)] p-4 flex justify-between items-center">
+              <h3 className="font-display font-bold text-lg text-[var(--color-text-primary)]">Registrar Cobranza</h3>
+              <button onClick={() => setIsColModalOpen(false)} className="text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -574,7 +574,7 @@ export const TreasuryView: React.FC = () => {
               </div>
               
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Monto a Cobrar ($)</label>
+                <label className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-1 block">Monto a Cobrar ($)</label>
                 <input
                   type="number"
                   step="0.01"
@@ -582,17 +582,17 @@ export const TreasuryView: React.FC = () => {
                   max={colDebt}
                   value={colAmount}
                   onChange={e => setColAmount(e.target.value ? Number(e.target.value) : '')}
-                  className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 text-lg font-mono font-bold text-slate-900 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none"
+                  className="w-full border-2 border-[var(--color-border-primary)] rounded-lg px-4 py-3 text-lg font-mono font-bold text-[var(--color-text-primary)] focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 outline-none"
                   required
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Método de Pago</label>
+                <label className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-1 block">Método de Pago</label>
                 <select
                   value={colMethod}
                   onChange={e => setColMethod(e.target.value)}
-                  className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 text-sm font-bold text-slate-700 focus:border-emerald-500 outline-none"
+                  className="w-full border-2 border-[var(--color-border-primary)] rounded-lg px-4 py-3 text-sm font-bold text-[var(--color-text-secondary)] focus:border-emerald-500 outline-none"
                 >
                   <option value="efectivo">Efectivo</option>
                   <option value="punto">Punto de Venta</option>
@@ -603,11 +603,11 @@ export const TreasuryView: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Cuenta Destino</label>
+                <label className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-1 block">Cuenta Destino</label>
                 <select
                   value={colAccountId}
                   onChange={e => setColAccountId(e.target.value)}
-                  className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 text-sm font-bold text-slate-700 focus:border-emerald-500 outline-none"
+                  className="w-full border-2 border-[var(--color-border-primary)] rounded-lg px-4 py-3 text-sm font-bold text-[var(--color-text-secondary)] focus:border-emerald-500 outline-none"
                   required
                 >
                   {accounts.map(a => (
@@ -627,10 +627,10 @@ export const TreasuryView: React.FC = () => {
       {/* MODAL NOTA DE CRÉDITO (NC003) */}
       {isNCModalOpen && ncDoc && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
-            <div className="bg-slate-50 border-b border-slate-200 p-4 flex justify-between items-center">
-              <h3 className="font-display font-bold text-lg text-slate-900">Emitir Nota de Crédito</h3>
-              <button onClick={() => setIsNCModalOpen(false)} className="text-slate-400 hover:text-slate-600">
+          <div className="bg-[var(--color-bg-surface)] rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="bg-[var(--color-bg-primary)] border-b border-[var(--color-border-primary)] p-4 flex justify-between items-center">
+              <h3 className="font-display font-bold text-lg text-[var(--color-text-primary)]">Emitir Nota de Crédito</h3>
+              <button onClick={() => setIsNCModalOpen(false)} className="text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -641,7 +641,7 @@ export const TreasuryView: React.FC = () => {
               </div>
               
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Monto a Anular/Reembolsar ($)</label>
+                <label className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-1 block">Monto a Anular/Reembolsar ($)</label>
                 <input
                   type="number"
                   step="0.01"
@@ -649,19 +649,19 @@ export const TreasuryView: React.FC = () => {
                   max={(Number(ncDoc.total_amount) - Number(ncDoc.paid_amount || 0) - Number(ncDoc.annulled_amount || 0))}
                   value={ncAmount}
                   onChange={e => setNcAmount(e.target.value ? Number(e.target.value) : '')}
-                  className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 text-lg font-mono font-bold text-slate-900 focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 outline-none"
+                  className="w-full border-2 border-[var(--color-border-primary)] rounded-lg px-4 py-3 text-lg font-mono font-bold text-[var(--color-text-primary)] focus:border-rose-500 focus:ring-4 focus:ring-rose-500/10 outline-none"
                   required
                 />
               </div>
 
               {ncDoc.payment_condition === 'CONTADO' && (
                 <div>
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Cuenta Origen (Para Reembolso)</label>
-                  <p className="text-[10px] text-slate-500 mb-2">Este ticket es de CONTADO, se debe extraer dinero de una caja/banco para devolver al cliente.</p>
+                  <label className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-1 block">Cuenta Origen (Para Reembolso)</label>
+                  <p className="text-[10px] text-[var(--color-text-muted)] mb-2">Este ticket es de CONTADO, se debe extraer dinero de una caja/banco para devolver al cliente.</p>
                   <select
                     value={ncRefundAccountId}
                     onChange={e => setNcRefundAccountId(e.target.value)}
-                    className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 text-sm font-bold text-slate-700 focus:border-rose-500 outline-none"
+                    className="w-full border-2 border-[var(--color-border-primary)] rounded-lg px-4 py-3 text-sm font-bold text-[var(--color-text-secondary)] focus:border-rose-500 outline-none"
                     required
                   >
                     {accounts.map(a => (
@@ -671,8 +671,8 @@ export const TreasuryView: React.FC = () => {
                 </div>
               )}
               {ncDoc.payment_condition === 'CUENTA_CORRIENTE' && (
-                <div className="bg-slate-100 p-3 rounded-lg border border-slate-200">
-                  <p className="text-xs text-slate-600">Este ticket es de CC. La Nota de Crédito solo disminuirá el saldo de la deuda del cliente. No se extrae dinero de caja.</p>
+                <div className="bg-slate-100 p-3 rounded-lg border border-[var(--color-border-primary)]">
+                  <p className="text-xs text-[var(--color-text-secondary)]">Este ticket es de CC. La Nota de Crédito solo disminuirá el saldo de la deuda del cliente. No se extrae dinero de caja.</p>
                 </div>
               )}
 

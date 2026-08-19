@@ -260,7 +260,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
   };
 
   if (isLoadingSession) {
-    return <div className="p-8 text-slate-900 font-mono flex items-center gap-3"><RefreshCw className="w-5 h-5 animate-spin" /> Cargando estado de caja...</div>;
+    return <div className="p-8 text-[var(--color-text-primary)] font-mono flex items-center gap-3"><RefreshCw className="w-5 h-5 animate-spin" /> Cargando estado de caja...</div>;
   }
 
   return (
@@ -269,10 +269,10 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="font-display text-3xl text-slate-900 tracking-wide flex items-center gap-2">
+          <h2 className="font-display text-3xl text-[var(--color-text-primary)] tracking-wide flex items-center gap-2">
             SESIÓN DE CAJA <DollarSign className="w-6 h-6 text-[#7A1B28]" />
           </h2>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-[var(--color-text-muted)]">
             Apertura/Cierre de sesión y visualización de movimientos monetarios de la jornada.
           </p>
         </div>
@@ -292,7 +292,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
           </div>
         ) : (
           <div className="flex items-center gap-4">
-            <span className="px-4 py-2 bg-slate-100 text-slate-500 font-bold rounded-lg uppercase tracking-wider text-sm border border-slate-300 flex items-center gap-2 w-max">
+            <span className="px-4 py-2 bg-slate-100 text-[var(--color-text-muted)] font-bold rounded-lg uppercase tracking-wider text-sm border border-[var(--color-border-primary)] flex items-center gap-2 w-max">
               <Lock className="w-4 h-4" /> Caja Cerrada
             </span>
             <button onClick={handleOpenRegister} disabled={isProcessing} className="bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-2 px-6 rounded-lg transition-colors uppercase tracking-widest text-sm disabled:opacity-50">
@@ -304,40 +304,40 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
 
       {session && (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-2">
-          <div className="glass-card p-4 border-l-4 border-l-emerald-500 rounded-xl bg-white shadow-sm">
-            <p className="text-xs text-slate-500 font-bold mb-1 uppercase tracking-wider">Total Ingresos</p>
+          <div className="glass-card p-4 border-l-4 border-l-emerald-500 rounded-xl bg-[var(--color-bg-surface)] shadow-sm">
+            <p className="text-xs text-[var(--color-text-muted)] font-bold mb-1 uppercase tracking-wider">Total Ingresos</p>
             <p className="text-xl font-display text-emerald-600">${totalIncome.toFixed(2)}</p>
           </div>
-          <div className="glass-card p-4 border-l-4 border-l-rose-500 rounded-xl bg-white shadow-sm">
-            <p className="text-xs text-slate-500 font-bold mb-1 uppercase tracking-wider">Total Egresos</p>
+          <div className="glass-card p-4 border-l-4 border-l-rose-500 rounded-xl bg-[var(--color-bg-surface)] shadow-sm">
+            <p className="text-xs text-[var(--color-text-muted)] font-bold mb-1 uppercase tracking-wider">Total Egresos</p>
             <p className="text-xl font-display text-rose-600">${totalExpense.toFixed(2)}</p>
           </div>
-          <div className="glass-card p-4 border-l-4 border-l-[#7A1B28] rounded-xl bg-slate-50 shadow-sm md:col-span-2">
-            <p className="text-xs text-slate-500 font-bold mb-1 uppercase tracking-wider">Saldo Actual (Total)</p>
-            <p className="text-2xl font-display font-bold text-slate-900">${currentBalance.toFixed(2)}</p>
+          <div className="glass-card p-4 border-l-4 border-l-[#7A1B28] rounded-xl bg-[var(--color-bg-primary)] shadow-sm md:col-span-2">
+            <p className="text-xs text-[var(--color-text-muted)] font-bold mb-1 uppercase tracking-wider">Saldo Actual (Total)</p>
+            <p className="text-2xl font-display font-bold text-[var(--color-text-primary)]">${currentBalance.toFixed(2)}</p>
           </div>
-          <div className="glass-card p-3 border border-slate-200 rounded-xl bg-white flex flex-col justify-center">
-            <p className="text-[10px] text-slate-500 font-bold uppercase">Efectivo USD</p>
+          <div className="glass-card p-3 border border-[var(--color-border-primary)] rounded-xl bg-[var(--color-bg-surface)] flex flex-col justify-center">
+            <p className="text-[10px] text-[var(--color-text-muted)] font-bold uppercase">Efectivo USD</p>
             <p className="text-sm font-mono font-bold">${getMethodTotal('efectivo').toFixed(2)}</p>
           </div>
-          <div className="glass-card p-3 border border-slate-200 rounded-xl bg-white flex flex-col justify-center">
-             <p className="text-[10px] text-slate-500 font-bold uppercase">Zelle</p>
+          <div className="glass-card p-3 border border-[var(--color-border-primary)] rounded-xl bg-[var(--color-bg-surface)] flex flex-col justify-center">
+             <p className="text-[10px] text-[var(--color-text-muted)] font-bold uppercase">Zelle</p>
              <p className="text-sm font-mono font-bold">${getMethodTotal('zelle').toFixed(2)}</p>
           </div>
-          <div className="glass-card p-3 border border-slate-200 rounded-xl bg-white flex flex-col justify-center">
-             <p className="text-[10px] text-slate-500 font-bold uppercase">Pago Móvil</p>
+          <div className="glass-card p-3 border border-[var(--color-border-primary)] rounded-xl bg-[var(--color-bg-surface)] flex flex-col justify-center">
+             <p className="text-[10px] text-[var(--color-text-muted)] font-bold uppercase">Pago Móvil</p>
              <p className="text-sm font-mono font-bold">${getMethodTotal('pago_movil').toFixed(2)}</p>
           </div>
-          <div className="glass-card p-3 border border-slate-200 rounded-xl bg-white flex flex-col justify-center">
-             <p className="text-[10px] text-slate-500 font-bold uppercase">Punto / Tarjeta</p>
+          <div className="glass-card p-3 border border-[var(--color-border-primary)] rounded-xl bg-[var(--color-bg-surface)] flex flex-col justify-center">
+             <p className="text-[10px] text-[var(--color-text-muted)] font-bold uppercase">Punto / Tarjeta</p>
              <p className="text-sm font-mono font-bold">${getMethodTotal('tarjeta').toFixed(2)}</p>
           </div>
-          <div className="glass-card p-3 border border-slate-200 rounded-xl bg-white flex flex-col justify-center">
-             <p className="text-[10px] text-slate-500 font-bold uppercase">Transferencia</p>
+          <div className="glass-card p-3 border border-[var(--color-border-primary)] rounded-xl bg-[var(--color-bg-surface)] flex flex-col justify-center">
+             <p className="text-[10px] text-[var(--color-text-muted)] font-bold uppercase">Transferencia</p>
              <p className="text-sm font-mono font-bold">${getMethodTotal('transferencia').toFixed(2)}</p>
           </div>
-          <div className="glass-card p-3 border border-slate-200 rounded-xl bg-white flex flex-col justify-center">
-             <p className="text-[10px] text-slate-500 font-bold uppercase">Binance</p>
+          <div className="glass-card p-3 border border-[var(--color-border-primary)] rounded-xl bg-[var(--color-bg-surface)] flex flex-col justify-center">
+             <p className="text-[10px] text-[var(--color-text-muted)] font-bold uppercase">Binance</p>
              <p className="text-sm font-mono font-bold">${getMethodTotal('binance').toFixed(2)}</p>
           </div>
         </div>
@@ -347,16 +347,16 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column: Actions */}
         <div className="flex flex-col gap-6 lg:col-span-1">
-          <div className="glass-card p-6 flex flex-col gap-4 relative overflow-hidden border-slate-200 rounded-2xl shadow-sm bg-white">
-            <h3 className="font-display text-xl text-slate-900 flex items-center gap-2 uppercase">
+          <div className="glass-card p-6 flex flex-col gap-4 relative overflow-hidden border-[var(--color-border-primary)] rounded-2xl shadow-sm bg-[var(--color-bg-surface)]">
+            <h3 className="font-display text-xl text-[var(--color-text-primary)] flex items-center gap-2 uppercase">
               <HandCoins className="w-5 h-5 text-emerald-600" /> Nueva Operación
             </h3>
 
             {!session ? (
-              <div className="absolute inset-0 bg-white/95 backdrop-blur-sm z-10 flex flex-col items-center justify-center p-6 text-center">
+              <div className="absolute inset-0 bg-[var(--color-bg-surface)]/95 backdrop-blur-sm z-10 flex flex-col items-center justify-center p-6 text-center">
                 <Lock className="w-12 h-12 text-slate-300 mb-4" />
-                <h4 className="text-slate-900 font-display text-xl mb-2">CAJA CERRADA</h4>
-                <p className="text-xs text-slate-500 mb-6">Debes abrir una sesión de caja para procesar comprobantes.</p>
+                <h4 className="text-[var(--color-text-primary)] font-display text-xl mb-2">CAJA CERRADA</h4>
+                <p className="text-xs text-[var(--color-text-muted)] mb-6">Debes abrir una sesión de caja para procesar comprobantes.</p>
                 
                 <button onClick={handleOpenRegister} disabled={isProcessing} className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3 rounded-lg transition-colors uppercase tracking-widest text-sm disabled:opacity-50">
                   {isProcessing ? 'APERTURANDO...' : 'APERTURAR CAJA'}
@@ -367,14 +367,14 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
             <form onSubmit={handleSubmitPayment} className="flex flex-col gap-4">
               
               <div>
-                <label className="text-xs text-slate-500 mb-1 block font-bold uppercase">Tipo de Comprobante</label>
+                <label className="text-xs text-[var(--color-text-muted)] mb-1 block font-bold uppercase">Tipo de Comprobante</label>
                 <select
                   value={voucherType}
                   onChange={(e) => {
                      setVoucherType(e.target.value);
                      if(e.target.value === 'nota_credito') setPaymentCondition('contado'); 
                   }}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all"
+                  className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all"
                 >
                   <option value="venta">Venta / Ingreso</option>
                   <option value="nota_credito">Nota de Crédito / Devolución</option>
@@ -389,12 +389,12 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
               )}
 
               <div>
-                <label className="text-xs text-slate-500 mb-1 block font-bold">Cliente</label>
+                <label className="text-xs text-[var(--color-text-muted)] mb-1 block font-bold">Cliente</label>
                 <select
                   value={selectedCustomerId}
                   onChange={(e) => setSelectedCustomerId(e.target.value)}
                   disabled={!!selectedOdsId || !!selectedOriginalDocId}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all disabled:opacity-50"
+                  className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all disabled:opacity-50"
                 >
                   <option value="">Seleccione un cliente...</option>
                   {customers.map((c) => (
@@ -407,11 +407,11 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
 
               {voucherType === 'venta' && (
                 <div>
-                  <label className="text-[10px] text-slate-400 mb-1 block font-bold uppercase">Vincular a ODS (Opcional)</label>
+                  <label className="text-[10px] text-[var(--color-text-muted)] mb-1 block font-bold uppercase">Vincular a ODS (Opcional)</label>
                   <select
                     value={selectedOdsId}
                     onChange={(e) => setSelectedOdsId(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all"
+                    className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all"
                   >
                     <option value="">Venta Independiente (Ninguna ODS)</option>
                     {orders.filter(o => o.status !== 'archived' && !commercialDocs.some(d => d.order_id === o.id) && (!selectedCustomerId || o.customerId === selectedCustomerId)).map(o => {
@@ -432,7 +432,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                   <select
                     value={selectedOriginalDocId}
                     onChange={(e) => setSelectedOriginalDocId(e.target.value)}
-                    className="w-full bg-rose-50 border border-rose-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none transition-all"
+                    className="w-full bg-rose-50 border border-rose-200 rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none transition-all"
                   >
                     <option value="">Seleccione comprobante original...</option>
                     {commercialDocs.filter(doc => !selectedCustomerId || doc.customer_id === selectedCustomerId).map(doc => {
@@ -448,11 +448,11 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
               )}
 
               <div>
-                <label className="text-xs text-slate-500 mb-1 block font-bold">Condición de Pago</label>
+                <label className="text-xs text-[var(--color-text-muted)] mb-1 block font-bold">Condición de Pago</label>
                 <select
                   value={paymentCondition}
                   onChange={(e) => setPaymentCondition(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all"
+                  className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all"
                 >
                   <option value="contado">Contado</option>
                   <option value="cuenta_corriente">Cuenta Corriente</option>
@@ -460,10 +460,10 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
               </div>
 
               <div>
-                <label className="text-xs text-slate-500 mb-1 block font-bold">Monto ($)</label>
+                <label className="text-xs text-[var(--color-text-muted)] mb-1 block font-bold">Monto ($)</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <DollarSign className="h-4 w-4 text-slate-400" />
+                    <DollarSign className="h-4 w-4 text-[var(--color-text-muted)]" />
                   </div>
                   <input
                     type="number"
@@ -472,7 +472,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                     value={paymentAmount}
                     onChange={(e) => setPaymentAmount(e.target.value as any)}
                     readOnly={!!selectedOdsId}
-                    className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all read-only:opacity-50"
+                    className="w-full pl-9 pr-3 py-2 bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg text-sm text-[var(--color-text-primary)] focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all read-only:opacity-50"
                     placeholder="0.00"
                   />
                 </div>
@@ -480,11 +480,11 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
 
               {paymentCondition === 'contado' && (
                 <div>
-                  <label className="text-xs text-slate-500 mb-1 block font-bold">Método de Pago</label>
+                  <label className="text-xs text-[var(--color-text-muted)] mb-1 block font-bold">Método de Pago</label>
                   <select
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none mb-2 transition-all"
+                    className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none mb-2 transition-all"
                   >
                     <option value="efectivo">Efectivo ($ USD)</option>
                     <option value="zelle">Zelle</option>
@@ -507,26 +507,26 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
         <div className="lg:col-span-2 flex flex-col gap-6">
           {/* Movements Table */}
 
-      <div className="glass-card flex flex-col border-slate-200 rounded-2xl shadow-sm bg-white overflow-hidden flex-1 min-h-[500px]">
-        <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-          <h3 className="font-display text-xl text-slate-900 flex items-center gap-2">
+      <div className="glass-card flex flex-col border-[var(--color-border-primary)] rounded-2xl shadow-sm bg-[var(--color-bg-surface)] overflow-hidden flex-1 min-h-[500px]">
+        <div className="p-4 border-b border-[var(--color-border-subtle)] flex justify-between items-center bg-[var(--color-bg-primary)]">
+          <h3 className="font-display text-xl text-[var(--color-text-primary)] flex items-center gap-2">
             <Receipt className="w-5 h-5 text-[#7A1B28]" /> MOVIMIENTOS DE LA CAJA ACTIVA
           </h3>
           <button onClick={fetchSession} className="p-2 hover:bg-slate-200 rounded-full transition-colors" title="Refrescar">
-            <RefreshCw className="w-4 h-4 text-slate-500" />
+            <RefreshCw className="w-4 h-4 text-[var(--color-text-muted)]" />
           </button>
         </div>
         
         {!session && (
-           <div className="p-12 text-center text-slate-400 font-display text-lg">
+           <div className="p-12 text-center text-[var(--color-text-muted)] font-display text-lg">
               Abra una sesión de caja para visualizar los movimientos.
            </div>
         )}
 
         {session && (
           <div className="flex-1 overflow-auto p-0">
-            <table className="w-full text-sm text-left text-slate-700">
-              <thead className="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-100 font-display tracking-wider sticky top-0 z-10 shadow-sm">
+            <table className="w-full text-sm text-left text-[var(--color-text-secondary)]">
+              <thead className="text-xs text-[var(--color-text-muted)] uppercase bg-[var(--color-bg-primary)] border-b border-[var(--color-border-subtle)] font-display tracking-wider sticky top-0 z-10 shadow-sm">
                 <tr>
                   <th className="px-4 py-3">Hora</th>
                   <th className="px-4 py-3">Tipo</th>
@@ -537,8 +537,8 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
               </thead>
               <tbody className="divide-y divide-slate-100 font-mono text-xs">
                 {movements.map((tx) => (
-                  <tr key={tx.id} className="hover:bg-slate-50 transition-colors group">
-                    <td className="px-4 py-3 text-slate-500">
+                  <tr key={tx.id} className="hover:bg-[var(--color-bg-primary)] transition-colors group">
+                    <td className="px-4 py-3 text-[var(--color-text-muted)]">
                       {new Date(tx.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                     </td>
                     <td className="px-4 py-3">
@@ -550,10 +550,10 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="font-sans font-medium text-slate-900">{tx.customerName}</div>
-                      <div className="text-[10px] text-slate-400 capitalize">{tx.source_type.replace('_', ' ')}</div>
+                      <div className="font-sans font-medium text-[var(--color-text-primary)]">{tx.customerName}</div>
+                      <div className="text-[10px] text-[var(--color-text-muted)] capitalize">{tx.source_type.replace('_', ' ')}</div>
                     </td>
-                    <td className="px-4 py-3 uppercase text-slate-500">
+                    <td className="px-4 py-3 uppercase text-[var(--color-text-muted)]">
                       {tx.payment_method.replace('_', ' ')}
                     </td>
                     <td className={`px-4 py-3 text-right font-bold text-sm ${
@@ -565,7 +565,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                 ))}
                 {movements.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-4 py-12 text-center text-slate-400 italic font-sans">
+                    <td colSpan={5} className="px-4 py-12 text-center text-[var(--color-text-muted)] italic font-sans">
                       No hay movimientos en esta sesión.
                     </td>
                   </tr>
@@ -580,14 +580,14 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
       {/* Close Register Modal */}
       {showCloseModal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-2xl max-w-xl w-full flex flex-col overflow-hidden animate-scale-up shadow-2xl">
+          <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] rounded-2xl max-w-xl w-full flex flex-col overflow-hidden animate-scale-up shadow-2xl">
             
             <div className="bg-[#7A1B28] text-white p-5 flex justify-between items-center">
               <div>
                 <h3 className="font-display text-2xl mb-1">CERRAR CAJA</h3>
                 <p className="text-xs text-white/70">Declara los montos físicos contados para el arqueo final.</p>
               </div>
-              <button onClick={() => setShowCloseModal(false)} className="text-white/70 hover:text-white hover:bg-white/10 p-2 rounded-full transition-colors">
+              <button onClick={() => setShowCloseModal(false)} className="text-white/70 hover:text-white hover:bg-[var(--color-bg-surface)]/10 p-2 rounded-full transition-colors">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -596,84 +596,84 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
               <div className="grid grid-cols-2 gap-x-6 gap-y-4">
                 {/* Inputs */}
                 <div className="space-y-4">
-                  <h4 className="font-bold text-sm text-slate-900 border-b border-slate-200 pb-2 mb-3">Dinero Físico (Billetes)</h4>
+                  <h4 className="font-bold text-sm text-[var(--color-text-primary)] border-b border-[var(--color-border-primary)] pb-2 mb-3">Dinero Físico (Billetes)</h4>
                   
                   <div>
-                    <label className="text-xs text-slate-500 font-bold block mb-1">Efectivo ($ USD)</label>
+                    <label className="text-xs text-[var(--color-text-muted)] font-bold block mb-1">Efectivo ($ USD)</label>
                     <div className="flex items-center gap-2">
                        <input type="number" step="0.01" min="0" value={declaredEfectivo} onChange={(e) => setDeclaredEfectivo(e.target.value as any)}
-                         className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
+                         className="w-full border border-[var(--color-border-primary)] rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
                        <div className="text-xs font-mono w-24 flex flex-col items-end">
-                         <span className="text-slate-400">Esp:</span>
-                         <span className={getMethodTotal('efectivo') < 0 ? 'text-rose-500 font-bold' : 'text-slate-900 font-bold'}>${getMethodTotal('efectivo').toFixed(2)}</span>
+                         <span className="text-[var(--color-text-muted)]">Esp:</span>
+                         <span className={getMethodTotal('efectivo') < 0 ? 'text-rose-500 font-bold' : 'text-[var(--color-text-primary)] font-bold'}>${getMethodTotal('efectivo').toFixed(2)}</span>
                        </div>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="font-bold text-sm text-slate-900 border-b border-slate-200 pb-2 mb-3">Saldos Digitales</h4>
+                  <h4 className="font-bold text-sm text-[var(--color-text-primary)] border-b border-[var(--color-border-primary)] pb-2 mb-3">Saldos Digitales</h4>
                   
                   <div>
-                    <label className="text-xs text-slate-500 font-bold block mb-1">Zelle</label>
+                    <label className="text-xs text-[var(--color-text-muted)] font-bold block mb-1">Zelle</label>
                     <div className="flex items-center gap-2">
                       <input type="number" step="0.01" min="0" value={declaredZelle} onChange={(e) => setDeclaredZelle(e.target.value as any)}
-                        className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
+                        className="w-full border border-[var(--color-border-primary)] rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
                       <div className="text-xs font-mono w-24 flex flex-col items-end">
-                        <span className="text-slate-400">Esp:</span>
-                        <span className={getMethodTotal('zelle') < 0 ? 'text-rose-500 font-bold' : 'text-slate-900 font-bold'}>${getMethodTotal('zelle').toFixed(2)}</span>
+                        <span className="text-[var(--color-text-muted)]">Esp:</span>
+                        <span className={getMethodTotal('zelle') < 0 ? 'text-rose-500 font-bold' : 'text-[var(--color-text-primary)] font-bold'}>${getMethodTotal('zelle').toFixed(2)}</span>
                       </div>
                     </div>
                   </div>
                   <div>
-                    <label className="text-xs text-slate-500 font-bold block mb-1">Pago Móvil</label>
+                    <label className="text-xs text-[var(--color-text-muted)] font-bold block mb-1">Pago Móvil</label>
                     <div className="flex items-center gap-2">
                       <input type="number" step="0.01" min="0" value={declaredPagoMovil} onChange={(e) => setDeclaredPagoMovil(e.target.value as any)}
-                        className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
+                        className="w-full border border-[var(--color-border-primary)] rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
                       <div className="text-xs font-mono w-24 flex flex-col items-end">
-                        <span className="text-slate-400">Esp:</span>
-                        <span className={getMethodTotal('pago_movil') < 0 ? 'text-rose-500 font-bold' : 'text-slate-900 font-bold'}>${getMethodTotal('pago_movil').toFixed(2)}</span>
+                        <span className="text-[var(--color-text-muted)]">Esp:</span>
+                        <span className={getMethodTotal('pago_movil') < 0 ? 'text-rose-500 font-bold' : 'text-[var(--color-text-primary)] font-bold'}>${getMethodTotal('pago_movil').toFixed(2)}</span>
                       </div>
                     </div>
                   </div>
                   <div>
-                    <label className="text-xs text-slate-500 font-bold block mb-1">Punto / Tarjeta</label>
+                    <label className="text-xs text-[var(--color-text-muted)] font-bold block mb-1">Punto / Tarjeta</label>
                     <div className="flex items-center gap-2">
                       <input type="number" step="0.01" min="0" value={declaredTarjeta} onChange={(e) => setDeclaredTarjeta(e.target.value as any)}
-                        className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
+                        className="w-full border border-[var(--color-border-primary)] rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
                       <div className="text-xs font-mono w-24 flex flex-col items-end">
-                        <span className="text-slate-400">Esp:</span>
-                        <span className={getMethodTotal('tarjeta') < 0 ? 'text-rose-500 font-bold' : 'text-slate-900 font-bold'}>${getMethodTotal('tarjeta').toFixed(2)}</span>
+                        <span className="text-[var(--color-text-muted)]">Esp:</span>
+                        <span className={getMethodTotal('tarjeta') < 0 ? 'text-rose-500 font-bold' : 'text-[var(--color-text-primary)] font-bold'}>${getMethodTotal('tarjeta').toFixed(2)}</span>
                       </div>
                     </div>
                   </div>
                   <div>
-                    <label className="text-xs text-slate-500 font-bold block mb-1">Transferencia</label>
+                    <label className="text-xs text-[var(--color-text-muted)] font-bold block mb-1">Transferencia</label>
                     <div className="flex items-center gap-2">
                       <input type="number" step="0.01" min="0" value={declaredTransferencia} onChange={(e) => setDeclaredTransferencia(e.target.value as any)}
-                        className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
+                        className="w-full border border-[var(--color-border-primary)] rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
                       <div className="text-xs font-mono w-24 flex flex-col items-end">
-                        <span className="text-slate-400">Esp:</span>
-                        <span className={getMethodTotal('transferencia') < 0 ? 'text-rose-500 font-bold' : 'text-slate-900 font-bold'}>${getMethodTotal('transferencia').toFixed(2)}</span>
+                        <span className="text-[var(--color-text-muted)]">Esp:</span>
+                        <span className={getMethodTotal('transferencia') < 0 ? 'text-rose-500 font-bold' : 'text-[var(--color-text-primary)] font-bold'}>${getMethodTotal('transferencia').toFixed(2)}</span>
                       </div>
                     </div>
                   </div>
                   <div>
-                    <label className="text-xs text-slate-500 font-bold block mb-1">Binance</label>
+                    <label className="text-xs text-[var(--color-text-muted)] font-bold block mb-1">Binance</label>
                     <div className="flex items-center gap-2">
                       <input type="number" step="0.01" min="0" value={declaredBinance} onChange={(e) => setDeclaredBinance(e.target.value as any)}
-                        className="w-full border border-slate-300 rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
+                        className="w-full border border-[var(--color-border-primary)] rounded px-3 py-2 text-sm focus:border-[#7A1B28] outline-none" placeholder="0.00" />
                       <div className="text-xs font-mono w-24 flex flex-col items-end">
-                        <span className="text-slate-400">Esp:</span>
-                        <span className={getMethodTotal('binance') < 0 ? 'text-rose-500 font-bold' : 'text-slate-900 font-bold'}>${getMethodTotal('binance').toFixed(2)}</span>
+                        <span className="text-[var(--color-text-muted)]">Esp:</span>
+                        <span className={getMethodTotal('binance') < 0 ? 'text-rose-500 font-bold' : 'text-[var(--color-text-primary)] font-bold'}>${getMethodTotal('binance').toFixed(2)}</span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-6 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                <div className="flex justify-between items-center text-sm font-bold text-slate-700 mb-2">
+              <div className="mt-6 bg-[var(--color-bg-primary)] p-4 rounded-xl border border-[var(--color-border-primary)]">
+                <div className="flex justify-between items-center text-sm font-bold text-[var(--color-text-secondary)] mb-2">
                   <span>Total Esperado Sistema:</span>
                   <span className="font-mono">${currentBalance.toFixed(2)}</span>
                 </div>
@@ -696,17 +696,17 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                     ${((Number(declaredEfectivo || 0) + Number(declaredZelle || 0) + Number(declaredPagoMovil || 0) + Number(declaredTransferencia || 0) + Number(declaredTarjeta || 0) + Number(declaredBinance || 0)) - currentBalance).toFixed(2)}
                   </span>
                 </div>
-                <p className="text-xs text-slate-500 border-t border-slate-200 pt-2 mt-2">
+                <p className="text-xs text-[var(--color-text-muted)] border-t border-[var(--color-border-primary)] pt-2 mt-2">
                   Las diferencias se calcularán y registrarán automáticamente por método de pago.
                 </p>
               </div>
 
             </div>
 
-            <div className="p-5 border-t border-slate-200 bg-slate-50 flex gap-3 justify-end">
+            <div className="p-5 border-t border-[var(--color-border-primary)] bg-[var(--color-bg-primary)] flex gap-3 justify-end">
               <button 
                 onClick={() => setShowCloseModal(false)}
-                className="px-6 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg font-bold text-sm hover:bg-slate-50 transition-colors"
+                className="px-6 py-2 bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] text-[var(--color-text-secondary)] rounded-lg font-bold text-sm hover:bg-[var(--color-bg-primary)] transition-colors"
                 disabled={isProcessing}
               >
                 Cancelar

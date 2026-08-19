@@ -57,7 +57,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
   };
 
   return (
-    <div className="relative min-h-screen lg:h-screen w-full text-slate-900 flex flex-col items-center justify-between p-3 sm:p-4 md:p-6 overflow-hidden select-none">
+    <div className="relative min-h-screen lg:h-screen w-full text-[var(--color-text-primary)] flex flex-col items-center justify-between p-3 sm:p-4 md:p-6 overflow-hidden select-none">
       
       {/* Background Image Scaled Up to remove white borders */}
       <div 
@@ -66,14 +66,14 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
       />
       
       {/* Background Opacity Layer (White) */}
-      <div className="absolute inset-0 bg-slate-50/85 pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-[var(--color-bg-primary)]/85 pointer-events-none z-0" />
       
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[600px] h-[300px] sm:h-[600px] bg-slate-200/50 rounded-full blur-[100px] sm:blur-[140px] pointer-events-none z-0" />
 
       {/* Top Header */}
       <div className="relative z-10 w-full flex flex-row items-center justify-between gap-2">
         <FaviconLogo size={36} showText />
-        <div className="px-3 py-1 rounded-full bg-white border border-slate-200 text-[10px] sm:text-xs font-mono text-[#7A1B28] flex items-center gap-1.5 shrink-0 shadow-sm">
+        <div className="px-3 py-1 rounded-full bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] text-[10px] sm:text-xs font-mono text-[#7A1B28] flex items-center gap-1.5 shrink-0 shadow-sm">
           <span className="w-2 h-2 rounded-full bg-[#7A1B28] animate-ping" />
           <span className="hidden sm:inline">SISTEMA DE GESTIÓN TALLER EN VIVO</span>
           <span className="sm:hidden">TALLER EN VIVO</span>
@@ -87,7 +87,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
           <div className="absolute -inset-3 sm:-inset-5 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 rounded-full blur-lg sm:blur-xl opacity-60 group-hover:opacity-100 transition-opacity z-0" />
 
           {/* Official Emblem Container - Compact for Full Screen View */}
-          <div className="relative z-10 w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full bg-black border-2 border-slate-200 shadow-sm flex items-center justify-center overflow-hidden">
+          <div className="relative z-10 w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full bg-black border-2 border-[var(--color-border-primary)] shadow-sm flex items-center justify-center overflow-hidden">
             <img
               src="/logo.png"
               alt="Super Wash Performance Emblem"
@@ -97,19 +97,19 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
         </div>
 
         {/* Athletic High-Impact Title */}
-        <h1 className="font-display text-2xl sm:text-3xl md:text-4xl tracking-wider text-slate-900 mb-1">
+        <h1 className="font-display text-2xl sm:text-3xl md:text-4xl tracking-wider text-[var(--color-text-primary)] mb-1">
           SUPER WASH <span className="text-[#7A1B28] drop-shadow-sm">PERFORMANCE</span>
         </h1>
-        <p className="font-heading text-xs sm:text-sm text-slate-700 font-medium max-w-lg mb-2 px-2 leading-snug">
+        <p className="font-heading text-xs sm:text-sm text-[var(--color-text-secondary)] font-medium max-w-lg mb-2 px-2 leading-snug">
           Plataforma Enterprise de Estética Automotriz, Detailing, Pintura y Gestión 360° de Órdenes de Servicio.
         </p>
 
         {/* Formulario de Autenticación Centrado (Ultracompacto) */}
         <form
           onSubmit={handleLoginSubmit}
-          className="flex flex-col gap-2.5 sm:gap-3 bg-white border border-slate-200 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 w-full max-w-xs sm:max-w-sm shadow-sm backdrop-blur-xl text-center my-1.5 sm:my-2"
+          className="flex flex-col gap-2.5 sm:gap-3 bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 w-full max-w-xs sm:max-w-sm shadow-sm backdrop-blur-xl text-center my-1.5 sm:my-2"
         >
-          <h2 className="font-display text-sm sm:text-base text-slate-900 font-bold tracking-wider uppercase mb-0.5">
+          <h2 className="font-display text-sm sm:text-base text-[var(--color-text-primary)] font-bold tracking-wider uppercase mb-0.5">
             INICIAR SESIÓN EN SUPER WASH
           </h2>
 
@@ -127,7 +127,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
               placeholder="Correo electrónico o número de celular"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-300 rounded-full px-4 py-2 sm:py-2.5 text-xs text-slate-900 placeholder:text-slate-500 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all"
+              className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-full px-4 py-2 sm:py-2.5 text-xs text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all"
             />
           </div>
 
@@ -138,12 +138,12 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
               placeholder="Contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-300 rounded-full px-4 py-2 sm:py-2.5 pr-10 text-xs text-slate-900 placeholder:text-slate-500 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all font-mono"
+              className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-full px-4 py-2 sm:py-2.5 pr-10 text-xs text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all font-mono"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-[#7A1B28] transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] hover:text-[#7A1B28] transition-colors"
             >
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
@@ -158,11 +158,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
         </form>
 
         {/* Tracker Input Bar */}
-        <div className="flex items-center bg-white border border-slate-200 rounded-full p-1 w-full max-w-xs sm:max-w-sm justify-between my-1">
+        <div className="flex items-center bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] rounded-full p-1 w-full max-w-xs sm:max-w-sm justify-between my-1">
           <input 
             type="text" 
             placeholder="Placa (ej. ABC-123)"
-            className="bg-transparent border-none outline-none text-slate-900 px-3 sm:px-4 py-1.5 w-full uppercase font-mono placeholder:text-slate-500 placeholder:normal-case text-xs"
+            className="bg-transparent border-none outline-none text-[var(--color-text-primary)] px-3 sm:px-4 py-1.5 w-full uppercase font-mono placeholder:text-[var(--color-text-muted)] placeholder:normal-case text-xs"
             value={plate}
             onChange={(e) => setPlate(e.target.value.toUpperCase())}
             onKeyDown={(e) => {
@@ -190,8 +190,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
       </div>
 
       {/* Footer Info & Centered Developer Badge */}
-      <div className="relative z-10 w-full text-center text-[10px] sm:text-xs text-slate-500 font-mono flex flex-col items-center justify-center gap-1 sm:gap-1.5 border-t border-slate-200 pt-2 pb-1 mt-1 shrink-0">
-        <span className="uppercase tracking-wide font-bold text-slate-500 px-2">
+      <div className="relative z-10 w-full text-center text-[10px] sm:text-xs text-[var(--color-text-muted)] font-mono flex flex-col items-center justify-center gap-1 sm:gap-1.5 border-t border-[var(--color-border-primary)] pt-2 pb-1 mt-1 shrink-0">
+        <span className="uppercase tracking-wide font-bold text-[var(--color-text-muted)] px-2">
           © 2026 SUPER WASH PERFORMANCE C.A. - TODOS LOS DERECHOS RESERVADOS.
         </span>
 
@@ -206,14 +206,14 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onEnter, onTrack }) 
           className="inline-flex flex-col items-center justify-center group transition-all duration-300 cursor-pointer"
           title="BY ARFENIXTECH"
         >
-          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-50 border border-slate-200 group-hover:border-slate-300 p-0.5 shadow-sm group-hover:shadow-md backdrop-blur-md overflow-hidden flex items-center justify-center">
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] group-hover:border-[var(--color-border-primary)] p-0.5 shadow-sm group-hover:shadow-md backdrop-blur-md overflow-hidden flex items-center justify-center">
             <img
               src="/arfenixtech-logo.png"
               alt="ARfenixTech"
               className="w-full h-full object-cover rounded-full opacity-95 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300 filter drop-shadow-none"
             />
           </div>
-          <span className="text-[9px] font-mono font-bold tracking-widest text-slate-500 group-hover:text-[#7A1B28] uppercase mt-0.5 transition-colors">
+          <span className="text-[9px] font-mono font-bold tracking-widest text-[var(--color-text-muted)] group-hover:text-[#7A1B28] uppercase mt-0.5 transition-colors">
             BY ARFENIXTECH
           </span>
         </a>

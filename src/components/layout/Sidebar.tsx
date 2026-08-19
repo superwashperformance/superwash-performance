@@ -39,7 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, curren
   const visibleNavItems = navItems.filter((item) => item.roles.includes(currentRole));
 
   return (
-    <aside className="w-16 md:w-64 bg-slate-50 border-r border-slate-200 flex flex-col py-6 shrink-0 transition-all shadow-sm z-20 overflow-y-auto">
+    <aside className="w-16 md:w-64 bg-[var(--color-bg-surface)] border-r border-[var(--color-border-primary)] flex flex-col py-6 shrink-0 transition-colors shadow-sm z-20 overflow-y-auto">
       {/* Top Logo Area */}
       <div className="px-6 pb-8 flex flex-col items-center justify-center">
         <FaviconLogo size={90} />
@@ -53,14 +53,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, curren
             <button
               key={item.id}
               onClick={() => onTabChange(item.id as NavTab)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm text-left group ${
+              className={`flex items-center gap-3 px-3 md:px-4 py-2.5 rounded-xl font-bold text-sm transition-all ${
                 isActive
-                  ? 'bg-[#7A1B28] text-white font-bold shadow-sm'
-                  : 'text-slate-600 hover:text-[#7A1B28] hover:bg-[#7A1B28]/5 font-medium'
+                  ? 'bg-[var(--color-primary)] text-white shadow-md transform scale-[1.02]'
+                  : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-border-subtle)] hover:text-[var(--color-text-primary)] hover:translate-x-1'
               }`}
+              title={item.label}
             >
-              <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-[#7A1B28]'}`} />
-              <span className="hidden md:inline truncate">{item.label}</span>
+              <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-[var(--color-text-secondary)] group-hover:text-[var(--color-primary)]'}`} />
+              <span className="hidden md:block font-sans whitespace-nowrap">{item.label}</span>
+              {isActive && <div className="hidden md:block w-1.5 h-1.5 rounded-full bg-white ml-auto" />}
             </button>
           );
         })}

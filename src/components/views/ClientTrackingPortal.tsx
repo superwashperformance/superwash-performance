@@ -100,20 +100,20 @@ export const ClientTrackingPortal: React.FC<ClientTrackingPortalProps> = ({ init
   const currentStep = order ? getProgressStep(order.status) : 0;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-[#7A1B28] selection:text-white">
+    <div className="min-h-screen bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] flex flex-col font-sans selection:bg-[#7A1B28] selection:text-white">
       {/* Background Effects */}
       <div className="fixed inset-0 bg-[radial-gradient(#7A1B28_1px,transparent_1px)] [background-size:40px_40px] opacity-[0.03] pointer-events-none" />
       <div className="fixed top-0 left-0 w-full h-96 bg-gradient-to-b from-slate-200/50 to-transparent pointer-events-none" />
 
       {/* Header */}
-      <header className="relative z-10 flex items-center justify-between p-4 md:px-8 border-b border-slate-200 bg-white/80 backdrop-blur-md">
+      <header className="relative z-10 flex items-center justify-between p-4 md:px-8 border-b border-[var(--color-border-primary)] bg-[var(--color-bg-surface)]/80 backdrop-blur-md">
         <div className="flex items-center gap-3">
           <FaviconLogo size={32} />
-          <span className="font-display tracking-widest text-sm md:text-lg text-slate-900">SUPER WASH PERFORMANCE</span>
+          <span className="font-display tracking-widest text-sm md:text-lg text-[var(--color-text-primary)]">SUPER WASH PERFORMANCE</span>
         </div>
         <button 
           onClick={onExit}
-          className="text-xs font-mono text-slate-500 hover:text-slate-900 flex items-center gap-1"
+          className="text-xs font-mono text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] flex items-center gap-1"
         >
           <ArrowLeft className="w-4 h-4" /> VOLVER
         </button>
@@ -123,15 +123,15 @@ export const ClientTrackingPortal: React.FC<ClientTrackingPortalProps> = ({ init
       <main className="relative z-10 flex-1 flex flex-col items-center p-4 md:p-8">
         
         {/* Search Bar */}
-        <div className="w-full max-w-2xl bg-white border border-slate-200 rounded-2xl p-2 flex items-center gap-2 mb-8 shadow-sm">
-          <Search className="w-5 h-5 text-slate-500 ml-3" />
+        <div className="w-full max-w-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] rounded-2xl p-2 flex items-center gap-2 mb-8 shadow-sm">
+          <Search className="w-5 h-5 text-[var(--color-text-muted)] ml-3" />
           <input
             type="text"
             placeholder="Ingresa tu Placa (ej. ABC-123)"
             value={plate}
             onChange={(e) => setPlate(e.target.value.toUpperCase())}
             onKeyDown={(e) => e.key === 'Enter' && fetchOrder(plate)}
-            className="flex-1 bg-transparent border-none outline-none text-slate-900 px-2 uppercase font-mono placeholder:text-slate-600 placeholder:normal-case"
+            className="flex-1 bg-transparent border-none outline-none text-[var(--color-text-primary)] px-2 uppercase font-mono placeholder:text-[var(--color-text-secondary)] placeholder:normal-case"
           />
           <button 
             onClick={() => fetchOrder(plate)}
@@ -151,35 +151,35 @@ export const ClientTrackingPortal: React.FC<ClientTrackingPortalProps> = ({ init
         ) : error ? (
           <div className="w-full max-w-2xl bg-red-950/30 border border-red-500/30 rounded-2xl p-8 text-center flex flex-col items-center gap-3">
             <AlertCircle className="w-12 h-12 text-red-500" />
-            <h3 className="text-xl font-display text-slate-900">VEHÍCULO NO ENCONTRADO</h3>
-            <p className="text-sm text-slate-500 font-mono">{error}</p>
+            <h3 className="text-xl font-display text-[var(--color-text-primary)]">VEHÍCULO NO ENCONTRADO</h3>
+            <p className="text-sm text-[var(--color-text-muted)] font-mono">{error}</p>
           </div>
         ) : order ? (
           <div className="w-full max-w-2xl flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4">
             
             {/* Vehicle Info Badge */}
-            <div className="glass-card p-6 flex flex-col md:flex-row items-center justify-between gap-4 border-slate-200 bg-white">
+            <div className="glass-card p-6 flex flex-col md:flex-row items-center justify-between gap-4 border-[var(--color-border-primary)] bg-[var(--color-bg-surface)]">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center border border-slate-200 shadow-sm">
+                <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center border border-[var(--color-border-primary)] shadow-sm">
                   <Car className="w-8 h-8 text-[#7A1B28]" />
                 </div>
                 <div>
-                  <h2 className="font-display text-2xl text-slate-900">{order.vehicleBrandModel}</h2>
+                  <h2 className="font-display text-2xl text-[var(--color-text-primary)]">{order.vehicleBrandModel}</h2>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="bg-slate-100 text-slate-900 border border-slate-200 px-2 py-0.5 rounded font-mono text-xs font-bold tracking-widest">{order.vehiclePlate}</span>
-                    <span className="text-slate-500 text-xs">• ODS: {order.orderNumber}</span>
+                    <span className="bg-slate-100 text-[var(--color-text-primary)] border border-[var(--color-border-primary)] px-2 py-0.5 rounded font-mono text-xs font-bold tracking-widest">{order.vehiclePlate}</span>
+                    <span className="text-[var(--color-text-muted)] text-xs">• ODS: {order.orderNumber}</span>
                   </div>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-[10px] font-mono text-slate-500 uppercase">Ingreso al taller</p>
-                <p className="text-sm text-slate-700 flex items-center gap-1 justify-end"><Clock className="w-3.5 h-3.5" /> {order.entryDate.split(',')[0]}</p>
+                <p className="text-[10px] font-mono text-[var(--color-text-muted)] uppercase">Ingreso al taller</p>
+                <p className="text-sm text-[var(--color-text-secondary)] flex items-center gap-1 justify-end"><Clock className="w-3.5 h-3.5" /> {order.entryDate.split(',')[0]}</p>
               </div>
             </div>
 
             {/* Status Pipeline */}
-            <div className="glass-card p-6 md:p-8 border-slate-200 bg-white mt-2">
-              <h3 className="font-display text-xl text-slate-900 mb-8 text-center">ESTADO ACTUAL</h3>
+            <div className="glass-card p-6 md:p-8 border-[var(--color-border-primary)] bg-[var(--color-bg-surface)] mt-2">
+              <h3 className="font-display text-xl text-[var(--color-text-primary)] mb-8 text-center">ESTADO ACTUAL</h3>
               
               <div className="relative">
                 {/* Connecting Line */}
@@ -193,49 +193,49 @@ export const ClientTrackingPortal: React.FC<ClientTrackingPortalProps> = ({ init
                 <div className="relative z-10 flex justify-between">
                   {/* Step 1: Recepción */}
                   <div className="flex flex-col items-center gap-2 w-1/4">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${currentStep >= 1 ? 'bg-[#7A1B28] border-[#7A1B28] text-white shadow-md' : 'bg-white border-slate-300 text-slate-400'}`}>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${currentStep >= 1 ? 'bg-[#7A1B28] border-[#7A1B28] text-white shadow-md' : 'bg-[var(--color-bg-surface)] border-[var(--color-border-primary)] text-[var(--color-text-muted)]'}`}>
                       <CheckCircle2 className="w-5 h-5" />
                     </div>
-                    <span className={`text-[10px] font-display uppercase tracking-wider text-center ${currentStep >= 1 ? 'text-[#7A1B28] font-bold' : 'text-slate-500'}`}>Recepción</span>
+                    <span className={`text-[10px] font-display uppercase tracking-wider text-center ${currentStep >= 1 ? 'text-[#7A1B28] font-bold' : 'text-[var(--color-text-muted)]'}`}>Recepción</span>
                   </div>
 
                   {/* Step 2: Aprobación */}
                   <div className="flex flex-col items-center gap-2 w-1/4">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${currentStep >= 2 ? 'bg-[#7A1B28] border-[#7A1B28] text-white shadow-md' : 'bg-white border-slate-300 text-slate-400'}`}>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${currentStep >= 2 ? 'bg-[#7A1B28] border-[#7A1B28] text-white shadow-md' : 'bg-[var(--color-bg-surface)] border-[var(--color-border-primary)] text-[var(--color-text-muted)]'}`}>
                       <CheckCircle2 className="w-5 h-5" />
                     </div>
-                    <span className={`text-[10px] font-display uppercase tracking-wider text-center ${currentStep >= 2 ? 'text-[#7A1B28] font-bold' : 'text-slate-500'}`}>Aprobación</span>
+                    <span className={`text-[10px] font-display uppercase tracking-wider text-center ${currentStep >= 2 ? 'text-[#7A1B28] font-bold' : 'text-[var(--color-text-muted)]'}`}>Aprobación</span>
                   </div>
 
                   {/* Step 3: En Proceso */}
                   <div className="flex flex-col items-center gap-2 w-1/4">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${currentStep >= 3 ? 'bg-[#7A1B28] border-[#7A1B28] text-white shadow-md' : 'bg-white border-slate-300 text-slate-400'}`}>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${currentStep >= 3 ? 'bg-[#7A1B28] border-[#7A1B28] text-white shadow-md' : 'bg-[var(--color-bg-surface)] border-[var(--color-border-primary)] text-[var(--color-text-muted)]'}`}>
                       <CheckCircle2 className="w-5 h-5" />
                     </div>
-                    <span className={`text-[10px] font-display uppercase tracking-wider text-center ${currentStep >= 3 ? 'text-[#7A1B28] font-bold' : 'text-slate-500'}`}>En Proceso</span>
+                    <span className={`text-[10px] font-display uppercase tracking-wider text-center ${currentStep >= 3 ? 'text-[#7A1B28] font-bold' : 'text-[var(--color-text-muted)]'}`}>En Proceso</span>
                   </div>
 
                   {/* Step 4: Finalizado */}
                   <div className="flex flex-col items-center gap-2 w-1/4">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${currentStep >= 4 ? 'bg-[#7A1B28] border-[#7A1B28] text-white shadow-md' : 'bg-white border-slate-300 text-slate-400'}`}>
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors ${currentStep >= 4 ? 'bg-[#7A1B28] border-[#7A1B28] text-white shadow-md' : 'bg-[var(--color-bg-surface)] border-[var(--color-border-primary)] text-[var(--color-text-muted)]'}`}>
                       <CheckCircle2 className="w-5 h-5" />
                     </div>
-                    <span className={`text-[10px] font-display uppercase tracking-wider text-center ${currentStep >= 4 ? 'text-[#7A1B28] font-bold' : 'text-slate-500'}`}>Control / Listo</span>
+                    <span className={`text-[10px] font-display uppercase tracking-wider text-center ${currentStep >= 4 ? 'text-[#7A1B28] font-bold' : 'text-[var(--color-text-muted)]'}`}>Control / Listo</span>
                   </div>
                 </div>
               </div>
 
               {/* Status Message */}
-              <div className="mt-8 p-4 bg-slate-50 rounded-xl border border-slate-200 text-center">
+              <div className="mt-8 p-4 bg-[var(--color-bg-primary)] rounded-xl border border-[var(--color-border-primary)] text-center">
                 <span className="font-mono text-[#7A1B28] block mb-1 uppercase tracking-widest text-xs">Fase Actual</span>
-                <p className="text-slate-900 text-lg font-medium">{getStatusMessage(order.status)}</p>
+                <p className="text-[var(--color-text-primary)] text-lg font-medium">{getStatusMessage(order.status)}</p>
               </div>
 
               {/* Final Photo if Archived/Completed */}
               {(order.status === 'archived' || order.status === 'delivered') && order.photos && order.photos.length > 0 && (
-                <div className="mt-6 border-t border-slate-100 pt-6">
-                  <span className="font-mono text-slate-500 block mb-3 uppercase tracking-widest text-xs text-center">Ficha del Registro Final</span>
-                  <div className="rounded-xl overflow-hidden shadow-sm border border-slate-200">
+                <div className="mt-6 border-t border-[var(--color-border-subtle)] pt-6">
+                  <span className="font-mono text-[var(--color-text-muted)] block mb-3 uppercase tracking-widest text-xs text-center">Ficha del Registro Final</span>
+                  <div className="rounded-xl overflow-hidden shadow-sm border border-[var(--color-border-primary)]">
                     <img 
                       src={order.photos.slice().reverse().find(p => p.category === 'final')?.photoUrl || order.photos[order.photos.length - 1].photoUrl} 
                       alt="Registro Final" 

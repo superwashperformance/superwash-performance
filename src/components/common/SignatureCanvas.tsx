@@ -65,9 +65,9 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({ onSaveSignatur
   };
 
   return (
-    <div className="flex flex-col gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200">
+    <div className="flex flex-col gap-2 p-3 rounded-xl bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)]">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-display text-slate-900 flex items-center gap-1.5">
+        <span className="text-xs font-display text-[var(--color-text-primary)] flex items-center gap-1.5">
           <PenTool className="w-4 h-4 text-cyan-600" /> FIRMA DIGITAL DE CONFORMIDAD DEL CLIENTE
         </span>
         {hasSignature && (
@@ -80,7 +80,7 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({ onSaveSignatur
         )}
       </div>
 
-      <div className="relative w-full h-36 bg-black rounded-lg border border-dashed border-slate-300 touch-none">
+      <div className="relative w-full h-36 bg-black rounded-lg border border-dashed border-[var(--color-border-primary)] touch-none">
         <canvas
           ref={canvasRef}
           width={500}
@@ -95,7 +95,7 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({ onSaveSignatur
           className="w-full h-full cursor-crosshair rounded-lg"
         />
         {!hasSignature && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-xs text-slate-600 font-mono uppercase tracking-widest">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-xs text-[var(--color-text-secondary)] font-mono uppercase tracking-widest">
             Firme aquí con el dedo o mouse
           </div>
         )}

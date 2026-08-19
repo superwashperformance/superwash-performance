@@ -175,10 +175,10 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="font-display text-3xl text-slate-800 tracking-wide flex items-center gap-2">
+          <h2 className="font-display text-3xl text-[var(--color-text-primary)] tracking-wide flex items-center gap-2">
             Directorio de Clientes <Users className="w-6 h-6 text-[#7A1B28]" />
           </h2>
-          <p className="text-xs text-slate-500">Base de datos centralizada para crear, buscar y gestionar clientes.</p>
+          <p className="text-xs text-[var(--color-text-muted)]">Base de datos centralizada para crear, buscar y gestionar clientes.</p>
         </div>
 
         <button
@@ -190,17 +190,17 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
       </div>
 
       {/* Search Bar */}
-      <div className="flex items-center gap-3 bg-white border border-slate-200 rounded-xl px-4 py-2.5 w-full max-w-md shadow-sm">
-        <Search className="w-5 h-5 text-slate-400 shrink-0" />
+      <div className="flex items-center gap-3 bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] rounded-xl px-4 py-2.5 w-full max-w-md shadow-sm">
+        <Search className="w-5 h-5 text-[var(--color-text-muted)] shrink-0" />
         <input
           type="text"
           placeholder="Buscar por Nombre, Cédula/RIF, Teléfono..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="bg-transparent border-none outline-none text-slate-900 w-full text-sm placeholder:text-slate-400"
+          className="bg-transparent border-none outline-none text-[var(--color-text-primary)] w-full text-sm placeholder:text-[var(--color-text-muted)]"
         />
         {searchTerm && (
-          <button onClick={() => setSearchTerm('')} className="text-xs text-slate-400 hover:text-slate-800">
+          <button onClick={() => setSearchTerm('')} className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]">
             <X className="w-4 h-4" />
           </button>
         )}
@@ -210,9 +210,9 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredCustomers.length === 0 ? (
           <div className="col-span-full glass-card p-12 flex flex-col items-center justify-center text-center">
-            <UserCheck className="w-12 h-12 text-slate-400 mb-3" />
-            <h3 className="font-display text-xl text-slate-800 mb-1">No se encontraron clientes</h3>
-            <p className="text-xs text-slate-500 mb-4">Intenta con otra búsqueda o crea un nuevo cliente.</p>
+            <UserCheck className="w-12 h-12 text-[var(--color-text-muted)] mb-3" />
+            <h3 className="font-display text-xl text-[var(--color-text-primary)] mb-1">No se encontraron clientes</h3>
+            <p className="text-xs text-[var(--color-text-muted)] mb-4">Intenta con otra búsqueda o crea un nuevo cliente.</p>
             <button onClick={openNewCustomerModal} className="btn-secondary text-xs py-2 px-4">
               <Plus className="w-4 h-4" /> Agregar Nuevo Cliente
             </button>
@@ -226,10 +226,10 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-mono text-xs text-[#7A1B28] font-bold">{cust.documentId}</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-slate-500 font-mono">Desde {cust.createdAt}</span>
+                      <span className="text-[10px] text-[var(--color-text-muted)] font-mono">Desde {cust.createdAt}</span>
                       <button
                         onClick={() => openEditCustomerModal(cust)}
-                        className="p-1.5 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 rounded-lg transition-colors border border-slate-200"
+                        className="p-1.5 bg-[var(--color-bg-primary)] hover:bg-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] rounded-lg transition-colors border border-[var(--color-border-primary)]"
                         title="Modificar Cliente"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
@@ -244,22 +244,22 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                     </div>
                   </div>
 
-                  <h3 className="font-display text-2xl text-slate-800 tracking-wide">{cust.fullName}</h3>
+                  <h3 className="font-display text-2xl text-[var(--color-text-primary)] tracking-wide">{cust.fullName}</h3>
 
-                  <div className="flex flex-col gap-1.5 mt-3 text-xs text-slate-600 font-mono">
+                  <div className="flex flex-col gap-1.5 mt-3 text-xs text-[var(--color-text-secondary)] font-mono">
                     <div className="flex items-center gap-2">
-                      <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <Phone className="w-3.5 h-3.5 text-[var(--color-text-muted)] shrink-0" />
                       <span>{cust.phone}</span>
                     </div>
                     {cust.email && (
                       <div className="flex items-center gap-2">
-                        <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                        <Mail className="w-3.5 h-3.5 text-[var(--color-text-muted)] shrink-0" />
                         <span className="truncate">{cust.email}</span>
                       </div>
                     )}
                     {cust.address && (
                       <div className="flex items-center gap-2">
-                        <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                        <MapPin className="w-3.5 h-3.5 text-[var(--color-text-muted)] shrink-0" />
                         <span className="truncate">{cust.address}</span>
                       </div>
                     )}
@@ -267,9 +267,9 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                 </div>
 
                 {/* Registered Vehicles */}
-                <div className="border-t border-slate-100 pt-3">
+                <div className="border-t border-[var(--color-border-subtle)] pt-3">
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-[10px] font-mono text-slate-500 uppercase">
+                    <span className="text-[10px] font-mono text-[var(--color-text-muted)] uppercase">
                       Vehículos Asociados ({custVehicles.length})
                     </span>
                     <button
@@ -281,11 +281,11 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
                   </div>
                   <div className="flex flex-col gap-1.5">
                     {custVehicles.length === 0 ? (
-                      <span className="text-[11px] text-slate-400 font-mono italic">Sin vehículos registrados</span>
+                      <span className="text-[11px] text-[var(--color-text-muted)] font-mono italic">Sin vehículos registrados</span>
                     ) : (
                       custVehicles.map((v) => (
-                        <div key={v.id} className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-xs flex items-center justify-between">
-                          <span className="font-bold text-slate-700">{v.brand} {v.model} ({v.year})</span>
+                        <div key={v.id} className="p-2 rounded-lg bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] text-xs flex items-center justify-between">
+                          <span className="font-bold text-[var(--color-text-secondary)]">{v.brand} {v.model} ({v.year})</span>
                           <span className="font-mono text-[10px] text-[#7A1B28] font-bold">{v.plate}</span>
                         </div>
                       ))
@@ -301,145 +301,145 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
       {/* Add / Edit Customer Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="glass-card p-6 w-full max-w-md flex flex-col gap-4 border border-slate-200 shadow-2xl animate-scale-up">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="font-display text-xl text-slate-800 flex items-center gap-2">
+          <div className="glass-card p-6 w-full max-w-md flex flex-col gap-4 border border-[var(--color-border-primary)] shadow-2xl animate-scale-up">
+            <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-3">
+              <h3 className="font-display text-xl text-[var(--color-text-primary)] flex items-center gap-2">
                 <Users className="w-5 h-5 text-[#7A1B28]" />
                 {editingCustomer ? 'MODIFICAR CLIENTE' : 'NUEVO CLIENTE'}
               </h3>
-              <button onClick={closeModal} className="text-slate-400 hover:text-slate-800">
+              <button onClick={closeModal} className="text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-3">
               <div>
-                <label className="text-xs text-slate-500 mb-1 block">Nombre Completo / Razón Social *</label>
+                <label className="text-xs text-[var(--color-text-muted)] mb-1 block">Nombre Completo / Razón Social *</label>
                 <input
                   type="text"
                   required
                   placeholder="Ej. Gustavo Cisneros"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none font-medium"
+                  className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] focus:border-[#7A1B28] outline-none font-medium"
                 />
               </div>
 
               <div>
-                <label className="text-xs text-slate-500 mb-1 block">Cédula / RIF / DNI *</label>
+                <label className="text-xs text-[var(--color-text-muted)] mb-1 block">Cédula / RIF / DNI *</label>
                 <input
                   type="text"
                   required
                   placeholder="Ej. V-18940293 o J-30199281-0"
                   value={documentId}
                   onChange={(e) => setDocumentId(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono focus:border-[#7A1B28] outline-none"
+                  className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] font-mono focus:border-[#7A1B28] outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-slate-500 mb-1 block">Teléfono Principal *</label>
+                  <label className="text-xs text-[var(--color-text-muted)] mb-1 block">Teléfono Principal *</label>
                   <input
                     type="text"
                     required
                     placeholder="Ej. +58 412-1234567"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono focus:border-[#7A1B28] outline-none"
+                    className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] font-mono focus:border-[#7A1B28] outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="text-xs text-slate-500 mb-1 block">Correo Electrónico</label>
+                  <label className="text-xs text-[var(--color-text-muted)] mb-1 block">Correo Electrónico</label>
                   <input
                     type="email"
                     placeholder="cliente@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none"
+                    className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] focus:border-[#7A1B28] outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs text-slate-500 mb-1 block">Dirección de Domicilio / Fiscal</label>
+                <label className="text-xs text-[var(--color-text-muted)] mb-1 block">Dirección de Domicilio / Fiscal</label>
                 <input
                   type="text"
                   placeholder="Ej. Av. Principal Las Mercedes, Edif. Centro, Piso 4"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none"
+                  className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] focus:border-[#7A1B28] outline-none"
                 />
               </div>
 
               {/* Section: Associated Vehicle (Optional during customer creation) */}
-              <div className="mt-2 pt-3 border-t border-slate-100 flex flex-col gap-3">
-                <span className="font-mono text-xs font-bold text-slate-600 flex items-center gap-1.5 uppercase">
-                  <Car className="w-4 h-4 text-slate-400" /> Registrar Vehículo del Cliente (Opcional)
+              <div className="mt-2 pt-3 border-t border-[var(--color-border-subtle)] flex flex-col gap-3">
+                <span className="font-mono text-xs font-bold text-[var(--color-text-secondary)] flex items-center gap-1.5 uppercase">
+                  <Car className="w-4 h-4 text-[var(--color-text-muted)]" /> Registrar Vehículo del Cliente (Opcional)
                 </span>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-[10px] text-slate-500 block mb-1">Placa / Matrícula</label>
+                    <label className="text-[10px] text-[var(--color-text-muted)] block mb-1">Placa / Matrícula</label>
                     <input
                       type="text"
                       placeholder="Ej. AA991GT"
                       value={initialVehPlate}
                       onChange={(e) => setInitialVehPlate(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1.5 text-xs text-slate-900 font-mono uppercase font-bold focus:border-[#7A1B28] outline-none"
+                      className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded px-2 py-1.5 text-xs text-[var(--color-text-primary)] font-mono uppercase font-bold focus:border-[#7A1B28] outline-none"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] text-slate-500 block mb-1">Año</label>
+                    <label className="text-[10px] text-[var(--color-text-muted)] block mb-1">Año</label>
                     <input
                       type="number"
                       value={initialVehYear}
                       onChange={(e) => setInitialVehYear(Number(e.target.value))}
-                      className="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1.5 text-xs text-slate-900 font-mono focus:border-[#7A1B28] outline-none"
+                      className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded px-2 py-1.5 text-xs text-[var(--color-text-primary)] font-mono focus:border-[#7A1B28] outline-none"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-[10px] text-slate-500 block mb-1">Marca</label>
+                    <label className="text-[10px] text-[var(--color-text-muted)] block mb-1">Marca</label>
                     <input
                       type="text"
                       placeholder="Ej. Toyota"
                       value={initialVehBrand}
                       onChange={(e) => setInitialVehBrand(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1.5 text-xs text-slate-900 focus:border-[#7A1B28] outline-none"
+                      className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded px-2 py-1.5 text-xs text-[var(--color-text-primary)] focus:border-[#7A1B28] outline-none"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] text-slate-500 block mb-1">Modelo</label>
+                    <label className="text-[10px] text-[var(--color-text-muted)] block mb-1">Modelo</label>
                     <input
                       type="text"
                       placeholder="Ej. Hilux GT"
                       value={initialVehModel}
                       onChange={(e) => setInitialVehModel(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1.5 text-xs text-slate-900 focus:border-[#7A1B28] outline-none"
+                      className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded px-2 py-1.5 text-xs text-[var(--color-text-primary)] focus:border-[#7A1B28] outline-none"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[10px] text-slate-500 block mb-1">Color</label>
+                  <label className="text-[10px] text-[var(--color-text-muted)] block mb-1">Color</label>
                   <input
                     type="text"
                     placeholder="Ej. Negro Zafiro"
                     value={initialVehColor}
                     onChange={(e) => setInitialVehColor(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1.5 text-xs text-slate-900 focus:border-[#7A1B28] outline-none"
+                    className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded px-2 py-1.5 text-xs text-[var(--color-text-primary)] focus:border-[#7A1B28] outline-none"
                   />
                 </div>
               </div>
 
-              <div className="flex gap-3 mt-3 pt-3 border-t border-slate-100">
+              <div className="flex gap-3 mt-3 pt-3 border-t border-[var(--color-border-subtle)]">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="flex-1 bg-white border border-slate-300 text-slate-700 py-2.5 rounded-lg text-xs font-bold hover:bg-slate-50 transition-colors uppercase tracking-wider"
+                  className="flex-1 bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] text-[var(--color-text-secondary)] py-2.5 rounded-lg text-xs font-bold hover:bg-[var(--color-bg-primary)] transition-colors uppercase tracking-wider"
                 >
                   CANCELAR
                 </button>
@@ -458,18 +458,18 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
       {/* Add Vehicle Modal */}
       {isVehicleModalOpen && vehicleCustomer && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="glass-card p-6 w-full max-w-md flex flex-col gap-4 border border-slate-200 shadow-2xl animate-scale-up">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div className="glass-card p-6 w-full max-w-md flex flex-col gap-4 border border-[var(--color-border-primary)] shadow-2xl animate-scale-up">
+            <div className="flex items-center justify-between border-b border-[var(--color-border-subtle)] pb-3">
               <div>
-                <h3 className="font-display text-xl text-slate-800 flex items-center gap-2">
+                <h3 className="font-display text-xl text-[var(--color-text-primary)] flex items-center gap-2">
                   <Car className="w-5 h-5 text-[#7A1B28]" />
                   REGISTRAR VEHÍCULO
                 </h3>
-                <p className="text-xs text-slate-500 font-mono mt-1">
-                  Cliente: <span className="font-bold text-slate-700">{vehicleCustomer.fullName}</span>
+                <p className="text-xs text-[var(--color-text-muted)] font-mono mt-1">
+                  Cliente: <span className="font-bold text-[var(--color-text-secondary)]">{vehicleCustomer.fullName}</span>
                 </p>
               </div>
-              <button onClick={() => setIsVehicleModalOpen(false)} className="text-slate-400 hover:text-slate-800">
+              <button onClick={() => setIsVehicleModalOpen(false)} className="text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -477,81 +477,81 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
             <form onSubmit={handleCreateVehicle} className="flex flex-col gap-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-slate-500 mb-1 block">Placa / Matrícula *</label>
+                  <label className="text-xs text-[var(--color-text-muted)] mb-1 block">Placa / Matrícula *</label>
                   <input
                     type="text"
                     required
                     placeholder="Ej. AB123CD"
                     value={vehPlate}
                     onChange={(e) => setVehPlate(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono uppercase font-bold focus:border-[#7A1B28] outline-none"
+                    className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] font-mono uppercase font-bold focus:border-[#7A1B28] outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-500 mb-1 block">Año *</label>
+                  <label className="text-xs text-[var(--color-text-muted)] mb-1 block">Año *</label>
                   <input
                     type="number"
                     required
                     value={vehYear}
                     onChange={(e) => setVehYear(Number(e.target.value))}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono focus:border-[#7A1B28] outline-none"
+                    className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] font-mono focus:border-[#7A1B28] outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-slate-500 mb-1 block">Marca *</label>
+                  <label className="text-xs text-[var(--color-text-muted)] mb-1 block">Marca *</label>
                   <input
                     type="text"
                     required
                     placeholder="Ej. Toyota / Porsche"
                     value={vehBrand}
                     onChange={(e) => setVehBrand(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none"
+                    className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] focus:border-[#7A1B28] outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-500 mb-1 block">Modelo *</label>
+                  <label className="text-xs text-[var(--color-text-muted)] mb-1 block">Modelo *</label>
                   <input
                     type="text"
                     required
                     placeholder="Ej. Corolla / 911"
                     value={vehModel}
                     onChange={(e) => setVehModel(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none"
+                    className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] focus:border-[#7A1B28] outline-none"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-slate-500 mb-1 block">Color</label>
+                  <label className="text-xs text-[var(--color-text-muted)] mb-1 block">Color</label>
                   <input
                     type="text"
                     placeholder="Ej. Negro Zafiro"
                     value={vehColor}
                     onChange={(e) => setVehColor(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] outline-none"
+                    className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] focus:border-[#7A1B28] outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-500 mb-1 block">VIN / Chasis</label>
+                  <label className="text-xs text-[var(--color-text-muted)] mb-1 block">VIN / Chasis</label>
                   <input
                     type="text"
                     placeholder="Opcional"
                     value={vehVin}
                     onChange={(e) => setVehVin(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 font-mono focus:border-[#7A1B28] outline-none"
+                    className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] font-mono focus:border-[#7A1B28] outline-none"
                   />
                 </div>
               </div>
 
-              <div className="flex gap-3 mt-3 pt-3 border-t border-slate-100">
+              <div className="flex gap-3 mt-3 pt-3 border-t border-[var(--color-border-subtle)]">
                 <button
                   type="button"
                   onClick={() => setIsVehicleModalOpen(false)}
-                  className="flex-1 bg-white border border-slate-300 text-slate-700 py-2.5 rounded-lg text-xs font-bold hover:bg-slate-50 transition-colors uppercase tracking-wider"
+                  className="flex-1 bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] text-[var(--color-text-secondary)] py-2.5 rounded-lg text-xs font-bold hover:bg-[var(--color-bg-primary)] transition-colors uppercase tracking-wider"
                 >
                   CANCELAR
                 </button>
@@ -569,19 +569,19 @@ export const CustomersView: React.FC<CustomersViewProps> = ({
       {/* Delete Confirmation Modal */}
       {customerToDelete && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-scale-in">
+          <div className="bg-[var(--color-bg-surface)] rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-scale-in">
             <div className="p-6 text-center">
               <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <AlertTriangle className="w-8 h-8" />
               </div>
-              <h3 className="text-xl font-display text-slate-900 mb-2">¿Eliminar Cliente?</h3>
-              <p className="text-sm text-slate-500 font-mono">Esta acción eliminará al cliente y todos sus vehículos asociados de forma permanente.</p>
+              <h3 className="text-xl font-display text-[var(--color-text-primary)] mb-2">¿Eliminar Cliente?</h3>
+              <p className="text-sm text-[var(--color-text-muted)] font-mono">Esta acción eliminará al cliente y todos sus vehículos asociados de forma permanente.</p>
               
               <div className="flex gap-3 mt-6">
                 <button
                   type="button"
                   onClick={() => setCustomerToDelete(null)}
-                  className="flex-1 bg-white border border-slate-300 text-slate-700 py-2.5 rounded-lg text-xs font-bold hover:bg-slate-50 transition-colors uppercase tracking-wider"
+                  className="flex-1 bg-[var(--color-bg-surface)] border border-[var(--color-border-primary)] text-[var(--color-text-secondary)] py-2.5 rounded-lg text-xs font-bold hover:bg-[var(--color-bg-primary)] transition-colors uppercase tracking-wider"
                 >
                   CANCELAR
                 </button>

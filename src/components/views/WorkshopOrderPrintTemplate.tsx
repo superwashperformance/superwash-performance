@@ -59,7 +59,7 @@ export const WorkshopOrderPrintTemplate: React.FC<WorkshopOrderPrintTemplateProp
   );
 
   return (
-    <div className="bg-white text-black w-full text-sm font-sans break-words print-taller-container hidden print:block">
+    <div className="bg-[var(--color-bg-surface)] text-black w-full text-sm font-sans break-words print-taller-container hidden print:block">
       {/* PAGE 1 */}
       <div className="p-4 sm:p-6 flex flex-col" style={{ pageBreakAfter: 'always' }}>
         {/* Header Section */}

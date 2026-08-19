@@ -71,7 +71,7 @@ export const TurboChatBox: React.FC<TurboChatBoxProps> = ({ role, orders, onClos
             </svg>
           </div>
           <div>
-            <h3 className="text-slate-900 font-display text-sm tracking-wide">TURBO ASSISTANT</h3>
+            <h3 className="text-[var(--color-text-primary)] font-display text-sm tracking-wide">TURBO ASSISTANT</h3>
             <div className="flex items-center gap-1.5">
               <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
               <span className="text-[10px] text-cyan-400 font-mono uppercase">En línea</span>
@@ -87,7 +87,7 @@ export const TurboChatBox: React.FC<TurboChatBoxProps> = ({ role, orders, onClos
             <div 
               className={`max-w-[85%] p-3 rounded-2xl text-sm ${
                 msg.sender === 'user' 
-                  ? 'bg-cyan-600 text-slate-900 rounded-tr-sm' 
+                  ? 'bg-cyan-600 text-[var(--color-text-primary)] rounded-tr-sm' 
                   : 'bg-slate-100 border border-slate-700 text-slate-200 rounded-tl-sm'
               }`}
             >
@@ -103,7 +103,7 @@ export const TurboChatBox: React.FC<TurboChatBoxProps> = ({ role, orders, onClos
                 </button>
               )}
             </div>
-            <span className="text-[9px] text-slate-500 mt-1 font-mono">{msg.timestamp}</span>
+            <span className="text-[9px] text-[var(--color-text-muted)] mt-1 font-mono">{msg.timestamp}</span>
           </div>
         ))}
 
@@ -120,7 +120,7 @@ export const TurboChatBox: React.FC<TurboChatBoxProps> = ({ role, orders, onClos
       </div>
 
       {/* Input Area */}
-      <div className="p-3 bg-white border-t border-white/5">
+      <div className="p-3 bg-[var(--color-bg-surface)] border-t border-white/5">
         <div className="relative flex items-center">
           <input
             type="text"
@@ -128,7 +128,7 @@ export const TurboChatBox: React.FC<TurboChatBoxProps> = ({ role, orders, onClos
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Pregunta o busca placas..."
-            className="w-full bg-black border border-slate-700 focus:border-cyan-500 rounded-full py-2.5 pl-4 pr-12 text-sm text-slate-900 placeholder:text-slate-600 outline-none transition-colors font-mono"
+            className="w-full bg-black border border-slate-700 focus:border-cyan-500 rounded-full py-2.5 pl-4 pr-12 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-secondary)] outline-none transition-colors font-mono"
           />
           <button 
             onClick={handleSend}
