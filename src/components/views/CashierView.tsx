@@ -388,6 +388,23 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                 </div>
               )}
 
+              <div>
+                <label className="text-xs text-slate-500 mb-1 block font-bold">Cliente</label>
+                <select
+                  value={selectedCustomerId}
+                  onChange={(e) => setSelectedCustomerId(e.target.value)}
+                  disabled={!!selectedOdsId || !!selectedOriginalDocId}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all disabled:opacity-50"
+                >
+                  <option value="">Seleccione un cliente...</option>
+                  {customers.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.fullName} - {c.documentId}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               {voucherType === 'venta' && (
                 <div>
                   <label className="text-[10px] text-slate-400 mb-1 block font-bold uppercase">Vincular a ODS (Opcional)</label>
@@ -429,23 +446,6 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                   </select>
                 </div>
               )}
-
-              <div>
-                <label className="text-xs text-slate-500 mb-1 block font-bold">Cliente</label>
-                <select
-                  value={selectedCustomerId}
-                  onChange={(e) => setSelectedCustomerId(e.target.value)}
-                  disabled={!!selectedOdsId || !!selectedOriginalDocId}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all disabled:opacity-50"
-                >
-                  <option value="">Seleccione un cliente...</option>
-                  {customers.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.fullName} - {c.documentId}
-                    </option>
-                  ))}
-                </select>
-              </div>
 
               <div>
                 <label className="text-xs text-slate-500 mb-1 block font-bold">Condición de Pago</label>

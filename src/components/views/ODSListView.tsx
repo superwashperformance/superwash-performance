@@ -35,7 +35,18 @@ export const ODSListView: React.FC<ODSListViewProps> = ({ orders, onSelectOrder,
     // Date filter
     let matchesDate = true;
     const now = new Date();
-    const orderDateObj = new Date(entryDateStr);
+    
+    let orderDateObj = new Date(entryDateStr);
+    if (isNaN(orderDateObj.getTime()) && entryDateStr.includes('/')) {
+      const [datePart, timePart] = entryDateStr.split(', ');
+      if (datePart) {
+        const parts = datePart.split('/');
+        if (parts.length === 3) {
+          const [day, month, year] = parts;
+          orderDateObj = new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${timePart || '00:00:00'}`);
+        }
+      }
+    }
 
     if (datePeriod === 'custom' && customDate) {
       matchesDate = entryDateStr.includes(customDate);
