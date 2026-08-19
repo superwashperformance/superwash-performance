@@ -63,6 +63,19 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
     }
   }, [selectedOriginalDocId, commercialDocs, voucherType]);
 
+  // Auto-select ODS if the selected customer has exactly 1 active ODS
+  useEffect(() => {
+    if (selectedCustomerId && voucherType === 'venta' && !selectedOdsId) {
+      const clientOds = orders.filter(o => 
+        o.status !== 'archived' && 
+        String(o.customerId).trim() === String(selectedCustomerId).trim()
+      );
+      if (clientOds.length === 1) {
+        setSelectedOdsId(clientOds[0].id);
+      }
+    }
+  }, [selectedCustomerId, voucherType, orders]);
+
   const handleSubmitPayment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedCustomerId || paymentAmount <= 0) {
@@ -414,7 +427,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                     className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all"
                   >
                     <option value="">Venta Independiente (Ninguna ODS)</option>
-                    {orders.filter(o => o.status !== 'archived' && !commercialDocs.some(d => d.order_id === o.id) && (!selectedCustomerId || o.customerId === selectedCustomerId)).map(o => {
+                    {orders.filter(o => o.status !== 'archived' && (!selectedCustomerId || String(o.customerId).trim() === String(selectedCustomerId).trim())).map(o => {
                       const c = customers.find(x => x.id === o.customerId);
                       return (
                         <option key={o.id} value={o.id}>
