@@ -414,7 +414,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                     className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all"
                   >
                     <option value="">Venta Independiente (Ninguna ODS)</option>
-                    {orders.filter(o => o.status !== 'archived' && !commercialDocs.some(d => d.order_id === o.id)).map(o => {
+                    {orders.filter(o => o.status !== 'archived' && !commercialDocs.some(d => d.order_id === o.id) && (!selectedCustomerId || o.customerId === selectedCustomerId)).map(o => {
                       const c = customers.find(x => x.id === o.customerId);
                       return (
                         <option key={o.id} value={o.id}>
@@ -435,7 +435,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                     className="w-full bg-rose-50 border border-rose-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 outline-none transition-all"
                   >
                     <option value="">Seleccione comprobante original...</option>
-                    {commercialDocs.map(doc => {
+                    {commercialDocs.filter(doc => !selectedCustomerId || doc.customer_id === selectedCustomerId).map(doc => {
                       const c = customers.find(x => x.id === doc.customer_id);
                       return (
                         <option key={doc.id} value={doc.id}>
