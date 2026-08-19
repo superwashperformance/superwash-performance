@@ -3,7 +3,18 @@
 @import "@fontsource/nunito-sans/500.css";
 @import "@fontsource/nunito-sans/600.css";
 @import "@fontsource/nunito-sans/700.css";
+@import "@fontsource/nunito-sans/700.css";
 @import "@fontsource/nunito-sans/800.css";
+
+@theme {
+  --color-bg-primary: var(--color-bg-primary);
+  --color-bg-surface: var(--color-bg-surface);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-muted: var(--color-text-muted);
+  --color-border-primary: var(--color-border-primary);
+  --color-border-subtle: var(--color-border-subtle);
+}
 
 @layer base {
   :root {
@@ -13,11 +24,35 @@
     --color-primary: #7A1B28;
     --color-primary-hover: #5d141e;
     --color-primary-light: #f7e8ea;
+
+    /* Theme Tokens (Light Mode Defaults) */
+    --color-bg-primary: #F8F9FA;
+    --color-bg-surface: #FFFFFF;
+    
+    --color-text-primary: #1E293B;
+    --color-text-secondary: #475569;
+    --color-text-muted: #94A3B8;
+    
+    --color-border-primary: #E2E8F0;
+    --color-border-subtle: #F1F5F9;
+  }
+
+  .dark {
+    /* Theme Tokens (Dark Mode) */
+    --color-bg-primary: #0F172A;
+    --color-bg-surface: #1E293B;
+    
+    --color-text-primary: #F1F5F9;
+    --color-text-secondary: #CBD5E1;
+    --color-text-muted: #64748b;
+    
+    --color-border-primary: #334155;
+    --color-border-subtle: #1E293B;
   }
 
   body {
-    background-color: #F8F9FA;
-    color: #334155;
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
     font-family: var(--font-sans);
     font-weight: 500;
     overflow-x: hidden;
@@ -39,8 +74,8 @@
 /* Clean SaaS Cards */
 .glass-card,
 .nike-card {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-primary);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
   border-radius: 1rem;
   transition: all 0.2s ease-in-out;
@@ -48,7 +83,7 @@
 
 .glass-card:hover,
 .nike-card:hover {
-  border-color: #CBD5E1;
+  border-color: var(--color-text-muted);
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
 }
 
@@ -92,9 +127,9 @@
 /* Modern Secondary Buttons */
 .btn-secondary,
 .btn-nike-secondary {
-  background: #FFFFFF;
-  color: #475569;
-  border: 1px solid #CBD5E1;
+  background: var(--color-bg-surface);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-primary);
   font-family: var(--font-sans);
   font-size: 0.95rem;
   padding: 0.6rem 1.4rem;
@@ -111,9 +146,9 @@
 
 .btn-secondary:hover,
 .btn-nike-secondary:hover {
-  background: #F8FAFC;
-  border-color: #94A3B8;
-  color: #1E293B;
+  background: var(--color-border-subtle);
+  border-color: var(--color-text-muted);
+  color: var(--color-text-primary);
 }
 
 /* Elegant Custom Scrollbar */
@@ -123,16 +158,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #F8F9FA;
+  background: var(--color-bg-primary);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: var(--color-border-primary);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: var(--color-text-muted);
 }
 
 /* Utilities */
