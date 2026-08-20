@@ -386,6 +386,10 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                   value={voucherType}
                   onChange={(e) => {
                      setVoucherType(e.target.value);
+                     setSelectedOdsId('');
+                     setSelectedOriginalDocId('');
+                     setSelectedCustomerId('');
+                     setPaymentAmount('' as any);
                      if(e.target.value === 'nota_credito') setPaymentCondition('contado'); 
                   }}
                   className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all"
@@ -407,7 +411,7 @@ export const CashierView: React.FC<CashierViewProps> = ({ orders, customers }) =
                 <select
                   value={selectedCustomerId}
                   onChange={(e) => setSelectedCustomerId(e.target.value)}
-                  disabled={!!selectedOdsId || !!selectedOriginalDocId}
+                  disabled={(voucherType === 'venta' && !!selectedOdsId) || (voucherType === 'nota_credito' && !!selectedOriginalDocId)}
                   className="w-full bg-[var(--color-bg-primary)] border border-[var(--color-border-primary)] rounded-lg px-3 py-2 text-sm text-[var(--color-text-primary)] focus:border-[#7A1B28] focus:ring-1 focus:ring-[#7A1B28] outline-none transition-all disabled:opacity-50"
                 >
                   <option value="">Seleccione un cliente...</option>
