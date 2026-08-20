@@ -6,13 +6,13 @@ interface FaviconLogoProps {
   showText?: boolean;
 }
 
-export const FaviconLogo: React.FC<FaviconLogoProps> = ({ size = 48, className = '', showText = false }) => {
+export const FaviconLogo: React.FC<FaviconLogoProps> = ({ size, className = '', showText = false }) => {
   return (
     <div className={`inline-flex items-center gap-3 ${className}`}>
       {/* Official Super Wash Performance Logo Badge */}
       <div
-        className="relative flex items-center justify-center rounded-full bg-black border border-[var(--color-border-primary)] shadow-2xl overflow-hidden shrink-0 group"
-        style={{ width: size, height: size }}
+        className={`relative flex items-center justify-center rounded-full bg-black border border-[var(--color-border-primary)] shadow-2xl overflow-hidden shrink-0 group ${!size ? 'w-10 h-10 md:w-[90px] md:h-[90px]' : ''}`}
+        style={size ? { width: size, height: size } : undefined}
       >
         <div className="absolute inset-0 bg-[#00E5FF]/20 rounded-full blur-md opacity-40 group-hover:opacity-80 transition-opacity" />
         {/* Scale-[1.6] con translate-y-1 ajusta el emblema circular negro centrándolo */}
@@ -25,7 +25,7 @@ export const FaviconLogo: React.FC<FaviconLogoProps> = ({ size = 48, className =
 
       {/* Brand Text */}
       {showText && (
-        <div className="flex flex-col">
+        <div className="hidden sm:flex flex-col">
           <span className="font-display text-2xl tracking-wider text-[var(--color-text-primary)] leading-none">
             SUPER <span className="text-cyan-600">WASH</span>
           </span>

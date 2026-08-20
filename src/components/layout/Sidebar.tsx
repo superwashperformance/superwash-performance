@@ -41,8 +41,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange, curren
   return (
     <aside className="w-16 md:w-64 bg-[var(--color-bg-surface)] border-r border-[var(--color-border-primary)] flex flex-col py-6 shrink-0 transition-colors shadow-sm z-20 overflow-y-auto">
       {/* Top Logo Area */}
-      <div className="px-6 pb-8 flex flex-col items-center justify-center">
-        <FaviconLogo size={90} />
+      <div className="px-2 md:px-6 pb-6 md:pb-8 flex flex-col items-center justify-center">
+        <FaviconLogo size={undefined} />
       </div>
 
       <div className="flex flex-col gap-1 px-3">

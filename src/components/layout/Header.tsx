@@ -68,7 +68,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Quick ODS Creation Pill Button */}
         <button onClick={onNewODS} className="btn-primary text-xs md:text-sm shadow-md">
           <Plus className="w-4 h-4 stroke-[3]" />
-          <span>NUEVA ODS</span>
+          <span className="hidden sm:inline">NUEVA ODS</span>
         </button>
 
         {/* User Session & Role Card */}
