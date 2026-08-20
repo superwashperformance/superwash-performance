@@ -89,7 +89,7 @@ export const KanbanView: React.FC<KanbanViewProps> = ({
       {/* Horizontal Kanban Columns Container */}
       <div className="flex-1 flex gap-4 overflow-x-auto pb-4 custom-scrollbar select-none">
         {columns.map((col) => {
-          const colOrders = orders.filter((o) => o.status === col.id);
+          const colOrders = orders.filter((o) => (o.status || '').trim() === col.id);
           return (
             <div
               key={col.id}
